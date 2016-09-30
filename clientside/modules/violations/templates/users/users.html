@@ -1,0 +1,33 @@
+<div id="users" class="block">
+    <div class="header">
+        Пользователи
+        <button class="blue right" ng-click="gotoNewUser()">
+            <span class="fa fa-user-plus"></span> Добавить пользователя
+        </button>
+    </div>
+    <div class="content">
+        <table class="stripped selectable">
+            <thead>
+            <tr>
+                <th class="width-15 text-center">Фамилия</th>
+                <th class="width-15 text-center">Имя</th>
+                <th class="width-15 text-center">Отчество</th>
+                <th class="width-25 text-center">E-mail</th>
+                <th class="width-30 text-center">Структурное подразделение</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="user in users.users.getAll() track by $id(user)" ng-click="selectUser(user)">
+                <td class="width-15 text-center">{{ user.surname.value }}</td>
+                <td class="width-15 text-center">{{ user.name.value }}</td>
+                <td class="width-15 text-center">{{ user.fname.value }}</td>
+                <td class="width-25 text-center">{{ user.email.value }}</td>
+                <td class="width-30 text-center">{{ violations.divisions.getById(user.divisionId.value).shortTitle.value }}</td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="padding-30 text-center" ng-show="users.getAll().length === 0">
+            Пользователи не найдены
+        </div>
+    </div>
+</div>

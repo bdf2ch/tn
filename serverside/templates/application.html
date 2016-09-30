@@ -1,0 +1,65 @@
+<!-- BEGIN: main -->
+<!DOCTYPE html>
+<html lang="en" ng-app="application">
+<head>
+    <meta charset="UTF-8">
+    <title>Технологические нарушения</title>
+    <link rel="stylesheet" href="/clientside/resources/styles/application.css">
+    <link rel="stylesheet" href="/clientside/resources/styles/utils.css">
+    <link rel="stylesheet" href="/clientside/resources/styles/ui.css">
+    <link type="text/css" rel="stylesheet" href="/clientside/resources/fonts/Font Awesome/css/font-awesome.min.css">
+</head>
+<body>
+    <script>
+        var initialData = {INITIAL_DATA};
+    </script>
+    <script src="/clientside/libs/angularjs/angular.min.js"></script>
+
+    <div id="app-header" ng-controller="HeaderController">
+        <div id="app-header-wrapper">
+            <span class="caption">Технологические нарушения</span>
+
+            <a ng-href="{{'#' + menu.url}}" ng-show="menu.isVisible === true" ng-class="{ active: menu.isActive === true }" ng-repeat="menu in navigation.getAll() | orderBy:'order' track by $index">
+                <span class="fa {{ menu.icon }}" ng-show="menu.icon !== ''"></span>
+                {{ menu.title }}
+            </a>
+
+            <div class="user-info">
+                <div class="user-name">
+                    <span class="fa fa-user"></span>&nbsp;
+                    {{ session.getCurrentUser().name.value + " " + session.getCurrentUser().surname.value }}
+                    &nbsp;<span class="fa fa-caret-down"></span>
+                </div>
+                <div class="dropdown-menu">
+                    <a href ng-click="logout()">
+                        <span class="fa fa-sign-out"></span>Выход
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="app-content">
+        <div id="app-content-wrapper" ng-view>
+
+        </div>
+    </div>
+
+    <script src="/clientside/libs/angularjs/angular-route.min.js"></script>
+    <script src="/clientside/libs/angularjs/angular-cookies.min.js"></script>
+    <script src="/clientside/libs/angularjs/angular-animate.min.js"></script>
+    <script src="/clientside/libs/momentjs/moment-with-locales.min.js"></script>
+    <!--<script src="/clientside/libs/krypton/krypton.js"></script>-->
+    <!--<script src="/clientside/libs/krypton/krypton.ui.js"></script>-->
+    <!--<script src="/clientside/modules/homunculus/homunculus.module.js"></script>-->
+    <!--<script src="/clientside/modules/homunculus.ui/ho"></script>-->
+    <!--<script src="/modules/application/application.module.js"></script>-->
+    <!--<script src="/modules/violations/violations.module.js"></script>-->
+    <!--<script src="/modules/violations/services/$violations.js"></script>-->
+    <!--<script src="/modules/violations/controllers/violations.js"></script>-->
+    <!--<script src="/modules/violations/controllers/new-violation.js"></script>-->
+
+    <script src="/clientside/dist/js/source.min.js"></script>
+    <!--<script src="/clientside/dist/js/auth.min.js"></script>-->
+</body>
+</html>
+<!-- END: main -->

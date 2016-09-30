@@ -1,0 +1,298 @@
+<div id="new-violation_">
+    <div id="violation-info" class="block">
+        <div class="header">
+            Регистрация технологического нарушения
+            <button class="red right" ng-click="gotoMain()">
+                <span class="fa fa-ban"></span>&nbsp;
+                Отмена
+            </button>
+            <button class="green right margin-right-10" ng-click="add()" ng-disabled="violations.violations.getNew()._states_.loading() === true">
+                <span class="fa fa-plus"></span>&nbsp;
+                Добавить
+            </button>
+        </div>
+        <div class="content">
+            <div class="row width-100 padding-10">
+                <div class="width-80">
+                    <label class="width-100" for="new-violation-date">
+                        Дата и время нарушения
+                    </label>
+                    <input type="text"
+                           name="date"
+                           id="new-violation-date"
+                           class="width-100"
+                           ui-date-time-picker
+                           date-time-picker-id="new-violation-date"
+                           date-time-picker-max-date="today"
+                           date-time-picker-modal="1"
+                           date-time-picker-enable-time="1"
+                           ng-model="violations.violations.getNew().happened.value">
+                </div>
+                <div class="width-20">
+                    <label for="new-violation-time" class="width-80 right">Время нарушения</label>
+                    <!--
+                    <input type="text"
+                           name="time"
+                           id="new-violation-time"
+                           class="width-80 right text-center"
+                           ng-model="violations.violations.getNew().happened.value"
+                           ui-time-input>
+                    -->
+                    <ui-time-picker class="width-80 right" ng-model="violations.violations.getNew().happened.value"></ui-time-picker>
+                </div>
+
+            </div>
+
+            <div class="row padding-10">
+                <label class="width-100" for="violations-tree">
+                    Структурное подразделение
+                    <span class="right form-error" ng-show="errors.divisionId !== undefined">{{ errors.divisionId }}</span>
+                </label>
+                <div class="width-90">
+                    <input type="text"
+                           name=""
+                           id=""
+                           class="width-100"
+                           ng-model="violations.divisions.getById(violations.violations.getNew().divisionId.value).shortTitle.value"
+                           disabled>
+                </div>
+                <div class="width-10">
+                    <button class="width-100 blue" ng-click="openSelectDivisionModal()">
+                        <span class="fa fa-building"></span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="row padding-10">
+                <label class="width-100" for="new-violation-esk-group">
+                    Група ЭСК
+                    <span class="right form-error" ng-show="errors.eskGroupId !== undefined">{{ errors.eskGroupId }}</span>
+                </label>
+                <select class="width-100"
+                        name="esk_group"
+                        id="new-violation-esk-group"
+                        ng-model="violations.violations.getNew().eskGroupId.value"
+                        ng-options="group.id.value as group.title.value for group in violations.eskGroups.getAll()">
+                </select>
+            </div>
+
+            <div class="row padding-10">
+                <label class="width-100" for="new-violation-esk-object">
+                    Объект ЭСК
+                    <span class="right form-error" ng-show="errors.eskObject !== undefined">{{ errors.eskObject }}</span>
+                </label>
+                <input class="width-100"
+                       type="text"
+                       name="esk_object"
+                       id="new-violation-esk-object"
+                       ng-model="violations.violations.getNew().eskObject.value"
+                       placeholder="Укажите объект, на котором произошло ТН">
+            </div>
+
+            <div class="row padding-10">
+                <label class="width-100" for="new-violation-comment">
+                    Описание
+                    <span class="right form-error" ng-show="errors.description !== undefined">{{ errors.description }}</span>
+                </label>
+                <textarea class="width-100"
+                          name="comment"
+                          id="new-violation-comment"
+                          cols="30"
+                          rows="10"
+                          ng-model="violations.violations.getNew().description.value"
+                          placeholder="Укажите описание ТН">
+                </textarea>
+            </div>
+        </div>
+    </div>
+    <div id="violation-documents" class="block">
+        <div class="header">
+            Документы
+            <label for="userfile" class="button blue right" ng-show="isUploadInProgress === false">
+                <span class="fa fa-upload"></span>&nbsp; Загрузить файл
+                <input
+                        type="file"
+                        name="userfile"
+                        id="userfile"
+                        ng-disabled="isUploadComplete === false"
+                        uploader
+                        uploader-url="http://10.50.0.65:80/uploads/share"
+                        uploader-data="uploaderData"
+                        uploader-on-before-upload="onBeforeUploadAttachment"
+                        uploader-on-complete-upload="onCompleteUploadAttachment"/>
+            </label>
+            <div class="upload-progress">
+                <span class="fa fa-spinner fa-pulse fa-fw" ng-show="isUploadInProgress === true"></span>
+                <span ng-show="isUploadInProgress === true">Файл загружается...</span>
+            </div>
+        </div>
+        <div class="content">
+            <div class="width-100 padding-30 margin-bottom-10 text-center" ng-show="violations.attachments.getNew().length === 0">
+                Документы отсутствуют
+            </div>
+
+            <table id="new-violation-files" class="stripped width-100" ng-show="violations.attachments.getNew().length > 0">
+                <thead>
+                <tr>
+                    <th class="width-80">Наименование</th>
+                    <th class="width-20">Размер</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="attachment" ng-repeat="attachment in violations.attachments.getNew() track by $index">
+                    <td class="width-80 attachment-loaded">
+                        <a ng-href="{{attachment.url.value}}" target="_blank">{{ attachment.title.value }}</a>
+                    </td>
+                    <td class="width-20 attachment-loaded">{{ attachment.size.value | filesize }}</td>
+                    <td class="attachment-message">
+                        <span class="fa fa-check-circle"></span> &nbsp; Файл загружен
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+<!--
+<columns id="new-violation" class="height-100">
+        <column id="form" width="75" show-header="0" class="block">
+            <div class="header">Регистрация технологического нарушения</div>
+            <div class="content">
+
+                <div class="row margin-bottom-20">
+                    <label class="width-100" for="new-violation-date">
+                        Дата и время нарушения
+
+                    </label>
+                    <input type="text"
+                           name="date"
+                           id="new-violation-date"
+                           class="width-100"
+                           ui-date-time-picker
+                           date-time-picker-modal="1"
+                           date-time-picker-enable-time="1"
+                           ng-model="violations.violations.getNew().happened.value">
+                </div>
+
+                <div class="row margin-bottom-20">
+                    <label class="width-100" for="violations-tree">
+                        Структурное подразделение
+                        <span class="right form-error" ng-show="errors.divisionId !== undefined">{{ errors.divisionId }}</span>
+                    </label>
+                    <div class="width-90">
+                        <input type="text" name="" id="" class="width-100" ng-model="violations.divisions.getById(violations.violations.getNew().divisionId.value).shortTitle.value">
+                    </div>
+                    <div class="width-10">
+                        <button class="width-100 blue" ng-click="openSelectDivisionModal()">
+                            <span class="fa fa-building"></span>&nbsp;
+                        </button>
+                    </div>
+
+                    <structure id="test2" root-key="0" root-key-data-type="DATA_TYPE_INTEGER" expand-on-select="1"></structure>
+                </div>
+
+                <div class="row margin-bottom-20">
+                    <label class="width-100" for="new-violation-esk-group">
+                        Група ЭСК
+                        <span class="right form-error" ng-show="errors.eskGroupId !== undefined">{{ errors.eskGroupId }}</span>
+                    </label>
+                    <select class="width-100" name="esk_group" id="new-violation-esk-group" ng-model="violations.violations.getNew().eskGroupId.value" ng-options="group.id.value as group.title.value for group in violations.eskGroups.getAll()"></select>
+                </div>
+
+                <div class="row margin-bottom-20">
+                    <label class="width-100" for="new-violation-esk-object">
+                        Объект ЭСК
+                        <span class="right form-error" ng-show="errors.eskObject !== undefined">{{ errors.eskObject }}</span>
+                    </label>
+                    <input class="width-100" type="text" name="esk_object" id="new-violation-esk-object" ng-model="violations.violations.getNew().eskObject.value" placeholder="Введите объект, на котором произошло ТН">
+                </div>
+
+                <div class="row margin-bottom-20">
+                    <label class="width-100" for="new-violation-comment">
+                        Описание
+                        <span class="right form-error" ng-show="errors.description !== undefined">{{ errors.description }}</span>
+                    </label>
+                    <textarea class="width-100" name="comment" id="new-violation-comment" cols="30" rows="10" ng-model="violations.violations.getNew().description.value" placeholder="Введите описание ТН"></textarea>
+                </div>
+
+                <div class="row margin-bottom-20">
+                    <label for="new-violation-files">Приложенные файлы</label>
+                    <table id="new-violation-files" class="stripped">
+                        <thead>
+                        <tr>
+                            <th class="width-90">Наименование</th>
+                            <th class="width-10">Размер</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="attachment in violations.attachments.getNew() track by $index">
+                            <td class="width-90">
+                                <a ng-href="{{attachment.url.value}}">{{ attachment.title.value }}</a>
+                            </td>
+                            <td class="width-10">{{ attachment.size.value | filesize }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row text-center">
+                    <span ng-show="violations.attachments.getNew().length === 0">
+                        Приложенные файлы отсутствуют<br><br>
+                    </span>
+                    <label for="userfile" class="button blue round">
+                        <span class="fa fa-upload"></span>&nbsp; Загрузить файл
+                        <input
+                                type="file"
+                                name="userfile"
+                                id="userfile"
+                                ng-disabled="isUploadComplete === false"
+                                uploader
+                                uploader-url="/serverside/uploader.php"
+                                uploader-data="uploaderData"
+                                uploader-on-before-upload="onBeforeUploadAttachment"
+                                uploader-on-complete-upload="onCompleteUploadAttachment"/>
+                    </label>
+                </div>
+
+            </div>
+        </column>
+        <column id="controls" width="25" show-header="0" class="controls">
+            <div class="row padding-10">
+                <div class="row">
+                    <button class="green width-100 margin-bottom-10" ng-click="add()" ng-disabled="violations.violations.getNew()._states_.loading() === true">
+                        <span class="fa fa-plus"></span>&nbsp;
+                        Добавить
+                    </button>
+                </div>
+                <div class="row">
+                    <button class="blue width-100" ng-click="gotoMain()">
+                        <span class="fa fa-arrow-left"></span>&nbsp;
+                        Вернуться
+                    </button>
+                </div>
+            </div>
+        </column>
+    </columns>
+-->
+
+
+
+
+
+ <div ui-modal modal-id="new-violation-division-modal" modal-caption="Выберите структурное подразделение" modal-width="450" modal-height="300">
+     <div class="row padding-10">
+         <ui-tree id="new-violation-tree" class="stacked" root-key="0" root-key-data-type="DATA_TYPE_INTEGER"></ui-tree>
+     </div>
+
+     <ui-modal-footer height="45">
+         <div class="row padding-5">
+             <button class="width-33 blue right" ng-disabled="violations.violations.getNew().divisionId.value === 0" ng-click="modals.close()">
+                 Выбрать
+             </button>
+         </div>
+     </ui-modal-footer>
+ </div>
+
+

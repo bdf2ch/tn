@@ -1,0 +1,77 @@
+@info-width: 700px;
+@documents-width: 490px;
+
+#current-violation_ {
+  width: 1200px;
+  height: 400px;
+
+  #violation-info {
+    float: left;
+    width: @info-width;
+    margin-right: 10px;
+    box-sizing: border-box;
+  }
+
+  #violation-documents {
+    float: left;
+    width: @documents-width;
+    box-sizing: border-box;
+
+
+    .content {
+      padding: 0px;
+    }
+
+    #current-violation-files {
+
+      .attachment {
+        transition: 0.7s ease all;
+        -webkit-transition: 0.7s linear all;
+
+        .attachment-message {
+          display: none;
+          font-size: 20px;
+          line-height: 14px;
+          text-align: center;
+          color: #1B5E20;
+
+          .fa {
+            font-size: 25px;
+            line-height: 14px;
+          }
+        }
+
+        .attachment-loaded {
+          display: table-cell;
+        }
+
+        &.ng-enter {
+          background: #81C784;
+
+          .attachment-message {
+            display: table-cell;
+          }
+
+          .attachment-loaded {
+            display: none;
+          }
+        }
+
+        &.ng-enter.ng-enter-active {
+          background: #C8E6C9;
+
+          //.attachment-message {
+          //display: none;
+          //}
+
+          //.attachment-loaded {
+          //  display: table-cell;
+          //}
+        }
+
+      }
+
+    }
+  }
+
+}

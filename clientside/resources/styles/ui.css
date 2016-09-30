@@ -1,0 +1,1711 @@
+/**
+*
+**/
+/**********
+** FONTS
+*********/
+@font-face {
+  font-family: "Roboto Regular";
+  src: url("../fonts/Roboto-Regular.ttf");
+}
+@font-face {
+  font-family: "Roboto Bold";
+  src: url("../fonts/Roboto-Bold.ttf");
+}
+@font-face {
+  font-family: "Roboto Italic";
+  src: url("../fonts/Roboto-Italic.ttf");
+}
+/**********
+** TEXT ALIGN
+**********/
+.text-left {
+  text-align: left !important;
+}
+.text-right {
+  text-align: right !important;
+}
+.text-center {
+  text-align: center !important;
+}
+.text-justify {
+  text-align: justify !important;
+}
+/**********
+** BLOCK FLOAT
+**********/
+.left {
+  float: left !important;
+}
+.right {
+  float: right !important;
+}
+.center {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  float: none !important;
+}
+/**********
+** GRID
+**********/
+.row {
+  overflow: auto;
+  box-sizing: border-box;
+}
+.row.bottom-split-5 {
+  margin-bottom: 5px;
+}
+/**********
+** WIDTH & height
+**********/
+.width-100 {
+  float: left;
+  width: 100% !important;
+  box-sizing: border-box;
+}
+.width-90 {
+  float: left;
+  width: 90%;
+  box-sizing: border-box;
+}
+.width-85 {
+  float: left;
+  width: 85%;
+  box-sizing: border-box;
+}
+.width-80 {
+  float: left;
+  width: 80%;
+  box-sizing: border-box;
+}
+.width-70 {
+  float: left;
+  width: 70%;
+  box-sizing: border-box;
+}
+.width-75 {
+  float: left;
+  width: 75%;
+  box-sizing: border-box;
+}
+.width-65 {
+  float: left;
+  width: 65%;
+}
+.width-60 {
+  float: left;
+  width: 60%;
+  box-sizing: border-box;
+}
+.width-50 {
+  float: left;
+  width: 50%;
+}
+.width-45 {
+  float: left;
+  width: 45%;
+}
+.width-40 {
+  float: left;
+  width: 40%;
+}
+.width-35 {
+  float: left;
+  width: 35%;
+}
+.width-33 {
+  float: left;
+  width: 33%;
+}
+.width-30 {
+  float: left;
+  width: 30%;
+  box-sizing: border-box;
+}
+.width-25 {
+  float: left;
+  width: 25%;
+  box-sizing: border-box;
+}
+.width-20 {
+  float: left;
+  width: 20%;
+  box-sizing: border-box;
+}
+.width-15 {
+  float: left;
+  width: 15%;
+}
+.width-10 {
+  float: left;
+  width: 10%;
+  box-sizing: border-box;
+}
+.width-5 {
+  float: left;
+  width: 5%;
+  box-sizing: border-box;
+}
+.height-100 {
+  height: 100%;
+}
+/**********
+** PADDINGS & MARGINS
+**********/
+.padding-5 {
+  padding: 5px;
+}
+.padding-10 {
+  padding: 10px;
+}
+.padding-20 {
+  padding: 20px;
+}
+.padding-30 {
+  padding: 30px;
+}
+.margin-top-5 {
+  margin-top: 5px;
+}
+.margin-20 {
+  margin: 20px !important;
+}
+.margin-bottom-5 {
+  margin-bottom: 5px !important;
+}
+.margin-bottom-10 {
+  margin-bottom: 10px !important;
+}
+.margin-bottom-20 {
+  margin-bottom: 20px !important;
+}
+.margin-bottom-30 {
+  margin-bottom: 30px !important;
+}
+.margin-bottom-40 {
+  margin-bottom: 40px !important;
+}
+.margin-right-5 {
+  margin-right: 5px !important;
+}
+.margin-right-10 {
+  margin-right: 10px !important;
+}
+/**********
+** FORMS
+**********/
+label {
+  display: inline-block;
+  margin-bottom: 3px;
+  font-size: 13px;
+  color: gray;
+}
+label.button {
+  height: 35px;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  line-height: 12px;
+  text-align: center;
+  box-sizing: border-box;
+  outline: none;
+}
+label.button.blue {
+  color: white;
+  background: #2196F3;
+}
+label.button.blue:hover {
+  background: #1976D2;
+}
+label.button.green {
+  color: white;
+  background: #4CAF50;
+}
+label.button.green:hover {
+  background: #388E3C;
+}
+label.button.green[disabled] {
+  background: #C8E6C9;
+}
+label.button.red {
+  color: white;
+  background: #F44336;
+}
+label.button.red:hover {
+  background: #D32F2F;
+}
+label.button.transparent {
+  background: transparent;
+}
+label.button input {
+  display: none;
+}
+input {
+  display: block;
+  font-family: "Roboto Regular";
+  font-size: 18px;
+  border: 1px solid lightgrey;
+  box-sizing: border-box;
+  outline: none;
+}
+input[type='text'],
+input[type='password'],
+input[type='number'] {
+  height: 35px;
+  padding: 7px;
+  box-sizing: border-box;
+}
+input[type='text'].label,
+input[type='password'].label,
+input[type='number'].label {
+  padding-left: 0px !important;
+  border: 1px solid transparent;
+  background: transparent;
+}
+input[type='text'].label.border-top,
+input[type='password'].label.border-top,
+input[type='number'].label.border-top {
+  border-top: 1px solid lightgrey;
+}
+input[type='text'].dark,
+input[type='password'].dark,
+input[type='number'].dark {
+  background: #F5F5F5;
+  border: none;
+}
+input[type='text'].obtique,
+input[type='password'].obtique,
+input[type='number'].obtique {
+  border-radius: 3px;
+}
+input[type='text'].big,
+input[type='password'].big,
+input[type='number'].big {
+  height: 41px;
+  padding: 10px;
+}
+select {
+  height: 35px;
+  padding: 7px;
+  box-sizing: border-box;
+  font-family: "Roboto Regular";
+  font-size: 17px;
+  text-align: center !important;
+  border: 1px solid lightgrey;
+  outline: none;
+}
+select[disabled] {
+  background: #FAFAFA;
+}
+select.no-border {
+  border: none;
+}
+select option {
+  padding: 10px;
+  color: gray;
+}
+textarea {
+  padding: 7px;
+  box-sizing: border-box;
+  font-family: "Roboto Regular";
+  font-size: 17px;
+  border: 1px solid lightgrey;
+  outline: none;
+}
+.input-comment {
+  display: block;
+  font-size: 13px;
+  color: #BDBDBD;
+}
+/**********
+** BUTTONS
+**********/
+input[type='button'],
+input[type='submit'],
+button {
+  height: 35px;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  line-height: 14px;
+  font-size: 14px;
+  box-sizing: border-box;
+  outline: none;
+}
+input[type='button'].rounded,
+input[type='submit'].rounded,
+button.rounded {
+  border-radius: 50%;
+}
+input[type='button'].obtique,
+input[type='submit'].obtique,
+button.obtique {
+  border-radius: 3px;
+}
+input[type='button'].small,
+input[type='submit'].small,
+button.small {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-left: 5px;
+  padding: 0px !important;
+  font-size: 11px;
+  text-align: center !important;
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+input[type='button'].big,
+input[type='submit'].big,
+button.big {
+  height: 45px;
+}
+input[type='button'].very-big,
+input[type='submit'].very-big,
+button.very-big {
+  height: 60px;
+}
+input[type='button'][disabled='true'],
+input[type='submit'][disabled='true'],
+button[disabled='true'] {
+  cursor: default;
+}
+input[type='button'].blue,
+input[type='submit'].blue,
+button.blue {
+  color: white;
+  background: #2196F3;
+}
+input[type='button'].blue:hover,
+input[type='submit'].blue:hover,
+button.blue:hover {
+  background: #1976D2;
+}
+input[type='button'].blue[disabled],
+input[type='submit'].blue[disabled],
+button.blue[disabled] {
+  background: #BBDEFB;
+}
+input[type='button'].green,
+input[type='submit'].green,
+button.green {
+  color: white;
+  background: #4CAF50;
+}
+input[type='button'].green:hover,
+input[type='submit'].green:hover,
+button.green:hover {
+  background: #388E3C;
+}
+input[type='button'].green[disabled],
+input[type='submit'].green[disabled],
+button.green[disabled] {
+  background: #C8E6C9;
+}
+input[type='button'].red,
+input[type='submit'].red,
+button.red {
+  color: white;
+  background: #F44336;
+}
+input[type='button'].red:hover,
+input[type='submit'].red:hover,
+button.red:hover {
+  background: #D32F2F;
+}
+input[type='button'].transparent,
+input[type='submit'].transparent,
+button.transparent {
+  background: transparent;
+}
+/*********
+* TABLES
+*********/
+table {
+  width: 100%;
+  border-spacing: 0px;
+}
+table thead th {
+  padding: 10px;
+  font-size: 14px;
+  text-align: left;
+  box-sizing: border-box;
+  background: #E0F2F1;
+}
+table tbody tr {
+  border-bottom: 1px solid black;
+}
+table tbody tr td {
+  padding: 10px;
+  box-sizing: border-box;
+}
+table.stripped tbody tr:nth-child(even) {
+  background: #FAFAFA;
+}
+table.selectable tr {
+  cursor: pointer;
+}
+table.selectable tr:hover {
+  background: #FAFAFA;
+}
+table.selectable tr.selected {
+  background: #EEEEEE !important;
+}
+/**********
+* LINKS
+*********/
+a {
+  color: #64B5F6;
+}
+a:hover {
+  color: #1565C0;
+}
+a.green {
+  color: #4CAF50;
+}
+a.green:hover {
+  color: #388E3C;
+}
+a.red {
+  color: #F44336;
+}
+a.red:hover {
+  color: #D32F2F;
+}
+a.blue {
+  color: #2196F3;
+}
+a.blue:hover {
+  color: #1976D2;
+}
+/**********
+** COLORS
+**********/
+/*.red {
+  background-color: #F44336;
+  color: white;
+  &:hover {
+    background-color: #D32F2F;
+  }
+}
+
+.light-red {
+  background-color: #FFCDD2;
+  color: #D50000;
+}
+
+.blue {
+  background-color: #2196F3;
+  color: white;
+  &:hover {
+    background-color: #1976D2;
+  }
+}
+
+.light-blue {
+  background-color: #BBDEFB;
+  color: #0D47A1;
+}
+
+.green {
+  background-color: #4CAF50;
+  color: white;
+  &:hover {
+    background-color: #388E3C;
+  }
+  
+  &.disabled {
+    background: #C8E6C9;
+    color: #BDBDBD;
+  }
+}
+
+.light-green {
+  background-color: #C8E6C9;
+  color: #1B5E20;
+}
+*/
+/**********
+** CUSTOM CONTROLS
+*********/
+/**********
+** DEBUG CONSOLE
+**********/
+#krypton-debug-console {
+  position: absolute;
+  z-index: 2000;
+  right: 20px;
+  bottom: 0px;
+  width: 300px;
+  height: 300px;
+  background: rgba(0, 0, 0, 0.9);
+  -webkit-box-shadow: 1px 2px 15px 2px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 1px 2px 15px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 1px 2px 15px 2px rgba(0, 0, 0, 0.2);
+}
+#krypton-debug-console table th {
+  padding: 10px;
+  font-size: 10px;
+  text-align: left;
+  text-transform: uppercase;
+  color: white;
+  background: rgba(0, 0, 0, 0.8);
+}
+#krypton-debug-console table td {
+  text-align: left;
+  vertical-align: top;
+  font-size: 11px;
+  color: white;
+}
+/**********
+* LIST
+**********/
+.list-item {
+  min-height: 44px;
+  box-sizing: border-box;
+  border-bottom: 1px solid #E0E0E0;
+  cursor: pointer;
+}
+.list-item:hover {
+  background: #FAFAFA;
+}
+.list-item.active {
+  background: #EEEEEE;
+}
+.list-item.active .list-item-icon {
+  border-left: 3px solid #2196F3;
+}
+.list-item .list-item-icon {
+  float: left;
+  height: 44px;
+  padding: 5px;
+  padding-top: 6px;
+  text-align: center;
+  font-size: 15px;
+  color: #273A4D;
+  border-left: 3px solid transparent;
+  box-sizing: border-box;
+}
+.list-item .list-item-icon span {
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  background: white;
+  border-radius: 50px;
+  border: 1px solid #E0E0E0;
+}
+.list-item .list-item-content-lead {
+  overflow: hidden;
+  height: 22px;
+  margin-left: 40px;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 5px;
+  color: #1F3E4C;
+  box-sizing: border-box;
+  white-space: nowrap;
+  text-overflow: ellipsis !important;
+}
+.list-item .list-item-content-lead.only {
+  height: 44px;
+  line-height: 33px;
+}
+.list-item .list-item-content-secondary {
+  overflow: hidden;
+  height: 22px;
+  margin-left: 40px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #A7B0BB;
+  white-space: nowrap;
+  text-overflow: ellipsis !important;
+  box-sizing: border-box;
+}
+.system-info {
+  display: block;
+  overflow: visible;
+  width: 250px;
+  margin-top: 100px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 20px;
+  text-align: center;
+  font-size: 17px;
+  color: #BDBDBD;
+  background: #FAFAFA;
+  border-radius: 4px;
+  text-shadow: #ffffff 0px 1px 0px;
+}
+.system-info .message {
+  display: block;
+}
+.system-info .fa {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  margin-right: auto;
+  margin-left: auto;
+  margin-bottom: 10px;
+  padding: 10px;
+  font-size: 36px;
+  text-align: center;
+  line-height: 40px;
+  background: white;
+  border: 1px solid #E0E0E0;
+  border-radius: 50%;
+}
+.badge {
+  display: inline-block;
+  height: 20px;
+  border-radius: 4px;
+  background: #607D8B;
+  color: white;
+  font-size: 13px;
+  line-height: 14px;
+}
+.content-caption {
+  border-bottom: 1px solid lightgrey;
+}
+.block-caption {
+  display: block;
+  margin-bottom: 20px;
+  padding-bottom: 5px;
+  font-size: 22px;
+  color: #BDBDBD;
+  border-bottom: 1px dotted lightgrey;
+}
+/***** PAGINATION *****/
+.pagination {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+.pagination a {
+  display: inline-block;
+  width: 25px;
+  height: 25px;
+  line-height: 25px;
+  text-align: center;
+  text-decoration: none;
+  color: #2196F3;
+  background: #BBDEFB;
+  cursor: pointer;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+.pagination a:hover {
+  color: white;
+  background: #1976D2;
+}
+.pagination a.current {
+  font-weight: bold;
+  color: white;
+  background: #2196F3;
+}
+.pagination .middle {
+  display: inline-block;
+  vertical-align: bottom;
+}
+.krypton-ui-fog {
+  position: fixed;
+  display: block;
+  overflow: hidden;
+  top: 0px;
+  left: 0px;
+  z-index: 1000;
+  opacity: 0;
+  background: rgba(0, 0, 0, 0.2);
+  -webkit-transition: opacity 0.4s ease;
+  -moz-transition: opacity 0.4s ease;
+  -o-transition: opacity 0.4s ease;
+  transition: opacity 0.4s ease;
+  filter: blur(2px);
+}
+.krypton-ui-fog.visible {
+  right: 0px;
+  height: 100%;
+  opacity: 1;
+}
+.ui-date-time-picker2 {
+  position: absolute;
+  display: none;
+  width: 259px;
+  z-index: 1001;
+  border: 1px solid lightgrey;
+  background: white;
+  box-sizing: content-box;
+  -webkit-box-shadow: 1px 1px 15px 1px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 1px 1px 15px 1px rgba(0, 0, 0, 0.2);
+  box-shadow: 1px 1px 15px 1px rgba(0, 0, 0, 0.2);
+}
+.ui-date-time-picker2 .toolbar {
+  float: left;
+  width: 259px;
+  box-sizing: border-box;
+}
+.ui-date-time-picker2 .toolbar .control {
+  float: left;
+  width: 37px;
+}
+.ui-date-time-picker2 .toolbar .content {
+  float: left;
+  width: 185px;
+}
+.ui-date-time-picker2 .toolbar .content select {
+  font-size: 15px;
+  text-align-last: center;
+  text-align: center;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-indent: 0.01px;
+  text-overflow: '';
+  -ms-appearance: none;
+  appearance: none !important;
+  background-image: url('../images/drop_down_arrow.png');
+  background-position: right center;
+  background-repeat: no-repeat;
+  background-size: 20px 20px;
+  background-position-x: 95%;
+}
+.ui-date-time-picker2 .toolbar .content select option {
+  text-align: center;
+}
+.ui-date-time-picker2 .toolbar .content .selected-date {
+  display: block;
+  height: 35px;
+  text-align: center;
+  line-height: 35px;
+}
+.ui-date-time-picker2 .weekdays {
+  float: left;
+  width: 259px;
+  box-sizing: border-box;
+}
+.ui-date-time-picker2 .weekdays .day {
+  float: left;
+  width: 37px;
+  height: 20px;
+  font-size: 11px;
+  line-height: 22px;
+  text-transform: uppercase;
+  border-right: none;
+  background: #FAFAFA;
+  cursor: default;
+}
+.ui-date-time-picker2 .weekdays .day:hover {
+  background: #FAFAFA;
+}
+.ui-date-time-picker2 .day {
+  display: inline-block;
+  float: left;
+  overflow: hidden;
+  width: 37px;
+  height: 37px;
+  font-family: "Roboto Regular";
+  font-size: 17px;
+  line-height: 37px;
+  text-align: center;
+  cursor: pointer;
+  box-sizing: border-box;
+  border-right: 1px solid #E0E0E0;
+  border-top: 1px solid #E0E0E0;
+  -webkit-transition: background 0.2s linear;
+  -moz-transition: background 0.2s linear;
+  -o-transition: background 0.2s linear;
+  transition: background 0.2s linear;
+}
+.ui-date-time-picker2 .day:hover {
+  background: #F5F5F5;
+}
+.ui-date-time-picker2 .day.sunday {
+  background: #FFEBEE !important;
+  border-right: none;
+}
+.ui-date-time-picker2 .day.sunday:hover {
+  background: #EF9A9A !important;
+}
+.ui-date-time-picker2 .day.not-this-month {
+  color: #BDBDBD;
+}
+.ui-date-time-picker2 .day.current {
+  background: #FFF3E0;
+}
+.ui-date-time-picker2 .day.current:hover {
+  background: #F5F5F5;
+}
+.ui-date-time-picker2 .day.disabled {
+  background: #FAFAFA;
+  color: #E0E0E0;
+  cursor: default;
+}
+.ui-date-time-picker2 .day.disabled:hover {
+  background: #FAFAFA;
+}
+.ui-date-time-picker2 .days-container {
+  float: left;
+  width: 100%;
+  box-sizing: border-box;
+}
+.ui-date-time-picker2 .hour {
+  display: inline-block;
+  position: relative;
+  float: left;
+  overflow: hidden;
+  width: 43.16666667px;
+  height: 25%;
+  font-family: "Roboto Regular";
+  font-size: 19px;
+  text-align: center;
+  cursor: pointer;
+  box-sizing: border-box;
+  border-right: 1px solid #E0E0E0;
+  border-top: 1px solid #E0E0E0;
+  -webkit-transition: background 0.2s linear;
+  -moz-transition: background 0.2s linear;
+  -o-transition: background 0.2s linear;
+  transition: background 0.2s linear;
+}
+.ui-date-time-picker2 .hour:hover {
+  background: #F5F5F5;
+}
+.ui-date-time-picker2 .hour.current {
+  background: #FFF3E0;
+}
+.ui-date-time-picker2 .hour.current:hover {
+  background: #F5F5F5;
+}
+.ui-date-time-picker2 .minute {
+  display: inline-block;
+  position: relative;
+  float: left;
+  overflow: hidden;
+  width: 64.75px;
+  height: 33.33333%;
+  text-align: center;
+  font-size: 19px;
+  line-height: 86.33333333px;
+  cursor: pointer;
+  box-sizing: border-box;
+  border-right: 1px solid #E0E0E0;
+  border-top: 1px solid #E0E0E0;
+  -webkit-transition: background 0.2s linear;
+  -moz-transition: background 0.2s linear;
+  -o-transition: background 0.2s linear;
+  transition: background 0.2s linear;
+}
+.ui-date-time-picker2 .minute:hover {
+  background: #F5F5F5;
+}
+.ui-date-time-picker2 .minute.current {
+  background: #FFF3E0;
+}
+.ui-date-time-picker2 .minute.current:hover {
+  background: #F5F5F5;
+}
+.ui-date-time-picker2.modal {
+  position: absolute;
+  width: 522px;
+  border: none;
+}
+.ui-date-time-picker2.modal .toolbar {
+  width: 522px;
+}
+.ui-date-time-picker2.modal .toolbar .control {
+  width: 74.57142857px;
+}
+.ui-date-time-picker2.modal .toolbar select {
+  height: 60px;
+  font-size: 22px;
+}
+.ui-date-time-picker2.modal .toolbar .content {
+  width: 372.85714286px;
+}
+.ui-date-time-picker2.modal .toolbar .content .selected-date {
+  font-size: 24px;
+  line-height: 60px;
+}
+.ui-date-time-picker2.modal .weekdays {
+  width: 522px;
+  box-sizing: border-box;
+}
+.ui-date-time-picker2.modal .weekdays .day {
+  width: 74.57142857px;
+  height: 20px;
+  font-size: 9px;
+  line-height: 22px;
+}
+.ui-date-time-picker2.modal .day {
+  width: 74.57142857px;
+  height: 74.57142857px;
+  font-size: 26px;
+  line-height: 74.57142857px;
+}
+.ui-date-time-picker2.modal .hour {
+  width: 87px;
+  height: 25%;
+  font-family: "Roboto Regular";
+  font-size: 22px;
+  line-height: 87px;
+}
+.ui-date-time-picker2.modal .minute {
+  width: 25%;
+  height: 33.333333333333333333333333%;
+  font-size: 24px;
+  line-height: 120.5px;
+  box-sizing: border-box;
+  border-right: 1px solid #E0E0E0;
+  border-top: 1px solid #E0E0E0;
+}
+.ui-data-field {
+  position: relative;
+  overflow: hidden;
+  height: 40px;
+  box-sizing: border-box;
+}
+.ui-data-field .input-container {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  right: 80px;
+  bottom: 0px;
+}
+.ui-data-field .input-container input {
+  width: 100%;
+  border-right: none !important;
+  box-sizing: border-box;
+}
+.ui-data-field .controls-container {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+  width: 80px;
+  box-sizing: border-box;
+}
+.ui-data-field .controls-container button {
+  display: inline-block;
+  float: left;
+  width: 40px;
+  height: 38px;
+}
+.ui-data-field .controls-container button.green {
+  font-size: 20px;
+}
+.ui-data-field .controls-container button.red {
+  font-size: 27px;
+}
+/******************
+* COLUMNS
+******************/
+.krypton-columns {
+  position: relative;
+  display: table;
+  width: 100%;
+  height: 100%;
+}
+.krypton-columns .columns-row {
+  position: relative;
+  display: table-row;
+  width: 100%;
+  box-sizing: border-box;
+}
+.krypton-columns .columns-column {
+  position: relative;
+  display: table-cell;
+  overflow: hidden;
+  height: 100%;
+  border-right: 1px solid #D3D5E0;
+}
+.krypton-columns .columns-column:last-of-type {
+  border-right: none;
+}
+.krypton-columns .columns-column .column-header {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  height: 30px;
+  padding: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  vertical-align: bottom;
+  box-sizing: border-box;
+  background: #E3E5F1;
+  border-bottom: 1px solid #D3D5E0;
+}
+.krypton-columns .columns-column .column-header .header-caption {
+  display: inline-block;
+  margin-right: 5px;
+  line-height: 22px;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #818292;
+}
+.krypton-columns .columns-column .column-header .service-button {
+  width: 20px;
+  height: 20px;
+  padding: 2px;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 14px;
+  color: darkgray;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+.krypton-columns .columns-column .column-header .service-button:hover {
+  color: black;
+}
+.krypton-columns .columns-column .column-content {
+  position: absolute;
+  top: 30px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  overflow: auto;
+}
+.krypton-columns .columns-column .column-content.no-header {
+  top: 0px;
+}
+/***************
+** HIERARCHY
+***************/
+.krypton-ui-hierarchy {
+  display: block;
+  overflow: visible;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-left: 0px;
+  list-style-type: none;
+  /*
+  ul.nested {
+    display: block;
+    margin-left: 7px !important;
+    margin-top: 20px !important;
+    padding-left: 0px !important;
+    //border-left: 1px dotted black;
+
+    ul {
+      margin-left: 15px !important;
+    }
+
+    li {
+      display: block;
+      //min-height: @hierarchy-item-height;
+      box-sizing: border-box;
+      padding-left: 0px !important;
+      //padding-top: 10px;
+      //padding-bottom: 5px;
+      background: lightblue;
+      border: 1px solid black;
+    }
+  }
+
+  li {
+    overflow: visible;
+    min-height: @hierarchy-item-height;
+    padding: 10px;
+    //border: 1px solid lightgray;
+  }
+
+  .expand {
+    font-size: 13px;
+    cursor: pointer;
+
+    &.invisible {
+      visibility: hidden;
+    }
+  }
+
+  .collapse {
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .item-lines {
+    float: left;
+    width: 10px;
+    height: 100%;
+    //box-sizing: border-box;
+    //border: 1px solid blue;
+
+    .lines-top {
+      height: 19px;
+      margin-top: -10px;
+      //background: yellow;
+      border-left: 1px dotted lightgray;
+      border-bottom: 1px dotted lightgray;
+    }
+
+    .lines-bottom {
+      height: 19px;
+      //margin-bottom: -5px;
+      //background: orange;
+    }
+  }
+
+  .item-controls {
+    float: left;
+    width: 15px;
+    height: 20px;
+    //margin-left: 5px;
+    text-align: center;
+    box-sizing: border-box;
+    border: 1px solid green;
+  }
+
+  .item-content {
+    float: left;
+    height: 100%;
+    border: 1px solid red;
+  }
+  */
+}
+.krypton-ui-hierarchy.root {
+  overflow: visible;
+  box-sizing: border-box;
+}
+.krypton-ui-hierarchy.root .nested {
+  margin-left: 10px;
+}
+.krypton-ui-hierarchy.root .nested li {
+  margin-top: -20px;
+}
+.krypton-ui-hierarchy.nested {
+  display: block;
+  overflow: visible;
+  margin-left: 15px;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+}
+.krypton-ui-hierarchy.nested .nested {
+  margin-left: 25px;
+  margin-top: -20px;
+}
+.krypton-ui-hierarchy.nested li {
+  margin-top: -10px;
+  border-left: 1px dotted black;
+}
+.krypton-ui-hierarchy.nested li:first-of-type {
+  margin-top: -10px;
+  padding-top: 20px;
+}
+.krypton-ui-hierarchy.nested li:last-of-type .lines-bottom {
+  border-left: none;
+}
+.krypton-ui-hierarchy li {
+  display: block;
+  clear: left;
+  overflow: visible;
+  min-height: auto;
+  box-sizing: border-box;
+}
+.krypton-ui-hierarchy .item-controls {
+  display: inline-block;
+  float: left;
+  width: 12px;
+  height: auto;
+  line-height: auto;
+  margin-right: 5px;
+  margin-left: 5px;
+}
+.krypton-ui-hierarchy .item-controls .expand {
+  line-height: auto;
+  cursor: pointer;
+}
+.krypton-ui-hierarchy .item-controls .expand.invisible {
+  visibility: hidden;
+}
+.krypton-ui-hierarchy .item-controls .collapse {
+  line-height: auto;
+  cursor: pointer;
+}
+.krypton-ui-hierarchy .item-lines {
+  display: inline-block;
+  float: left;
+  width: 15px;
+  height: auto;
+  box-sizing: border-box;
+}
+.krypton-ui-hierarchy .item-lines .lines-top {
+  margin-top: -1px;
+  border-bottom: 1px dotted black;
+}
+.krypton-ui-hierarchy .item-content {
+  display: inline-block;
+  float: left;
+  height: auto;
+  padding: 10px;
+  box-sizing: border-box;
+  background: lavender;
+}
+.krypton-ui-hierarchy .tree-item {
+  border: 1px solid red;
+}
+/*
+
+.krypton-ui-tree {
+  overflow: auto;
+  //padding-top: 15px;
+  box-sizing: border-box;
+  //border: 1px solid green;
+
+  .container {
+    position: relative;
+    //float: left;
+    width: inherit;
+    overflow: visible;
+    //margin-top: 10px;
+    box-sizing: border-box;
+    //border: 1px solid yellow;
+
+    .tree-item:last-of-type {
+      border-left: none;
+      //margin-top: -1px;
+
+      .top {
+        border-left: 1px solid black;
+      }
+
+    }
+
+    .tree-item:first-of-type {
+      border-left: none;
+    }
+
+
+    &.root {
+
+      .container {
+        border-left: 1px solid black;
+
+        .tree-item:first-of-type {
+          .top {
+            border-left: 1px solid black;
+          }
+        }
+      }
+
+
+      .tree-item:first-of-type {
+        .top {
+          border-left: none;
+        }
+        .bottom {
+          border-left: 1px solid black;
+        }
+      }
+
+      .tree-item:last-of-type {
+        .bottom {
+          border-left: none;
+        }
+      }
+
+
+      .container {
+        .tree-item:last-of-type {
+          .top {
+            border-left: 1px solid black;
+          }
+        }
+
+      }
+
+    }
+
+
+    &.nested {
+      //margin-top: -5px;
+      padding-left: 20px;
+
+      .nested {
+        border-left: 1px solid black;
+      }
+
+    }
+  }
+
+
+
+  .tree-item {
+    overflow: visible;
+    //min-height: @hierarchy-item-height;
+    //border: 1px solid red;
+    border-left: 1px solid black;
+    box-sizing: border-box;
+  }
+
+  .item-lines {
+    float: left;
+    width: 15px;
+    height: @hierarchy-item-height;
+    //border: 1px solid orange;
+
+    .top {
+      width: 15px;
+      height: @hierarchy-item-height / 2 - 1px;
+      //border-right: 1px dotted black;
+      border-bottom: 1px solid black;
+    }
+
+    .bottom {
+      width: 15px;
+      height: @hierarchy-item-height / 2 - 1px;
+      //border-right: 1px dotted black;
+    }
+
+  }
+
+  .item-controls {
+    float: left;
+    width: 15px;
+    height: @hierarchy-item-height;
+    text-align: center;
+    //border: 1px solid blue;
+
+    .expand {
+        line-height: @hierarchy-item-height;
+    }
+
+    .collapse {
+      line-height: @hierarchy-item-height;
+    }
+  }
+
+  .item-content {
+    overflow: auto;
+    height: @hierarchy-item-height;
+    //padding-left: 5px;
+    //padding-right: 5px;
+    padding: 5px;
+    line-height: @hierarchy-item-height;
+    //border: 1px solid yellow;
+  }
+
+}
+*/
+.krypton-ui-tree {
+  overflow: auto;
+}
+.krypton-ui-tree .container {
+  overflow: auto;
+  background: white;
+}
+.krypton-ui-tree .container.nested {
+  padding-left: 20px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-right: 7px;
+  border-top: 1px solid #E0E0E0;
+}
+.krypton-ui-tree .container.nested .tree-item {
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+}
+.krypton-ui-tree .tree-item {
+  display: block;
+  overflow: auto;
+  margin-bottom: 5px;
+  background: white;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+.krypton-ui-tree .tree-item.with-children {
+  border: 1px solid #F5F5F5;
+  background: #FAFAFA;
+}
+.krypton-ui-tree .tree-item.active {
+  background: #EEEEEE;
+}
+.krypton-ui-tree .tree-item-content {
+  overflow: auto;
+  padding-right: 3px;
+  padding-left: 3px;
+  border-left: 3px solid transparent;
+}
+.krypton-ui-tree .item-label {
+  display: inline-block;
+  float: left;
+  margin-right: 10px;
+  padding: 5px;
+  line-height: 20px;
+  border-left: 3px solid transparent;
+}
+.krypton-ui-tree .item-label:hover {
+  text-decoration: underline;
+  color: #0D47A1 !important;
+}
+.krypton-ui-tree .item-label.active {
+  font-weight: bold;
+}
+.krypton-ui-tree .item-controls {
+  display: inline-block;
+  float: right;
+  height: auto;
+  margin-right: 5px;
+  padding: 5px;
+  line-height: auto;
+  font-size: 10px;
+}
+.krypton-ui-tree .item-controls .expand {
+  cursor: pointer;
+}
+.krypton-ui-tree .item-controls .collapse {
+  cursor: pointer;
+}
+.krypton-ui-tree .item-content {
+  float: left;
+}
+.krypton-ui-tree .item-notifications {
+  float: right;
+}
+.krypton-ui-tree .item-notifications .notification {
+  float: left;
+  margin-right: 4px;
+}
+.krypton-ui-tree .item-notifications .notification:last-of-type {
+  margin-right: 0px;
+}
+.krypton-ui-tree .item-notifications .notification .fa {
+  display: inline-block;
+  float: left;
+  width: 12px;
+  height: 20px;
+  margin-right: 3px;
+  font-size: 12px;
+  line-height: 20px;
+  text-align: center;
+}
+.krypton-ui-tree .item-notifications .notification .value {
+  display: inline-block;
+  float: left;
+  height: 20px;
+  font-size: 13px;
+  line-height: 20px;
+  text-align: center;
+}
+.krypton-ui-tree.stacked .counter-1 {
+  display: inline-block;
+  float: right;
+  height: 18px;
+  margin-right: 5px;
+  font-size: 12px;
+  text-align: center;
+  line-height: 18px !important;
+  color: #FF5722;
+  box-sizing: border-box;
+}
+.krypton-ui-tree.stacked .counter-2 {
+  display: inline-block;
+  float: right;
+  height: 18px;
+  margin-left: 6px;
+  font-size: 12px;
+  text-align: center;
+  line-height: 18px !important;
+  color: #1B5E20;
+  box-sizing: border-box;
+}
+.krypton-ui-tree.stacked .container {
+  padding-top: 0px !important;
+}
+.krypton-ui-tree.stacked .container.nested {
+  padding-left: 20px !important;
+  border-top: none !important;
+  padding-bottom: 0px !important;
+  padding-right: 0px !important;
+}
+.krypton-ui-tree.stacked .tree-item {
+  min-height: 20px;
+  height: auto;
+  font-size: 13px;
+  margin-bottom: 0px !important;
+}
+.krypton-ui-tree.stacked .tree-item.with-children {
+  background: transparent;
+  border: none;
+  color: #01579B;
+}
+.krypton-ui-tree.stacked .tree-item.active {
+  background: #EEEEEE;
+}
+.krypton-ui-tree.stacked .tree-item.active .tree-item-content {
+  background: transparent;
+  border-left: none;
+}
+.krypton-ui-tree.stacked .tree-item.active .tree-item-content > .tree-item > .item-label {
+  font-weight: normal !important;
+}
+.krypton-ui-tree.stacked .tree-item .tree-item-content {
+  padding-top: 5px !important;
+  min-height: 0px !important;
+  border-left: none !important;
+}
+.krypton-ui-tree.stacked .tree-item .tree-item-content .item-controls {
+  display: none;
+}
+.krypton-ui-tree.stacked .tree-item .tree-item-content .item-label {
+  height: auto !important;
+  float: left;
+  padding-top: 3px !important;
+  padding-bottom: 3px !important;
+  padding-left: 0px;
+  padding-right: 0px;
+  color: #58697a;
+  font-size: 14px;
+  line-height: 14px !important;
+  text-decoration: dotted;
+  cursor: pointer;
+}
+.krypton-ui-tree.stacked .tree-item .tree-item-content .item-label.active {
+  font-weight: bold;
+}
+.krypton-ui-tree.stacked .tree-item .item-label {
+  line-height: 12px !important;
+  margin-bottom: 0px !important;
+}
+/********************
+** MODEL-LIST
+********************/
+.krypton-ui-model-list .model-item {
+  min-height: 45px;
+  overflow: visible;
+  padding: 10px;
+  margin-bottom: 5px;
+  box-sizing: border-box;
+  cursor: pointer;
+  background: #FAFAFA;
+  border: 1px solid lightgray;
+}
+.krypton-ui-model-list .model-item:hover {
+  border: 1px solid darkgray;
+  background: #F5F5F5;
+}
+.krypton-ui-model-list .model-item.selected {
+  background: #E0E0E0;
+}
+.krypton-ui-model-list .item-primary-label {
+  font-size: 16px;
+}
+/********************
+** MODAL
+********************/
+.krypton-ui-modal {
+  display: none;
+  position: absolute;
+  overflow: visible;
+  z-index: 5000;
+  width: 400px;
+  height: auto;
+  box-sizing: border-box;
+  background: white;
+  -webkit-box-shadow: 1px 1px 15px 1px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 1px 1px 15px 1px rgba(0, 0, 0, 0.2);
+  box-shadow: 1px 1px 15px 1px rgba(0, 0, 0, 0.2);
+}
+.krypton-ui-modal .modal-header {
+  height: 35px;
+  border-bottom: 1px solid #D3D5E0;
+  box-sizing: border-box;
+  background-color: #EEF1F8;
+}
+.krypton-ui-modal .modal-header .modal-caption {
+  height: 35px;
+  margin-left: 10px;
+  text-align: left;
+  font-size: 13px;
+  text-transform: uppercase;
+  line-height: 35px;
+}
+.krypton-ui-modal .modal-header .modal-close {
+  width: 30px;
+  height: 35px;
+  text-align: center;
+  font-size: 17px;
+  line-height: 35px;
+  color: lightgray;
+  cursor: pointer;
+}
+.krypton-ui-modal .modal-header .modal-close:hover {
+  color: gray;
+}
+.krypton-ui-modal .modal-content {
+  left: 0px;
+  right: 0px;
+  top: 35px;
+  bottom: 0px;
+  overflow: auto;
+  background: white;
+  box-sizing: border-box;
+}
+.krypton-ui-modal .modal-footer {
+  display: none;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  overflow: hidden;
+  box-sizing: border-box;
+  border-top: 1px solid lightgrey;
+}
+.krypton-ui-modal .modal-errors {
+  padding: 10px;
+  background: #FFCDD2;
+}
+.krypton-ui-modal .modal-errors .error {
+  color: #F44336;
+}
+.ui-time-picker {
+  overflow: hidden;
+  height: 35px;
+  box-sizing: border-box;
+  border: 1px solid lightgrey;
+}
+.ui-time-picker .time-picker-hours {
+  overflow: hidden;
+  float: left;
+  width: 45%;
+  box-sizing: border-box;
+}
+.ui-time-picker .time-picker-hours input {
+  display: block;
+  width: 100%;
+  text-align: center;
+  box-sizing: border-box;
+  border: none;
+}
+.ui-time-picker .time-picker-separator {
+  float: left;
+  width: 10%;
+  height: 35px;
+  text-align: center;
+  line-height: 30px;
+  box-sizing: border-box;
+}
+.ui-time-picker .time-picker-minutes {
+  overflow: hidden;
+  float: left;
+  width: 45%;
+  box-sizing: border-box;
+}
+.ui-time-picker .time-picker-minutes input {
+  width: 100%;
+  text-align: center;
+  border: none;
+}
+.ui-time-picker .time-picker-controls {
+  float: left;
+  width: 20%;
+  height: 35px;
+  box-sizing: border-box;
+  border: 1px solid red;
+}
+.ui-time-picker .time-picker-controls button {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 17.5px !important;
+  margin-bottom: 0px;
+  line-height: 17.5px;
+  box-sizing: border-box;
+}

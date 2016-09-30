@@ -1,0 +1,149 @@
+<div id="users" class="block">
+    <div class="header">
+        Структурные подразделения
+
+        <button class="blue right" ng-disabled="divisions.getCurrent() === undefined" ng-click="openEditDivisionModal()">
+            <span class="fa fa-pencil"></span> Изменить
+        </button>
+
+        <button class="green right margin-right-10" ng-click="openNewDivisionModal()">
+            <span class="fa fa-plus"></span> Добавить
+        </button>
+    </div>
+    <div class="content">
+        <div class="row padding-10">
+            <ui-tree id="divisions-tree" root-key="0" root-key-data-type="DATA_TYPE_INTEGER"></ui-tree>
+        </div>
+
+    </div>
+</div>
+
+
+
+<div ui-modal modal-id="new-division-modal" modal-caption="Новое структурное подразделение" modal-width="450" modal-on-close="cancelAddDivision">
+    <div class="row padding-10">
+        <label for="new-division-full-title" class="width-100">
+            Полное наименование
+            <span class="right form-error" ng-show="errors.fullTitle !== undefined">{{ errors.fullTitle }}</span>
+        </label>
+        <input type="text"
+               name="full_title"
+               id="new-division-full-title"
+               placeholder="Введите полное наименование"
+               class="width-100"
+               ng-model="divisions.getNew().fullTitle.value">
+    </div>
+
+    <div class="row padding-10">
+        <label for="new-division-short-title" class="width-100">
+            Полное наименование
+            <span class="right form-error" ng-show="errors.shortTitle !== undefined">{{ errors.shortTitle }}</span>
+        </label>
+        <input type="text"
+               name="short_title"
+               id="new-division-short-title"
+               placeholder="Введите краткое наименование"
+               class="width-100"
+               ng-model="divisions.getNew().shortTitle.value">
+    </div>
+
+    <div class="row padding-10">
+        <label for="new-division-parent" class="width-100">Родительское структурное подразделение</label>
+        <input type="text"
+               name="parent"
+               id="new-division-parent"
+               class="width-100"
+               ng-model="divisions.getById(divisions.getNew().parentId.value).shortTitle.value"
+               disabled>
+    </div>
+
+    <div class="row padding-10">
+        <div class="width-90">
+            Структурное подразделение является филиалом
+        </div>
+        <div class="width-10">
+            <input type="checkbox"
+                   name="is_department"
+                   id="new-division-is-department"
+                   class="right"
+                   ng-model="divisions.getNew().isDepartment.value">
+        </div>
+    </div>
+
+    <div class="row padding-10">
+        <button class="green width-50" ng-disabled="divisions.getNew()._states_.loading() === true" ng-click="add()">
+            Добавить
+        </button>
+        <button class="red width-50" ng-click="modals.close()">
+            Отмена
+        </button>
+    </div>
+
+</div>
+
+
+
+<div ui-modal modal-id="edit-division-modal" modal-caption="Изменение структурного подразделения" modal-width="450" modal-on-close="cancelEditDivision">
+    <div class="row padding-10">
+        <label for="current-division-full-title" class="width-100">
+            Полное наименование
+            <span class="right form-error" ng-show="errors.fullTitle !== undefined">{{ errors.fullTitle }}</span>
+        </label>
+        <input type="text"
+               name="full_title"
+               id="current-division-full-title"
+               placeholder="Введите полное наименование"
+               class="width-100"
+               ng-change="divisions.getCurrent()._states_.changed(true)"
+               ng-model="divisions.getCurrent().fullTitle.value">
+    </div>
+
+    <div class="row padding-10">
+        <label for="current-division-short-title" class="width-100">
+            Полное наименование
+            <span class="right form-error" ng-show="errors.shortTitle !== undefined">{{ errors.shortTitle }}</span>
+        </label>
+        <input type="text"
+               name="short_title"
+               id="current-division-short-title"
+               placeholder="Введите краткое наименование"
+               class="width-100"
+               ng-change="divisions.getCurrent()._states_.changed(true)"
+               ng-model="divisions.getCurrent().shortTitle.value">
+    </div>
+
+    <div class="row padding-10">
+        <label for="current-division-parent" class="width-100">Родительское структурное подразделение</label>
+        <input type="text"
+               name="parent"
+               id="current-division-parent"
+               class="width-100"
+               ng-change="divisions.getCurrent()._states_.changed(true)"
+               ng-model="divisions.getById(divisions.getCurrent().parentId.value).shortTitle.value"
+               disabled>
+    </div>
+
+    <div class="row padding-10">
+        <div class="width-90">
+            Структурное подразделение является филиалом
+        </div>
+        <div class="width-10">
+            <input type="checkbox"
+                   name="is_department"
+                   id="current-division-is-department"
+                   class="right"
+                   ng-change="divisions.getCurrent()._states_.changed(true)"
+                   ng-model="divisions.getCurrent().isDepartment.value">
+        </div>
+    </div>
+
+    <div class="row padding-10">
+        <button class="green width-50" ng-disabled="divisions.getCurrent()._states_.changed() === false || divisions.getCurrent()._states_.loading() === true" ng-click="save()">
+            Сохранить
+        </button>
+        <button class="red width-50" ng-click="modals.close()">
+            Отмена
+        </button>
+    </div>
+
+</div>

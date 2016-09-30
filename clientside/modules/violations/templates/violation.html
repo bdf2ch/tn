@@ -1,0 +1,174 @@
+<div id="current-violation_">
+
+    <div id="violation-info" class="block" ng-init="user = session.getCurrentUser()">
+        <div class="header">
+            Нарушение #{{ violations.violations.getCurrent().id.value }} от {{ violations.violations.getCurrent().happened.value | dateFilter }}
+            <button class="blue right" ng-click="gotoMain()">
+                <span class="fa fa-arrow-left"></span>&nbsp;
+                Вернуться
+            </button>
+            <button class="green right margin-right-10"
+                    ng-click="save()"
+                    ng-disabled="violations.violations.getCurrent()._states_.changed() === false || violations.violations.getCurrent()._states_.loading() === true">
+                <span class="fa fa-plus"></span>&nbsp;
+                Сохранить
+            </button>
+        </div>
+        <div class="content">
+            <div class="row" ng-show=""></div>
+
+            <div class="row padding-10">
+                <div class="width-100">
+                    <span class="left">Технологическое нарушение проверено и подтверждено &nbsp; &nbsp; &nbsp;</span>
+                    <input type="checkbox"
+                           name="confirmed"
+                           id="current-violation-is-conformed"
+                           ng-change="violations.violations.getCurrent()._states_.changed(true)"
+                           ng-model="violations.violations.getCurrent().isConfirmed.value"
+                           ng-disabled="user.allowConfirm.value === false">
+                </div>
+            </div>
+
+
+            <div class="row padding-10">
+                <label class="width-100" for="current-violation-date">
+                    Дата и время нарушения
+                </label>
+                <input type="text"
+                       name="date"
+                       id="current-violation-date"
+                       class="width-100"
+                       value="{{ violations.violations.getCurrent().happened.value | dateFilter }}"
+                       disabled>
+            </div>
+
+            <div class="row padding-10">
+                <label class="width-100" for="current-violation-user">
+                    Автор
+                </label>
+                <input type="text"
+                       name="user"
+                       id="current-violation-user"
+                       class="width-100"
+                       value="{{ violations.violations.getCurrent().user.surname.value + ' ' + violations.violations.getCurrent().user.name.value + ' ' + violations.violations.getCurrent().user.fname.value }}"
+                       disabled>
+            </div>
+
+            <div class="row padding-10">
+                <label class="width-100" for="current-violation-division">
+                    Структурное подразделение
+                    <span class="right form-error" ng-show="errors.divisionId !== undefined">{{ errors.divisionId }}</span>
+                </label>
+                <div class="width-100">
+                    <input type="text"
+                           name="division"
+                           id="current-violation-division"
+                           class="width-100"
+                           ng-model="violations.divisions.getById(violations.violations.getCurrent().divisionId.value).shortTitle.value"
+                           disabled>
+                </div>
+            </div>
+
+            <div class="row padding-10">
+                <label class="width-100" for="current-violation-esk-group">
+                    Група ЭСК
+                    <span class="right form-error" ng-show="errors.eskGroupId !== undefined">{{ errors.eskGroupId }}</span>
+                </label>
+                <select class="width-100"
+                        name="esk_group"
+                        id="current-violation-esk-group"
+                        ng-disabled="violations.violations.getCurrent().isConfirmed.value === true || user.allowEdit.value === false"
+                        ng-model="violations.violations.getCurrent().eskGroupId.value"
+                        ng-change="violations.violations.getCurrent()._states_.changed(true)"
+                        ng-options="group.id.value as group.title.value for group in violations.eskGroups.getAll()">
+                </select>
+            </div>
+
+            <div class="row padding-10">
+                <label class="width-100" for="current-violation-esk-object">
+                    Объект ЭСК
+                    <span class="right form-error" ng-show="errors.eskObject !== undefined">{{ errors.eskObject }}</span>
+                </label>
+                <input class="width-100"
+                       type="text"
+                       name="esk_object"
+                       id="current-violation-esk-object"
+                       ng-disabled="violations.violations.getCurrent().isConfirmed.value === true || user.allowEdit.value === false"
+                       ng-model="violations.violations.getCurrent().eskObject.value"
+                       ng-change="violations.violations.getCurrent()._states_.changed(true)"
+                       placeholder="Укажите объект, на котором произошло ТН">
+            </div>
+
+            <div class="row padding-10">
+                <label class="width-100" for="current-violation-comment">
+                    Описание
+                    <span class="right form-error" ng-show="errors.description !== undefined">{{ errors.description }}</span>
+                </label>
+                <textarea class="width-100"
+                          name="comment"
+                          id="current-violation-comment"
+                          cols="30"
+                          rows="6"
+                          ng-disabled="violations.violations.getCurrent().isConfirmed.value === true || user.allowEdit.value === false"
+                          ng-model="violations.violations.getCurrent().description.value"
+                          ng-change="violations.violations.getCurrent()._states_.changed(true)"
+                          placeholder="Укажите описание ТН">
+                </textarea>
+            </div>
+        </div>
+    </div>
+    <div id="violation-documents" class="block">
+        <div class="header">
+            Документы
+            <label for="userfile" class="button blue right" ng-show="isUploadInProgress === false">
+                <span class="fa fa-upload"></span>
+                <span>&nbsp; Загрузить файл</span>
+                <input
+                        type="file"
+                        name="userfile"
+                        id="userfile"
+                        ng-disabled="isUploadComplete === false"
+                        uploader
+                        uploader-url="/serverside/uploader.php"
+                        uploader-data="uploaderData"
+                        uploader-on-before-upload="onBeforeUploadAttachment"
+                        uploader-on-complete-upload="onCompleteUploadAttachment"/>
+            </label>
+            <div class="upload-progress">
+                <span class="fa fa-spinner fa-pulse fa-fw" ng-show="isUploadInProgress === true"></span>
+                <span ng-show="isUploadInProgress === true">Файл загружается...</span>
+            </div>
+        </div>
+        <div class="content">
+            <div class="width-100 padding-30 margin-bottom-10 text-center" ng-show="violations.violations.getCurrent().attachments.length === 0">
+                Документы отсутствуют
+            </div>
+
+            <table id="current-violation-files" class="stripped width-100" ng-show="violations.violations.getCurrent().attachments.length > 0">
+                <thead>
+                <tr>
+                    <th class="width-60">Наименование</th>
+                    <th class="width-25 text-center">Добавлен</th>
+                    <th class="width-15">Размер</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="attachment" ng-repeat="attachment in violations.violations.getCurrent().attachments track by $index">
+                    <td class="width-60 attachment-loaded">
+                        <a ng-href="{{ attachment.url.value }}" target="_blank">{{ attachment.title.value }}</a>
+                    </td>
+                    <td class="width-25 attachment-loaded text-center">
+                        {{ attachment.added.value | dateShort }}
+                    </td>
+                    <td class="width-15 attachment-loaded">
+                        {{ attachment.size.value | filesize }}
+                    </td>
+                    <td colspan="3" class="attachment-message">
+                        <span class="fa fa-check-circle"></span> &nbsp; Файл загружен
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

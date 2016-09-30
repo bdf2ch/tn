@@ -1,0 +1,170 @@
+<div id="new-user">
+
+    <div id="user-info" class="block">
+        <div class="header">
+            Данные пользователя
+            <button class="right red" ng-click="cancel()">
+                <span class="fa fa-arrow-left"></span>&nbsp;
+                Отмена
+            </button>
+            <button class="green right margin-right-10"
+                    ng-click="add()"
+                    ng-disabled="violations.violations.getCurrent()._states_.changed() === false || violations.violations.getCurrent()._states_.loading() === true">
+                <span class="fa fa-plus"></span>&nbsp;
+                Добавить
+            </button>
+        </div>
+        <div class="content">
+            <div class="row" ng-show=""></div>
+
+
+            <div class="row padding-10">
+                <label class="width-100" for="new-user-surname">
+                    Фамилия
+                    <span class="right form-error" ng-show="errors.surname !== undefined">{{ errors.surname }}</span>
+                </label>
+                <input type="text"
+                       name="surname"
+                       id="new-user-surname"
+                       class="width-100"
+                       ng-model="users.users.getNew().surname.value">
+            </div>
+
+            <div class="row padding-10">
+                <label class="width-100" for="new-user-name">
+                    Имя
+                    <span class="right form-error" ng-show="errors.name !== undefined">{{ errors.name }}</span>
+                </label>
+                <input type="text"
+                       name="name"
+                       id="new-user-name"
+                       class="width-100"
+                       ng-model="users.users.getNew().name.value">
+            </div>
+
+            <div class="row padding-10">
+                <label class="width-100" for="new-user-fname">
+                    Отчество
+                    <span class="right form-error" ng-show="errors.fname !== undefined">{{ errors.fname }}</span>
+                </label>
+                <input type="text"
+                       name="fname"
+                       id="new-user-fname"
+                       class="width-100"
+                       ng-model="users.users.getNew().fname.value">
+            </div>
+
+            <div class="row padding-10">
+                <label class="width-100" for="new-user-email">
+                    E-mail
+                    <span class="right form-error" ng-show="errors.email !== undefined">{{ errors.email }}</span>
+                </label>
+                <input type="text"
+                       name="email"
+                       id="new-user-email"
+                       class="width-100"
+                       ng-model="users.users.getNew().email.value">
+            </div>
+
+            <div class="row padding-10">
+                <label class="width-100" for="new-user-login">
+                    Учетная запись в AD
+                    <span class="right form-error" ng-show="errors.login !== undefined">{{ errors.login }}</span>
+                </label>
+                <input type="text"
+                       name="email"
+                       id="new-user-login"
+                       class="width-100"
+                       ng-model="users.users.getNew().login.value">
+            </div>
+
+            <div class="row padding-10">
+                <label class="width-100" for="new-user-password">
+                    Пароль
+                    <span class="right form-error" ng-show="errors.password !== undefined">{{ errors.password }}</span>
+                </label>
+                <input type="text"
+                       name="password"
+                       id="new-user-password"
+                       class="width-100"
+                       ng-model="users.users.getNew().password.value">
+            </div>
+
+            <div class="row padding-10">
+                <label class="width-100" for="new-user-division">
+                    Структурное подразделение
+                    <span class="right form-error" ng-show="errors.divisionId !== undefined">{{ errors.divisionId }}</span>
+                </label>
+                <div class="width-90">
+                    <input type="text"
+                           name="division"
+                           id="new-user-division"
+                           class="width-100"
+                           ng-model="violations.divisions.getById(users.users.getNew().divisionId.value).shortTitle.value"
+                           disabled>
+                </div>
+                <div class="width-10">
+                    <button class="width-100 blue" ng-click="openSelectDivisionModal()" title="Выбрать структурное подразделение">
+                        <span class="fa fa-building"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="user-permissions" class="block">
+        <div class="header">
+            Права пользователя
+        </div>
+        <div class="content">
+            <div class="row">
+                <table class="stripped">
+                    <tbody>
+                    <tr>
+                        <td>Пользователь может редактировать ТН</td>
+                        <td>
+                            <input type="checkbox"
+                                   name="allow-edit"
+                                   id="new-user-allow-edit"
+                                   ng-model="users.users.getNew().allowEdit.value">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Пользователь может утверждать ТН</td>
+                        <td>
+                            <input type="checkbox"
+                                   name="allow-confirm"
+                                   id="new-user-allow-confirm"
+                                   ng-model="users.users.getNew().allowConfirm.value">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Пользователь является администратором</td>
+                        <td>
+                            <input type="checkbox"
+                                   name="is-administrator"
+                                   id="new-user-is-administrator"
+                                   ng-model="users.users.getNew().isAdministrator.value">
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div ui-modal modal-id="new-user-division-modal" modal-caption="Выберите структурное подразделение" modal-width="450" modal-height="450">
+    <div class="row padding-10">
+        <ui-tree id="new-user-tree" class="stacked" root-key="0" root-key-data-type="DATA_TYPE_INTEGER"></ui-tree>
+    </div>
+
+    <ui-modal-footer height="45">
+        <div class="row padding-5">
+            <button class="width-33 blue right" ng-disabled="users.users.getNew().divisionId.value === 0" ng-click="modals.close()">
+                Выбрать
+            </button>
+        </div>
+    </ui-modal-footer>
+</div>
+

@@ -1,0 +1,79 @@
+<!-- BEGIN: main -->
+<!DOCTYPE html>
+<html lang="en" ng-app="authorization">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/clientside/resources/styles/authorization.css">
+    <link rel="stylesheet" href="/clientside/resources/styles/utils.css">
+    <link type="text/css" rel="stylesheet" href="/clientside/resources/fonts/Font Awesome/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
+</head>
+<body>
+<script src="/clientside/libs/angularjs/angular.min.js"></script>
+
+    <div id="auth-bg"></div>
+    <div id="auth-container" ng-controller="AuthorizationController" centered>
+
+        <div class="row auth-header margin-bottom-20">
+            <span class="fa fa-user"></span>
+        </div>
+        <div class="row margin-bottom-10">
+            <span class="form-caption width-100">
+                Авторизация
+            </span>
+        </div>
+
+        <form class="padding-10" name="auth_form" ng-submit="login()" novalidate>
+            <div class="row margin-bottom-10">
+                <label for="auth-email"></label>
+                <input class="width-100 dark text-center"
+                       type="text"
+                       name="email"
+                       id="auth-email"
+                       ng-model="email"
+                       required
+                       placeholder="Введите учетную запись">
+            </div>
+
+            <div class="row margin-bottom-20">
+                <label for="auth-password"></label>
+                <input class="width-100 dark text-center"
+                       type="password"
+                       name="password"
+                       id="auth-password"
+                       ng-model="password"
+                       required
+                       placeholder="Введите пароль">
+            </div>
+
+            <div class="row">
+                <button class="blue width-100" ng-disabled="isLoading">
+                    <span class="fa fa-sign-in"></span>&nbsp;
+                    Войти
+                </button>
+            </div>
+
+        </form>
+        <div class="row" ng-show="auth_form.$invalid === true && submitted === true">
+            <div class="error" ng-show="auth_form.email.$error.required">
+                <span class="fa fa-exclamation-circle"></span>&nbsp; Вы не ввели Ваш e-mail
+            </div>
+            <div class="error" ng-show="auth_form.password.$error.required">
+                <span class="fa fa-exclamation-circle"></span>&nbsp; Вы не ввели Ваш пароль
+            </div>
+
+        </div>
+        <div class="error" ng-show="noUserFound === true">
+            <span class="fa fa-exclamation-circle"></span>&nbsp; Пользователь не найден
+        </div>
+    </div>
+
+
+<script src="/clientside/libs/angularjs/angular-route.min.js"></script>
+<script src="/clientside/libs/krypton/krypton.js"></script>
+<script src="/clientside/libs/krypton/krypton.ui.js"></script>
+<script src="/clientside/dist/js/auth.min.js"></script>
+</body>
+</html>
+<!-- END: main -->
