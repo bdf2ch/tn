@@ -141,6 +141,7 @@
                     $scope.uploaderLink = "/serverside/uploader.php";
                     $scope.uploaderData.departmentId = $divisions.getDepartmentByDivisionId($session.getCurrentUser().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($session.getCurrentUser().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
                 } else
+                    
                     $scope.uploaderLink = division.storage.value + "/uploader/share";
                 $log.log("uploaderlink = ", $scope.uploaderLink);
                 $log.log("currentUserDivision = ", division);
