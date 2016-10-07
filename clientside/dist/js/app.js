@@ -7,6 +7,8 @@ angular.module("violations", [])
         $divisions.init(window.initialData.divisions);
         $violations.init();
         $violations.violations.getNew().userId.value = $session.getCurrentUser().id.value;
+        //$violations.violations.startDate = new moment().unix();
+
 
         $navigation.add({
             id: "violations",
@@ -16,6 +18,8 @@ angular.module("violations", [])
             order: 1
         });
 
+
+
         $navigation.add({
             id: "users",
             url: "/users/",
@@ -24,6 +28,7 @@ angular.module("violations", [])
             order: 3,
             isVisible: $session.getCurrentUser().isAdministrator.value === true ? true : false
         });
+
 
         $navigation.add({
             id: "user",
@@ -41,6 +46,15 @@ angular.module("violations", [])
             title: "Стр. подразделения",
             order: 2,
             isVisible: $session.getCurrentUser().isAdministrator.value === true ? true : false
+        });
+
+        $navigation.add({
+            id: "help",
+            url: "/help/",
+            icon: "fa fa-info",
+            title: "Помощь",
+            order: 4,
+            isVisible: true
         });
         
     }]);
@@ -64,6 +78,7 @@ $classesInjector
         fullTitle: new Field({ source: "TITLE_FULL", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
         violationsAdded: new Field({ source: "VIOLATIONS_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
         attachmentsAdded: new Field({ source: "ATTACHMENTS_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        storage: new Field({ source: "FILE_STORAGE_HOST", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
         isDepartment: new Field({ source: "IS_DEPARTMENT", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
         path: new Field({ source: "PATH", type: DATA_TYPE_STRING, value: "", default_value: "" })
     });
@@ -84,7 +99,7 @@ $classesInjector
         happened: new Field({ source: "DATE_HAPPENED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
         added: new Field({ source: "DATE_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
         description: new Field({ source: "DESCRIPTION", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
-        isConfirmed: new Field({ source: "IS_CONFIRMED", type: DATA_TYPE_BOOLEAN, value: false, default_value: false }),
+        isConfirmed: new Field({ source: "IS_CONFIRMED", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
         user: 0,
         attachments: [],
         isNew: false,
@@ -224,6 +239,12 @@ angular
     }]);
 angular
     .module("violations")
+    .controller("HelpController", ["$scope", "$session", function ($scope, $session) {
+        $scope.session = $session;
+    }]);
+
+angular
+    .module("violations")
     .controller("NewUserController", ["$log", "$scope", "$http", "$location", "$users", "$violations", "$modals", "$tree", function ($log, $scope, $http, $location, $users, $violations, $modals, $tree) {
         $scope.users = $users;
         $scope.violations = $violations;
@@ -335,7 +356,7 @@ angular
 (function () {
     angular
         .module("violations")
-        .controller("NewViolationController", ["$log", "$scope", "$violations", "$factory", "$tree", "$location", "$modals", function ($log, $scope, $violations, $factory, $tree, $location, $modals) {
+        .controller("NewViolationController", ["$log", "$scope", "$violations", "$divisions", "$factory", "$tree", "$location", "$modals", "$session", function ($log, $scope, $violations, $divisions, $factory, $tree, $location, $modals, $session) {
             $scope.violations = $violations;
             $scope.modals = $modals;
             $scope.submitted = false;
@@ -348,22 +369,23 @@ angular
                 description: undefined
             };
             $scope.uploaderData = {
+                serviceId: "violations",
                 violationId: $violations.violations.getNew().id.value,
                 divisionId: $violations.violations.getNew().divisionId.value
             };
             $scope.today = new moment().hours(23).minutes(59).seconds(59).unix();
+            $scope.hours = 0;
+            $scope.minutes = 0;
+            $scope.uploaderLink = "/serverside/uploader.php";
+
+
 
             $scope.openSelectDivisionModal = function () {
                 $modals.open("new-violation-division-modal");
             };
 
 
-            $scope.selectDivision = function (division) {
-                $violations.violations.getNew().divisionId.value = division.key;
-                $log.log("new = ", $violations.violations.getNew());
-            };
 
-            
             $scope.gotoMain = function () {
                 $location.url("/");
                 if ($violations.violations.getNew().id.value !== 0) {
@@ -378,6 +400,28 @@ angular
             };
 
 
+
+            $scope.onHoursChange = function () {
+                var exp = new RegExp("^(0|[0-9]|[0-2][0-9])$");
+                if (exp.test($scope.hours)) {
+                    $violations.violations.getNew().happened.value = moment.unix($violations.violations.getNew().happened.value).hours($scope.hours).unix();
+                } else {
+                    $scope.hours = 0;
+                    $violations.violations.getNew().happened.value = moment.unix($violations.violations.getNew().happened.value).hours($scope.hours).unix();
+                }
+            };
+
+
+
+            $scope.onMinutesChange = function () {
+                var exp = new RegExp("^(0|[0-9]|[0-5][0-9])$");
+                if (exp.test($scope.minutes)) {
+                    $violations.violations.getNew().happened.value = moment.unix($violations.violations.getNew().happened.value).minutes($scope.minutes).unix();
+                } else {
+                    $scope.minutes = 0;
+                    $violations.violations.getNew().happened.value = moment.unix($violations.violations.getNew().happened.value).minutes($scope.minutes).unix();
+                }
+            };
 
 
 
@@ -399,7 +443,10 @@ angular
                     $scope.errors.eskGroupId === undefined && $scope.errors.eskObject === undefined &&
                     $scope.errors.description === undefined) {
                     $violations.violations.add(function (violation) {
-                        $location.url("/");
+                        $violations.violations.getByDivisionId(violation.divisionId.value, function () {
+                            $location.url("/");
+                        });
+
                         $violations.violations.getNew().id.value = 0;
                         $violations.violations.getNew().happened.value = new moment().unix();
                         $violations.violations.getNew().eskGroupId.value = 0;
@@ -407,18 +454,16 @@ angular
                         $violations.violations.getNew().description.value = "";
                         $violations.attachments.getNew().splice(0, $violations.attachments.getNew().length);
 
-
-                        var item = $tree.getItemByKey("global-divisions-tree", violation.divisionId.value);
+                        var item = $tree.getItemByKey("session-divisions-tree", violation.divisionId.value);
                         item.data.violationsAdded++;
                         item.data.violationsTotal++;
                         item.notifications.getById("violations").value += 1;
                         item.notifications.getById("violations").isVisible = item.notifications.getById("violations").value > 0 ? true : false;
                         var att = violation.attachments.length;
                         item.notifications.getById("attachments").value += att;
-                        item.notifications.getById("attachments").isVisible = item.notifications.getById("atachments").value > 0 ? true : false;
+                        item.notifications.getById("attachments").isVisible = item.notifications.getById("attachments").value > 0 ? true : false;
                         item.data.attachmentsTotal += att;
                         item.data.attachmentsAdded += att;
-
 
                         var parent = $tree.getItemByKey("global-divisions-tree", item.parentKey);
                         while (parent) {
@@ -426,23 +471,32 @@ angular
                             parent.data.violationsTotal++;
                             parent.notifications.getById("violations").value += 1;
                             parent.notifications.getById("violations").isVisible = parent.notifications.getById("violations").value > 0 ? true : false;
-
                             parent.data.attachmentsTotal += att;
                             parent.notifications.getById("attachments").value += att;
                             parent.notifications.getById("attachments").isVisible = parent.notifications.getById("attachments").value > 0 ? true : false;
-
                             parent = $tree.getItemByKey("global-divisions-tree", parent.parentKey);
                         }
-
                         $tree.getById("global-divisions-tree").calcRoot();
                     });
                 }
             };
 
 
+
             $scope.onBeforeUploadAttachment = function () {
                 $scope.isUploadInProgress = true;
                 $scope.uploaderData.violationId = $violations.violations.getNew().id.value;
+
+                var division = $divisions.getById($session.getCurrentUser().divisionId.value);
+                $log.log("current division = ", division);
+                if (division.storage.value === "") {
+                    $scope.uploaderLink = "/serverside/uploader.php";
+                    $scope.uploaderData.departmentId = $divisions.getDepartmentByDivisionId($session.getCurrentUser().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($session.getCurrentUser().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
+                } else
+                    $scope.uploaderLink = division.storage.value + "/uploader/share";
+                $log.log("uploaderlink = ", $scope.uploaderLink);
+                $log.log("currentUserDivision = ", division);
+                $log.log("currentUserDepartment = ", $scope.uploaderData.departmentId);
             };
 
             $scope.onCompleteUploadAttachment = function (data) {
@@ -452,6 +506,7 @@ angular
                 $violations.violations.addAttachmentToNew(attachment);
                 $violations.attachments.add(attachment);
                 $scope.isUploadInProgress = false;
+                delete $scope.uploaderData.storage;
 
                 $log.log("attachment = ", attachment);
 
@@ -585,6 +640,7 @@ angular
         $scope.session = $session;
         $scope.violation = undefined;
         $scope.uploaderData = {
+            serviceId: "violations",
             violationId: 0,
             divisionId: 0
         };
@@ -922,82 +978,6 @@ angular
     }]);
 angular
     .module("violations")
-    .filter("byViolationId", ["$log", function ($log) {
-        return function (input, violationId) {
-            if (violationId !== undefined && violationId !== 0) {
-                var length = input.length;
-                var result = [];
-                
-                for (var i = 0; i < length; i++) {
-                    if (input[i].violationId.value === violationId)
-                        result.push(input[i]);
-                }
-                return result;
-            } else
-                return input;
-
-        }
-    }]);
-angular.module("violations")
-    .filter("dateFilter", ["$log", function ($log) {
-        return function (input) {
-            return moment.unix(input).format("DD MMMM YYYY, HH:mm");
-        }
-    }]);
-angular.module("violations")
-    .filter("dateShort", ["$log", function ($log) {
-        return function (input) {
-            return moment.unix(input).format("DD.MM.YYYY");
-        }
-    }]);
-angular.module("violations")
-    .filter("day", ["$log", function ($log) {
-        return function (input) {
-            return moment.unix(input).format("DD MMMM YYYY");
-        }
-    }]);
-
-angular
-    .module("violations")
-    .filter("filesize", [function () {
-        return function (input, precision) {
-            if (typeof precision === 'undefined') precision = 1;
-            var units = ['байт', 'кб', 'мб', 'гб', 'тв', 'пб'];
-            var number = Math.floor(Math.log(input) / Math.log(1024));
-            return (input / Math.pow(1024, Math.floor(number))).toFixed(precision) +  ' ' + units[number];
-        }
-    }]);
-
-angular
-    .module("violations")
-    .filter("noDateSelected", ["$log", function ($log) {
-        return function (input) {
-            if (input === 0)
-                return "Не выбрано";
-            else
-                return input;
-        }
-    }]);
-angular.module("violations")
-    .filter("time", ["$log", function ($log) {
-        return function (input) {
-            return moment.unix(input).format("HH:mm");
-        }
-    }]);
-angular
-    .module("violations")
-    .filter('toArray', [function () {
-        return function (input) {
-            var result = [];
-            for (var index in input) {
-                result.push(input[index]);
-            }
-            return result;
-        }
-    }]);
-
-angular
-    .module("violations")
     .factory("$divisions", ["$log", "$http", "$factory", "$errors", "$session", "$violations", "$tree", function ($log, $http, $factory, $errors, $session, $violations, $tree) {
         var divisions = [];
         var currentDivision = undefined;
@@ -1207,8 +1187,12 @@ angular
                     collapseOnDeselect: true,
                     showNotifications: false,
                     onSelect: function (item) {
+                        //var division = this.getById(item.key);
+                        //$log.log("div = ", division);
                         $violations.violations.getNew().divisionId.value = item.key;
+                        $log.log("div id = ", item.key);
                     }
+
                 });
                 var newViolationRoot = $tree.getItemByKey("global-divisions-tree", $session.getCurrentUser().divisionId.value);
                 if (newViolationRoot) {
@@ -1319,6 +1303,7 @@ angular
                         parentId: newDivision.parentId.value,
                         shortTitle: newDivision.shortTitle.value,
                         fullTitle: newDivision.fullTitle.value,
+                        storage: newDivision.storage.value,
                         isDepartment: newDivision.isDepartment.value === true ? 1 : 0
                     }
                 };
@@ -1366,6 +1351,8 @@ angular
                         parentId: currentDivision.parentId.value,
                         shortTitle: currentDivision.shortTitle.value,
                         fullTitle: currentDivision.fullTitle.value,
+                        storage: currentDivision.storage.value,
+                        departmentId: this.getDepartmentByDivisionId(currentDivision.id.value).id.value,
                         isDepartment: currentDivision.isDepartment.value === true ? 1 : 0
                     }
                 };
@@ -1388,329 +1375,32 @@ angular
                             error();
                         return false;
                     });
-            }
-        }
-    }]);
-angular
-    .module("violations")
-    .factory("$structure", ["$log", "$errors", "$classes", "$factory", function ($log, $errors, $classes, $factory) {
-        var trees = [];
-
-        return {
-
-            register: function (parameters) {
-                $log.log("parameters = ", parameters);
-                if (parameters === undefined) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> register: Не задан параметр - объект с настройками дерева");
-                    return false;
-                }
-
-                if (parameters.id === undefined || parameters.id === "") {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> register: Не задан параметр дерева - идентификатор дерева");
-                    return false;
-                }
-
-                if (parameters.rootKey === undefined || parameters.rootKey === "") {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> register: Не задан параметр дерева - значение ключа корневого элемента дерева");
-                    return false;
-                }
-
-                var tree = $factory({ classes: ["TreeStructure"], base_class: "TreeStructure" });
-                tree.id = parameters.id;
-                tree.rootKey = parameters.rootKey;
-                tree.expandOnSelect = parameters.expandOnSelect !== undefined ? true : false;
-                tree.collapseOnDeselect = parameters.collapseOnDeselect !== undefined ? true: false;
-                tree.onSelect = parameters.onSelect !== undefined && typeof parameters.onSelect === "function" ? parameters.onSelect : undefined;
-                trees.push(tree);
-
-                $log.log("structures = ", trees);
-
-                return tree;
             },
 
 
-
-            getById: function (treeId) {
-                if (treeId === undefined) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> getById: Не задан параметр - идентификатор дерева");
+            getDepartmentByDivisionId: function (divisionId) {
+                if (divisionId === undefined) {
+                    $errors.add(ERROR_TYPE_DEFAULT, "$divisions -> getDepartmentByDivisionId: Не задан параметр - идентификатор структурного подразделения");
                     return false;
                 }
 
-                var length = trees.length;
+                var length = divisions.length;
                 for (var i = 0; i < length; i++) {
-                    if (trees[i].id === treeId)
-                        return trees[i];
-                }
-                
-                return false;
-            },
-
-
-            getItemByKey: function (treeId, key) {
-                if (treeId === undefined) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> getItemByKey: Не задан параметр - идентификатор дерева");
-                    return false;
-                }
-
-                if (key === undefined) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> getItemByKey: Не задан параметр - значение ключа элемента");
-                    return false;
-                }
-
-                var tree = this.getById(treeId);
-                if (!tree) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> getItemByKey: Дерево с идентификатором '" + treeId + "' не найдено");
-                    return false;
-                }
-
-                var item = tree.stack[key];
-                return item !== undefined ? item : false;
-            },
-
-
-
-            addItem: function (treeId, key, parentKey, display, order, data) {
-                if (treeId === undefined) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> addItem: Не задан параметр - идентификатор дерева");
-                    return false;
-                }
-
-                if (key === undefined) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> addItem: Не задан параметр - значение ключа элемента");
-                    return false;
-                }
-
-                if (parentKey === undefined) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> addItem: Не задан параметр - значение родительского ключа элемента");
-                    return false;
-                }
-
-                if (display === undefined) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> addItem: Не задан параметр - отображаемое значение элемента");
-                    return false;
-                }
-
-                if (order !== undefined && order === "") {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> addItem: Не задан параметр - порядковый номер отображения элемента");
-                    return false;
-                }
-
-                var tree = this.getById(treeId);
-                if (!tree) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> addItem: Дерево с идентификатором '" + treeId + "' не найдено");
-                    return false;
-                }
-
-                var item = $factory({ classes: ["TreeItem"], base_class: "TreeItem" });
-                item.key = key;
-                item.parentKey = parentKey;
-                item.display = display;
-                item.order = order;
-                item.data = data !== undefined ? data : {};
-
-                if (item.parentKey === tree.rootKey) {
-                    tree.initial[item.key] = item;
-                    tree.onAddItem(item);
-                    tree.stack[item.key] = item;
-                } else {
-                    var parent = tree.stack[item.parentKey];
-                    if (parent === undefined) {
-                        $errors.add(ERROR_TYPE_DEFAULT, "$structure -> addItem: родительский элемент с ключом '" + parentKey + "' не найден");
-                        return false;
-                    }
-                    tree.stack[item.key] = item;
-                    parent.children[item.key] = item;
-                    parent.childrenCount++;
-                    tree.onAddItem(item);
-                    parent.onAddChildren(item);
-                }
-
-                
-                return item;
-            },
-
-
-
-            expandItem: function (treeId, key) {
-                $log.log("expand item called");
-
-                if (treeId === undefined) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> expandItem: Не задан параметр - идентификатор дерева");
-                    return false;
-                }
-
-                if (key === undefined) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> expandItem: Не задан параметр - значение ключа элемента");
-                    return false;
-                }
-
-                var tree = this.getById(treeId);
-                if (!tree) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> expandItem: Дерево с идентификатором '" + treeId + "' не найдено");
-                    return false;
-                }
-
-                var item = tree.stack[key];
-                if (item === undefined) {
-                    $errors.add(ERROR_TYPE_ENGINE, "$structure -> expandItem: Элемент с ключом " + key + " не найден");
-                    return false;
-                }
-
-                item.isExpanded = true;
-                $log.log(item);
-                return true;
-            },
-
-
-
-            expandToRoot: function (treeId, key) {
-                if (treeId === undefined) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> expandToRoot: Не задан параметр - идентификатор дерева");
-                    return false;
-                }
-
-                if (key === undefined) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> expandToRoot: Не задан параметр - значение ключа элемента");
-                    return false;
-                }
-
-                var tree = this.getById(treeId);
-                if (!tree) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> expandToRoot: Дерево с идентификатором '" + treeId + "' не найдено");
-                    return false;
-                }
-
-                var item = tree.stack[key];
-                if (item === undefined) {
-                    $errors.add(ERROR_TYPE_ENGINE, "$structure -> expandToRoot: Элемент с ключом " + key + " не найден");
-                    return false;
-                }
-
-                var parent = tree.stack[item.parentKey];
-                while (parent) {
-                    parent.isExpanded = true;
-                    parent = tree.stack[parent.parentKey];
-                }
-            },
-
-
-
-            collapseItem: function (treeId, key) {
-                if (treeId === undefined) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> collapseItem: Не задан параметр - идентификатор дерева");
-                    return false;
-                }
-
-                if (key === undefined) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> collapseItem: Не задан параметр - значение ключа элемента");
-                    return false;
-                }
-
-                var tree = this.getById(treeId);
-                if (!tree) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> collapseItem: Дерево с идентификатором '" + treeId + "' не найдено");
-                    return false;
-                }
-
-                var item = tree.stack[key];
-                if (item === undefined) {
-                    $errors.add(ERROR_TYPE_ENGINE, "$structure -> collapseItem: Элемент с ключом " + key + " не найден");
-                    return false;
-                }
-
-                item.isExpanded = false;
-                return true;
-            },
-
-
-
-            selectItem: function (treeId, key) {
-                if (treeId === undefined) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> selectItem: Не задан параметр - идентификатор дерева");
-                    return false;
-                }
-
-                if (key === undefined) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> selectItem: Не задан параметр - значение ключа элемента");
-                    return false;
-                }
-
-                var tree = this.getById(treeId);
-                if (!tree) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> selectItem: Дерево с идентификатором '" + treeId + "' не найдено");
-                    return false;
-                }
-
-                var item = tree.stack[key];
-                if (item === undefined) {
-                    $errors.add(ERROR_TYPE_ENGINE, "$structure -> selectItem: Элемент с ключом " + key + " не найден");
-                    return false;
-                }
-
-                $log.log("selected item = ", item);
-
-                for (var index in tree.stack) {
-                    var itm = tree.stack[index];
-                    if (itm.key === key) {
-                        if (itm.isSelected == true) {
-                            itm.isSelected = false;
-                            if (tree.collapseOnDeselect == true)
-                                item.isExpanded = false;
-                        } else {
-                            itm.isSelected = true;
-                            if (tree.expandOnSelect === true)
-                                itm.isExpanded = true;
-                            tree.onSelect(itm);
+                    if (divisions[i].id.value === divisionId) {
+                        var division = divisions[i];
+                        while (division.isDepartment.value === false) {
+                            var length2 = divisions.length;
+                            for (var x = 0; x < length2; x++) {
+                                if (divisions[x].id.value === division.parentId.value)
+                                    division = divisions[x];
+                            }
                         }
-                    } else
-                        itm.isSelected = false;
-
+                        return division;
+                    }
                 }
-
-                return true;
-            },
-
-
-            calcViolations: function (treeId, key) {
-                if (treeId === undefined) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> calc: Не задан параметр - идентификатор дерева");
-                    return false;
-                }
-
-                if (key === undefined) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> calc: Не задан параметр - значение ключа элемента");
-                    return false;
-                }
-
-                var tree = this.getById(treeId);
-                if (!tree) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$structure -> calc: Дерево с идентификатором '" + treeId + "' не найдено");
-                    return false;
-                }
-
-                var item = tree.stack[key];
-                if (item === undefined) {
-                    $errors.add(ERROR_TYPE_ENGINE, "$structure -> calc: Элемент с ключом " + key + " не найден");
-                    return false;
-                }
-
-                var result = 0;
-                for (var index in item.children) {
-                    var child = item.children[index];
-                    result += child.data.violationsAdded;
-                }
-
-                return result;
             }
-
-
-
         }
     }]);
-    
-    
-    
-
 
 angular.module("violations")
         .factory("$violations", ["$log", "$classes", "$factory", "$http", "$errors", "$session", "$tree", function ($log, $classes, $factory, $http, $errors, $session, $tree) {
@@ -1979,6 +1669,7 @@ angular.module("violations")
                     
                     startDate: 0,
                     endDate: 0,
+                    loadMore: true,
 
                     filterStartDate: function (date) {
                         if (date !== undefined)
@@ -2186,6 +1877,9 @@ angular.module("violations")
                                         }
 
                                         violations.push(violation);
+
+                                        if (callback !== undefined && typeof callback === "function")
+                                            callback();
                                     }
 
 
@@ -2284,11 +1978,15 @@ angular.module("violations")
                         var params = {
                             action: "cancelViolation",
                             data: {
+                                serviceId: "violations",
                                 id: newViolation.id.value
                             }
                         };
-                        $http.post("/serverside/api.php", params)
+
+                        newViolation._states_.loading(true);
+                        $http.post("http://wfs.kolenergo.ru/cancel.php", params)
                             .success(function (data) {
+                                newViolation._states_.loading(false);
                                 if (data !== undefined) {
                                     if (data === "true") {
                                         if (callback !== undefined && typeof callback === "function")
@@ -2377,11 +2075,91 @@ angular.module("violations")
             }
         }]);
 angular
+    .module("violations")
+    .filter("byViolationId", ["$log", function ($log) {
+        return function (input, violationId) {
+            if (violationId !== undefined && violationId !== 0) {
+                var length = input.length;
+                var result = [];
+                
+                for (var i = 0; i < length; i++) {
+                    if (input[i].violationId.value === violationId)
+                        result.push(input[i]);
+                }
+                return result;
+            } else
+                return input;
+
+        }
+    }]);
+angular.module("violations")
+    .filter("dateFilter", ["$log", function ($log) {
+        return function (input) {
+            return moment.unix(input).format("DD MMMM YYYY, HH:mm");
+        }
+    }]);
+angular.module("violations")
+    .filter("dateShort", ["$log", function ($log) {
+        return function (input) {
+            return moment.unix(input).format("DD.MM.YYYY");
+        }
+    }]);
+angular.module("violations")
+    .filter("day", ["$log", function ($log) {
+        return function (input) {
+            return moment.unix(input).format("DD MMMM YYYY");
+        }
+    }]);
+
+angular
+    .module("violations")
+    .filter("filesize", [function () {
+        return function (input, precision) {
+            if (typeof precision === 'undefined') precision = 1;
+            var units = ['байт', 'кб', 'мб', 'гб', 'тв', 'пб'];
+            var number = Math.floor(Math.log(input) / Math.log(1024));
+            return (input / Math.pow(1024, Math.floor(number))).toFixed(precision) +  ' ' + units[number];
+        }
+    }]);
+
+angular
+    .module("violations")
+    .filter("noDateSelected", ["$log", function ($log) {
+        return function (input) {
+            if (input === 0)
+                return "Не выбрано";
+            else
+                return input;
+        }
+    }]);
+angular.module("violations")
+    .filter("time", ["$log", function ($log) {
+        return function (input) {
+            return moment.unix(input).format("HH:mm");
+        }
+    }]);
+angular
+    .module("violations")
+    .filter('toArray', [function () {
+        return function (input) {
+            var result = [];
+            for (var index in input) {
+                result.push(input[index]);
+            }
+            return result;
+        }
+    }]);
+
+angular
     .module("application", ["ngRoute", "ngCookies", "ngAnimate", "violations", "homunculus", "homunculus.ui"])
     .config(["$routeProvider", "$locationProvider", "$httpProvider", function ($routeProvider, $locationProvider, $httpProvider) {
 
         $httpProvider.defaults.useXDomain = true;
         delete $httpProvider.defaults.headers.common['X-Requested-With'];
+        $httpProvider.defaults.headers.common = {};
+        $httpProvider.defaults.headers.post = {};
+        $httpProvider.defaults.headers.put = {};
+        $httpProvider.defaults.headers.patch = {};
 
         //$locationProvider.html5Mode(true);
         $routeProvider
@@ -2446,12 +2224,16 @@ angular
                     }]
                 }
             })
+            .when("/help/", {
+                templateUrl: "clientside/modules/violations/templates/help/help.html",
+                controller: "HelpController"
+            })
             .otherwise({
                 redirectTo: "/"
             });
     }])
     .run(["$log", "$violations", "$navigation", function ($log, $violations, $navigation) {
         moment.locale("ru");
-        $violations.violations.getNew().happened.value = new moment().unix();
+        $violations.violations.getNew().happened.value = new moment().hours(0).minutes(0).seconds(0).unix();
         $log.log(window.initialData);
     }]);

@@ -36,7 +36,7 @@
 
     <div class="row padding-10">
         <label for="new-division-short-title" class="width-100">
-            Полное наименование
+            Краткое наименование
             <span class="right form-error" ng-show="errors.shortTitle !== undefined">{{ errors.shortTitle }}</span>
         </label>
         <input type="text"
@@ -45,6 +45,19 @@
                placeholder="Введите краткое наименование"
                class="width-100"
                ng-model="divisions.getNew().shortTitle.value">
+    </div>
+
+    <div class="row padding-10">
+        <label for="new-division-short-title" class="width-100">
+            Адрес хранилища данных (в формате http://*.ru)
+        </label>
+        <input type="text"
+               name="short_title"
+               id="new-division-storage"
+               placeholder="Введите адрес хранилища данных"
+               class="width-100"
+               ng-change="divisions.getNew()._states_.changed(true)"
+               ng-model="divisions.getNew().storage.value">
     </div>
 
     <div class="row padding-10">
@@ -100,7 +113,7 @@
 
     <div class="row padding-10">
         <label for="current-division-short-title" class="width-100">
-            Полное наименование
+            Краткое наименование
             <span class="right form-error" ng-show="errors.shortTitle !== undefined">{{ errors.shortTitle }}</span>
         </label>
         <input type="text"
@@ -110,6 +123,19 @@
                class="width-100"
                ng-change="divisions.getCurrent()._states_.changed(true)"
                ng-model="divisions.getCurrent().shortTitle.value">
+    </div>
+
+    <div class="row padding-10">
+        <label for="current-division-short-title" class="width-100">
+            Адрес хранилища данных (в формате http://*.ru)
+        </label>
+        <input type="text"
+               name="short_title"
+               id="current-division-storage"
+               placeholder="Введите адрес хранилища данных"
+               class="width-100"
+               ng-change="divisions.getCurrent()._states_.changed(true)"
+               ng-model="divisions.getCurrent().storage.value">
     </div>
 
     <div class="row padding-10">

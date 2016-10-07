@@ -46,3 +46,17 @@
 #current-violation_ #violation-documents #current-violation-files .attachment.ng-enter.ng-enter-active {
   background: #C8E6C9;
 }
+#current-violation_ .is-violation-confirmed {
+  padding: 10px;
+  font-size: 18px;
+  background: #FFFDE7;
+  border: 2px solid #FFF9C4;
+}
+#current-violation_ .is-violation-confirmed.yes {
+  background: #E8F5E9;
+  border: 2px solid #C8E6C9;
+}
+#current-violation_ .is-violation-confirmed input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+}

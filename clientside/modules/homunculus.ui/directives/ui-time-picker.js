@@ -67,7 +67,7 @@ angular
                         scope.$apply();
                     } else {
                         $log.log("shit");
-                        //ngModel.$setViewValue(element.val());
+                        //ngModel.$setViewValue(previousHours);
                         //$log.log("rec $viewValue = ", ngModel.$viewValue);
                     }
                 });
@@ -81,7 +81,7 @@ angular
 
                 angular.element(minutesInput).on("keyup", function () {
                     //var exp = new RegExp("^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5]?[0-9]$");
-                    var exp = new RegExp("^([0-9]|0[0-9]|1[0-9]|2[0-3])$");
+                    var exp = new RegExp("^(0|[0-5]?[0-9])$");
                     if (exp.test(angular.element(minutesInput).val())) {
                         $log.log("minutes accepted");
                         date.minutes(parseInt(angular.element(minutesInput).val()));

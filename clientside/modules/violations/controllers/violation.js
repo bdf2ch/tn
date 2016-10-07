@@ -5,6 +5,7 @@ angular
         $scope.session = $session;
         $scope.violation = undefined;
         $scope.uploaderData = {
+            serviceId: "violations",
             violationId: 0,
             divisionId: 0
         };

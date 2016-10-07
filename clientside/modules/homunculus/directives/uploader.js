@@ -1,16 +1,32 @@
 angular
     .module("homunculus")
-    .directive("uploader", ["$log", "$http", function ($log, $http) {
+    .directive("uploader", ["$log", "$http", "$errors", function ($log, $http, $errors) {
         return {
             restrict: "A",
             scope: {
-                uploaderUrl: "@",
+                //uploaderUrl: "=",
                 uploaderData: "=",
                 uploaderOnCompleteUpload: "=",
                 uploaderOnBeforeUpload: "="
             },
             link: function (scope, element, attrs) {
+                var url = "";
                 var fd = new FormData();
+
+                if (attrs.uploaderUrl === undefined || attrs.uploaderUrl === "") {
+                    $errors.add(ERROR_TYPE_DEFAULT, "uploader -> Не задан атрибут - url");
+                    return false;
+                }
+
+                attrs.$observe("uploaderUrl", function (val) {
+                    $log.log("interpolated url = ", val);
+                    url = val;
+                });
+
+                //scope.$watch("uploaderUrl", function (val) {
+                //    $log.log("url = ", val);
+                //    url = val;
+                //});
 
                 /**
                  * Отслеживаем выбор файла для загрузки
@@ -49,7 +65,7 @@ angular
                 scope.upload = function () {
                     if (fd.has("file")) {
                         element.prop("disabled", "disabled");
-                        $http.post(scope.uploaderUrl, fd,
+                        $http.post(url, fd,
                             {
                                 transformRequest: angular.identity,
                                 headers: {

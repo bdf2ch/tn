@@ -182,6 +182,18 @@ table tfoot td.buttoned:hover {
 #new-violation_ #violation-documents #new-violation-files .attachment.ng-enter.ng-enter-active {
   background: #C8E6C9;
 }
+#new-violation_ #new-violation-hours {
+  border-right: none;
+}
+#new-violation_ #new-violation-minutes {
+  border-left: none;
+}
+#new-violation_ .time-separator {
+  height: 35px;
+  line-height: 30px;
+  border-top: 1px solid lightgrey;
+  border-bottom: 1px solid lightgrey;
+}
 #current-violation_ {
   width: 1200px;
   height: 400px;
@@ -229,6 +241,20 @@ table tfoot td.buttoned:hover {
 }
 #current-violation_ #violation-documents #current-violation-files .attachment.ng-enter.ng-enter-active {
   background: #C8E6C9;
+}
+#current-violation_ .is-violation-confirmed {
+  padding: 10px;
+  font-size: 18px;
+  background: #FFFDE7;
+  border: 2px solid #FFF9C4;
+}
+#current-violation_ .is-violation-confirmed.yes {
+  background: #E8F5E9;
+  border: 2px solid #C8E6C9;
+}
+#current-violation_ .is-violation-confirmed input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
 }
 #new-user,
 #edit-user {

@@ -209,8 +209,12 @@ angular
                     collapseOnDeselect: true,
                     showNotifications: false,
                     onSelect: function (item) {
+                        //var division = this.getById(item.key);
+                        //$log.log("div = ", division);
                         $violations.violations.getNew().divisionId.value = item.key;
+                        $log.log("div id = ", item.key);
                     }
+
                 });
                 var newViolationRoot = $tree.getItemByKey("global-divisions-tree", $session.getCurrentUser().divisionId.value);
                 if (newViolationRoot) {
@@ -321,6 +325,7 @@ angular
                         parentId: newDivision.parentId.value,
                         shortTitle: newDivision.shortTitle.value,
                         fullTitle: newDivision.fullTitle.value,
+                        storage: newDivision.storage.value,
                         isDepartment: newDivision.isDepartment.value === true ? 1 : 0
                     }
                 };
@@ -368,6 +373,8 @@ angular
                         parentId: currentDivision.parentId.value,
                         shortTitle: currentDivision.shortTitle.value,
                         fullTitle: currentDivision.fullTitle.value,
+                        storage: currentDivision.storage.value,
+                        departmentId: this.getDepartmentByDivisionId(currentDivision.id.value).id.value,
                         isDepartment: currentDivision.isDepartment.value === true ? 1 : 0
                     }
                 };
@@ -390,6 +397,29 @@ angular
                             error();
                         return false;
                     });
+            },
+
+
+            getDepartmentByDivisionId: function (divisionId) {
+                if (divisionId === undefined) {
+                    $errors.add(ERROR_TYPE_DEFAULT, "$divisions -> getDepartmentByDivisionId: Не задан параметр - идентификатор структурного подразделения");
+                    return false;
+                }
+
+                var length = divisions.length;
+                for (var i = 0; i < length; i++) {
+                    if (divisions[i].id.value === divisionId) {
+                        var division = divisions[i];
+                        while (division.isDepartment.value === false) {
+                            var length2 = divisions.length;
+                            for (var x = 0; x < length2; x++) {
+                                if (divisions[x].id.value === division.parentId.value)
+                                    division = divisions[x];
+                            }
+                        }
+                        return division;
+                    }
+                }
             }
         }
     }]);

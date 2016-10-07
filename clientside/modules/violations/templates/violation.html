@@ -9,6 +9,7 @@
             </button>
             <button class="green right margin-right-10"
                     ng-click="save()"
+                    ng-show="session.getCurrentUser().isAdministrator.value === true"
                     ng-disabled="violations.violations.getCurrent()._states_.changed() === false || violations.violations.getCurrent()._states_.loading() === true">
                 <span class="fa fa-plus"></span>&nbsp;
                 Сохранить
@@ -18,11 +19,12 @@
             <div class="row" ng-show=""></div>
 
             <div class="row padding-10">
-                <div class="width-100">
+                <div class="width-100  is-violation-confirmed" ng-class="{ 'yes': violations.violations.getCurrent().isConfirmed.value === true }">
                     <span class="left">Технологическое нарушение проверено и подтверждено &nbsp; &nbsp; &nbsp;</span>
                     <input type="checkbox"
                            name="confirmed"
                            id="current-violation-is-conformed"
+                           class="right"
                            ng-change="violations.violations.getCurrent()._states_.changed(true)"
                            ng-model="violations.violations.getCurrent().isConfirmed.value"
                            ng-disabled="user.allowConfirm.value === false">

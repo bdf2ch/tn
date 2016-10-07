@@ -92,7 +92,7 @@
         }
         $result -> user = mysql_fetch_assoc($user);
 
-        $divisions = mysql_query("SELECT ID, PARENT_ID, TITLE_FULL, SORT_ID, TITLE_SHORT, IS_DEPARTMENT, PATH, (SELECT COUNT(*) FROM violations WHERE division_id = divisions.ID AND date_happened > ".$result -> thursday.") AS VIOLATIONS_ADDED, (SELECT COUNT(*) FROM attachments WHERE DIVISION_ID = divisions.ID AND DATE_ADDED > ".$result -> thursday.") AS ATTACHMENTS_ADDED FROM divisions ORDER By PARENT_ID ASC", $link);
+        $divisions = mysql_query("SELECT ID, PARENT_ID, TITLE_FULL, SORT_ID, TITLE_SHORT, IS_DEPARTMENT, PATH, FILE_STORAGE_HOST, (SELECT COUNT(*) FROM violations WHERE division_id = divisions.ID AND date_happened > ".$result -> thursday.") AS VIOLATIONS_ADDED, (SELECT COUNT(*) FROM attachments WHERE DIVISION_ID = divisions.ID AND DATE_ADDED > ".$result -> thursday.") AS ATTACHMENTS_ADDED FROM divisions ORDER By PARENT_ID ASC", $link);
         if (!$divisions) {
             echo("Error executing query: ".mysql_error());
             return false;
@@ -292,6 +292,12 @@
             $query = mysql_query("UPDATE violations SET USER_ID = $userId, DIVISION_ID = $divisionId, ESK_GROUP_ID = $eskGroupId, ESK_OBJECT = '$eskObject', DESCRIPTION = '$description', DATE_HAPPENED = $happened, DATE_ADDED = $added WHERE ID = $id", $link);
             if (!$query) {
                 echo("Не удалось обновить информацию о технологическом нарушении");
+                return false;
+            }
+
+            $query = mysql_query("UPDATE attachments SET DIVISION_ID = $divisionId WHERE VIOLATION_ID = $id", $link);
+            if (!$query) {
+                echo("Не удалось обновить информацию о прикрепленных документах");
                 return false;
             }
 
@@ -766,6 +772,7 @@
         $fullTitle = $data -> fullTitle;
         $shortTitle = $data -> shortTitle;
         $parentId = $data -> parentId;
+        $storage = $data -> storage;
         $isDepartment = $data -> isDepartment;
         $path = "";
 
@@ -799,7 +806,7 @@
             }
         }
 
-        $division = mysql_query("INSERT INTO divisions (PARENT_ID, TITLE_SHORT, TITLE_FULL, IS_DEPARTMENT, PATH) VALUES ($parentId, '$shortTitle', '$fullTitle', $isDepartment, '')", $link);
+        $division = mysql_query("INSERT INTO divisions (PARENT_ID, TITLE_SHORT, TITLE_FULL, FILE_STORAGE_HOST, IS_DEPARTMENT, PATH) VALUES ($parentId, '$shortTitle', '$fullTitle', '$storage', $isDepartment, '')", $link);
         if (!$division) {
             echo("Error executing query: ".mysql_error());
             return false;
@@ -837,6 +844,8 @@
         $fullTitle = $data -> fullTitle;
         $shortTitle = $data -> shortTitle;
         $parentId = $data -> parentId;
+        $departmentId = $data -> departmentId;
+        $storage = $data -> storage;
         $isDepartment = $data -> isDepartment;
 
         $link = mysql_connect($db_host, $db_user, $db_password);
@@ -857,13 +866,34 @@
             return false;
         }
 
-        $division = mysql_query("UPDATE divisions SET TITLE_SHORT = '$shortTitle', TITLE_FULL = '$fullTitle', IS_DEPARTMENT = $isDepartment WHERE ID = $id", $link);
+        $division = mysql_query("UPDATE divisions SET TITLE_SHORT = '$shortTitle', TITLE_FULL = '$fullTitle', FILE_STORAGE_HOST = '$storage', IS_DEPARTMENT = $isDepartment WHERE ID = $id", $link);
         if (!$division) {
             echo("Error executing query: ".mysql_error());
             return false;
         }
 
-        $division  = mysql_query("SELECT * FROM divisions WHERE ID = $id", $link);
+        $attachments = mysql_query("SELECT * FROM attachments WHERE DIVISION_ID = $id", $link);
+        if (!$attachments) {
+            echo("Error executing attachments query: ".mysql_error());
+            return false;
+        }
+
+        while ($attachment = mysql_fetch_assoc($attachments)) {
+            $attachmentId = $attachment["ID"];
+            $violationId = $attachment["VIOLATION_ID"];
+            $title = $attachment["TITLE"];
+            if ($storage != "")
+                $link = $storage."/uploads/violations/".$violationId."/".$title;
+            else
+                $link = "/uploads/violations/".$departmentId."/".$violationId."/".$title;
+            $url = mysql_query("UPDATE attachments SET URL = '$link' WHERE ID = $attachmentId", $link);
+            if (!$url) {
+                echo("Error executing url query: ".mysql_error());
+                return false;
+            }
+        }
+
+        $division = mysql_query("SELECT * FROM divisions WHERE ID = $id", $link);
         if (!$division) {
             echo("Error executing query: ".mysql_error());
             return false;

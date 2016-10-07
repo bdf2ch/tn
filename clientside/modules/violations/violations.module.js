@@ -7,6 +7,8 @@ angular.module("violations", [])
         $divisions.init(window.initialData.divisions);
         $violations.init();
         $violations.violations.getNew().userId.value = $session.getCurrentUser().id.value;
+        //$violations.violations.startDate = new moment().unix();
+
 
         $navigation.add({
             id: "violations",
@@ -16,6 +18,8 @@ angular.module("violations", [])
             order: 1
         });
 
+
+
         $navigation.add({
             id: "users",
             url: "/users/",
@@ -24,6 +28,7 @@ angular.module("violations", [])
             order: 3,
             isVisible: $session.getCurrentUser().isAdministrator.value === true ? true : false
         });
+
 
         $navigation.add({
             id: "user",
@@ -41,6 +46,15 @@ angular.module("violations", [])
             title: "Стр. подразделения",
             order: 2,
             isVisible: $session.getCurrentUser().isAdministrator.value === true ? true : false
+        });
+
+        $navigation.add({
+            id: "help",
+            url: "/help/",
+            icon: "fa fa-info",
+            title: "Помощь",
+            order: 4,
+            isVisible: true
         });
         
     }]);

@@ -4,6 +4,10 @@ angular
 
         $httpProvider.defaults.useXDomain = true;
         delete $httpProvider.defaults.headers.common['X-Requested-With'];
+        $httpProvider.defaults.headers.common = {};
+        $httpProvider.defaults.headers.post = {};
+        $httpProvider.defaults.headers.put = {};
+        $httpProvider.defaults.headers.patch = {};
 
         //$locationProvider.html5Mode(true);
         $routeProvider
@@ -68,12 +72,16 @@ angular
                     }]
                 }
             })
+            .when("/help/", {
+                templateUrl: "clientside/modules/violations/templates/help/help.html",
+                controller: "HelpController"
+            })
             .otherwise({
                 redirectTo: "/"
             });
     }])
     .run(["$log", "$violations", "$navigation", function ($log, $violations, $navigation) {
         moment.locale("ru");
-        $violations.violations.getNew().happened.value = new moment().unix();
+        $violations.violations.getNew().happened.value = new moment().hours(0).minutes(0).seconds(0).unix();
         $log.log(window.initialData);
     }]);

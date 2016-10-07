@@ -14,7 +14,8 @@ angular
                 dateTimePickerNoValue: "@",
                 dateTimePickerOnSelect: "=",
                 dateTimePickerMinDate: "=",
-                dateTimePickerMaxDate: "="
+                dateTimePickerMaxDate: "=",
+                dateTimePickerFormat: "@"
             },
             link: function (scope, element, attrs, controller) {
 
@@ -51,15 +52,16 @@ angular
                 }
 
 
-                controller.$render = function () {
-                    $log.log("dateTimePicker render called");
+                //controller.$render = function () {
+                //    $log.log("dateTimePicker render called");
                     //if (scope.settings.isTimeEnabled === true)
                     //    element.val(moment.unix(controller).format("DD.MM.YYYY HH:mm"));
                     //else
                     //    element.val(moment.unix(controller).format("DD.MM.YYYY"));
-                };
+                //};
 
 
+                /*
                 scope.$watch("ngModel", function (val) {
                     $log.log("newVal = ", val);
                     //controller.$render();
@@ -68,6 +70,7 @@ angular
                     else
                         element.val(moment.unix(val).format("DD.MM.YYYY"));
                 });
+                */
 
 
 
@@ -135,7 +138,8 @@ angular
                     element: element,
                     onSelect: scope.dateTimePickerOnSelect !== null && scope.dateTimePickerOnSelect !== undefined ? scope.dateTimePickerOnSelect : undefined,
                     minDate: scope.dateTimePickerMinDate !== null && scope.dateTimePickerMinDate !== undefined ? scope.dateTimePickerMinDate : 0,
-                    maxDate: scope.dateTimePickerMaxDate !== null && scope.dateTimePickerMaxDate !== undefined ? scope.dateTimePickerMaxDate : Number.POSITIVE_INFINITY
+                    maxDate: scope.dateTimePickerMaxDate !== null && scope.dateTimePickerMaxDate !== undefined ? scope.dateTimePickerMaxDate : Number.POSITIVE_INFINITY,
+                    format: scope.dateTimePickerFormat !== null && scope.dateTimePickerFormat !== undefined && scope.dateTimePickerFormat !== "" ? scope.dateTimePickerFormat : "DD MMM YYYY"
                 };
 
 
@@ -252,19 +256,22 @@ angular
 
 
 
-                controller.$parsers.push(function (value) {
+                controller.$parsers.push(function(value) {
                     scope.$apply();
                     return value;
                 });
 
-                controller.$formatters.push(function (value) {
+                controller.$formatters.push(function(value) {
+                    $log.log("formatter value = ", value);
                     if (value === 0) {
-                        if (scope.settings.noValue !== undefined)
+                        $log.log("formatter value = ", value);
+                        if (scope.settings.noValue !== undefined) {
+                            $log.log("noValue = ", scope.settings.noValue);
                             return scope.settings.noValue;
-                        else
+                        } else
                             return moment.unix(value).format("DD MMM YYYY");
                     } else {
-                        return scope.settings.isTimeEnabled === true ? moment.unix(value).format("DD MMM YYYY, HH:mm") : moment.unix(value).format("DD MMM YYYY");
+                        return scope.settings.isTimeEnabled === true ? moment.unix(value).format("DD MMM YYYY, HH:mm") : moment.unix(value).format(scope.settings.format);
                     }
 
                 });
@@ -363,7 +370,7 @@ angular
                                 scope.month = temp.month();
                                 scope.day = temp.date();
                                 scope.value.month(scope.month).date(scope.day).hours(0).minutes(0).seconds(0);
-                                //scope.ngModel = scope.value.unix();
+                                scope.ngModel = scope.value.unix();
                                 controller.$setViewValue(scope.value.unix());
                                 $log.log(scope.value.format("DD.MM.YYYY HH:mm"), scope.value.unix());
                                 scope.value = moment(new Date());

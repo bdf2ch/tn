@@ -46,3 +46,12 @@
 #new-violation_ #violation-documents #new-violation-files .attachment.ng-enter.ng-enter-active {
   background: #C8E6C9;
 }
+#new-violation_ #new-violation-hours {
+  border-right: none;
+}
+#new-violation_ #new-violation-minutes {
+  border-left: none;
+}
+#new-violation_ .time-separator {
+  border-top: 1ps solid;
+}

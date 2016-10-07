@@ -1,4 +1,6 @@
 <?php
+    define("SERVICE_ID", "violations");
+
 
     $db_host = "10.50.0.65";
     $db_user = "wfs_base";

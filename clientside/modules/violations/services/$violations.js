@@ -266,6 +266,7 @@ angular.module("violations")
                     
                     startDate: 0,
                     endDate: 0,
+                    loadMore: true,
 
                     filterStartDate: function (date) {
                         if (date !== undefined)
@@ -473,6 +474,9 @@ angular.module("violations")
                                         }
 
                                         violations.push(violation);
+
+                                        if (callback !== undefined && typeof callback === "function")
+                                            callback();
                                     }
 
 
@@ -571,11 +575,15 @@ angular.module("violations")
                         var params = {
                             action: "cancelViolation",
                             data: {
+                                serviceId: "violations",
                                 id: newViolation.id.value
                             }
                         };
-                        $http.post("/serverside/api.php", params)
+
+                        newViolation._states_.loading(true);
+                        $http.post("http://wfs.kolenergo.ru/cancel.php", params)
                             .success(function (data) {
+                                newViolation._states_.loading(false);
                                 if (data !== undefined) {
                                     if (data === "true") {
                                         if (callback !== undefined && typeof callback === "function")
