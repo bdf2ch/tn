@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: localhost
--- Время создания: Окт 07 2016 г., 18:54
+-- Время создания: Окт 08 2016 г., 16:34
 -- Версия сервера: 5.7.13-0ubuntu0.16.04.2
 -- Версия PHP: 7.0.8-0ubuntu0.16.04.3
 
@@ -19,6 +19,8 @@ SET time_zone = "+00:00";
 --
 -- База данных: `wfs_base`
 --
+CREATE DATABASE IF NOT EXISTS `wfs_base` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `wfs_base`;
 
 -- --------------------------------------------------------
 
