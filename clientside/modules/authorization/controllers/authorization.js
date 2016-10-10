@@ -12,7 +12,7 @@ angular
             $scope.noUserFound = false;
             if ($scope.auth_form.$valid === true) {
                 $authorization.login($scope.email, $scope.password, function (data) {
-                    $log.log("result = ", data);
+                    //$log.log("result = ", data);
                     if (data !== false) {
                         $window.location.reload();
                     } else

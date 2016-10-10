@@ -83,7 +83,7 @@ angular
 
 
         if (!$tree.getById("divisions-tree")) {
-            $log.log("NO TREE");
+            //$log.log("NO TREE");
             var divisionsTree = $tree.register({
                 id: "divisions-tree",
                 rootKey: 0,

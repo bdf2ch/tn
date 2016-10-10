@@ -5,7 +5,7 @@ angular
         $scope.today = new moment().hours(23).minutes(59).seconds(59).unix();
 
         $scope.selectStartDate = function () {
-            $log.log("onSelect called");
+            //$log.log("onSelect called");
             $violations.violations.setStart(0);
             $dateTimePicker.getById("violations-end-date").scope.settings.minDate = $violations.violations.startDate;
             var division = $tree.getById("session-divisions-tree").selectedItem;
@@ -55,7 +55,7 @@ angular
             if (division.isSelected === true) {
                 $violations.violations.getNew().divisionId.value = division.key;
                 $violations.violations.getByDivisionId(division.key, $violations.violations.startDate, $violations.violations.endDate);
-                $log.log("new = ", $violations.violations.getNew());
+                //$log.log("new = ", $violations.violations.getNew());
 
             }
         };

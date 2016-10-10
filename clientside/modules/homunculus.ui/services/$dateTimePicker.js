@@ -18,7 +18,7 @@ angular
                     instance.minDate = scope.settings.minDate;
                     instance.maxDate = scope.settings.maxDate;
                     instances.push(instance);
-                    $log.log(instances);
+                    //$log.log(instances);
                     return instance;
                 } else
                     return $errors.add(ERROR_TYPE_DEFAULT, "krypton.ui -> dateTimePicker directive: Не задан параметр - объект с настройками директивы");
@@ -26,7 +26,7 @@ angular
 
 
             show: function (elementId) {
-                $log.log("instances before = ", instances);
+                //$log.log("instances before = ", instances);
                 if (elementId !== undefined) {
                     var length = instances.length;
                     for (var i = 0; i < length; i++) {

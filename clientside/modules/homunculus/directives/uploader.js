@@ -19,14 +19,10 @@ angular
                 }
 
                 attrs.$observe("uploaderUrl", function (val) {
-                    $log.log("interpolated url = ", val);
                     url = val;
-                });
+                    $log.log("interpolated url = ", url);
 
-                //scope.$watch("uploaderUrl", function (val) {
-                //    $log.log("url = ", val);
-                //    url = val;
-                //});
+                });
 
                 /**
                  * Отслеживаем выбор файла для загрузки
@@ -41,11 +37,8 @@ angular
                     /* Если задан коллбэк onBeforeUpload - выполняем его */
                     $log.log(scope.uploaderOnBeforeUpload);
                     if (scope.uploaderOnBeforeUpload !== undefined && typeof scope.uploaderOnBeforeUpload === "function") {
-                        //scope.$apply(scope.uploaderOnBeforeUpload);
-                        scope.uploaderOnBeforeUpload();
-                       // scope.upload();
-                    } //else
-                        //scope.upload();
+                        scope.$apply(scope.uploaderOnBeforeUpload);
+                    }
 
                     /* Если заданы данные для отправки на сервер - добавляем их в данные формы для отправки */
                     if (scope.uploaderData !== undefined) {
@@ -56,13 +49,14 @@ angular
                     }
 
                     scope.upload();
-
                 });
 
                 /**
                  * Отправляет данные на сервер
                  */
                 scope.upload = function () {
+
+                    $log.info("upload, link = ", url);
                     if (fd.has("file")) {
                         element.prop("disabled", "disabled");
                         $http.post(url, fd,
@@ -73,14 +67,13 @@ angular
                                 }
                             }
                         ).success(function (data) {
-                                $log.log(data);
-                                element.prop("disabled", "");
-                                if (scope.uploaderOnCompleteUpload !== undefined)
-                                    scope.uploaderOnCompleteUpload(data);
-                                fd.delete("file");
-                                fd = new FormData();
-                            }
-                        );
+                            $log.log(data);
+                            element.prop("disabled", "");
+                            if (scope.uploaderOnCompleteUpload !== undefined && typeof scope.uploaderOnCompleteUpload === "function")
+                                scope.uploaderOnCompleteUpload(data);
+                            fd.delete("file");
+                            fd = new FormData();
+                        });
                     }
                 };
 

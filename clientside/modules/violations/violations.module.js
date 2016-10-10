@@ -1,6 +1,6 @@
 angular.module("violations", [])
     .run(["$log", "$divisions", "$violations", "$session", "$users", "$navigation", function ($log, $divisions, $violations, $session, $users, $navigation) {
-        $log.log("violations module run...");
+        //$log.log("violations module run...");
 
         $session.init(window.initialData);
         $users.users.init(window.initialData.users);

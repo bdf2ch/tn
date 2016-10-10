@@ -103,7 +103,7 @@ angular
         var add = function (title, definition) {
             if (title !== undefined && definition !== undefined && typeof(definition) == "object") {
                 items[title] = definition;
-                $log.info("Класс " + title + " добавлен в стек классов");
+                //$log.info("Класс " + title + " добавлен в стек классов");
                 //$log.log("total = ", items);
                 return true;
             } else
@@ -353,8 +353,8 @@ angular
         };
 
         $rootScope.$on("$routeChangeStart", function (event, next, current) {
-            $log.log("current = ", current);
-            $log.log("next = ", next);
+            //$log.log("current = ", current);
+            //$log.log("next = ", next);
 
             breadcrumb = [];
             var length = menu.length;
@@ -370,7 +370,7 @@ angular
                     }
                     if (menu[i].parentId !== "") {
                         var parentId = menu[i].parentId;
-                        $log.log("parentId = ", parentId);
+                        //$log.log("parentId = ", parentId);
                         while (parentId !== "") {
                             for (var x = 0; x < length; x++) {
                                 if (menu[x].id === parentId) {
@@ -395,7 +395,7 @@ angular
                     menu[i].isActive = false;
             }
 
-            $log.log("breadcrumb = ", breadcrumb);
+            //$log.log("breadcrumb = ", breadcrumb);
         });
 
         return {
@@ -431,7 +431,7 @@ angular
                 item.isVisible = parameters.isVisible !== undefined ? parameters.isVisible : true;
 
                 menu.push(item);
-                $log.info("menus = ", menu);
+                //$log.info("menus = ", menu);
             },
 
             select: function (menuId, callback) {
@@ -461,7 +461,7 @@ angular
     .module("homunculus")
     .factory("$session", ["$log", "$http", "$classes", "$factory", "$errors", function ($log, $http, $classes, $factory, $errors) {
         var user = $factory({ classes: ["AppUser", "Model", "Backup", "States"], base_class: "AppUser" });
-        $log.log("user = ", user);
+        //$log.log("user = ", user);
 
         return {
 
@@ -808,14 +808,10 @@ angular
                 }
 
                 attrs.$observe("uploaderUrl", function (val) {
-                    $log.log("interpolated url = ", val);
                     url = val;
-                });
+                    $log.log("interpolated url = ", url);
 
-                //scope.$watch("uploaderUrl", function (val) {
-                //    $log.log("url = ", val);
-                //    url = val;
-                //});
+                });
 
                 /**
                  * Отслеживаем выбор файла для загрузки
@@ -830,11 +826,8 @@ angular
                     /* Если задан коллбэк onBeforeUpload - выполняем его */
                     $log.log(scope.uploaderOnBeforeUpload);
                     if (scope.uploaderOnBeforeUpload !== undefined && typeof scope.uploaderOnBeforeUpload === "function") {
-                        //scope.$apply(scope.uploaderOnBeforeUpload);
-                        scope.uploaderOnBeforeUpload();
-                       // scope.upload();
-                    } //else
-                        //scope.upload();
+                        scope.$apply(scope.uploaderOnBeforeUpload);
+                    }
 
                     /* Если заданы данные для отправки на сервер - добавляем их в данные формы для отправки */
                     if (scope.uploaderData !== undefined) {
@@ -845,13 +838,14 @@ angular
                     }
 
                     scope.upload();
-
                 });
 
                 /**
                  * Отправляет данные на сервер
                  */
                 scope.upload = function () {
+
+                    $log.info("upload, link = ", url);
                     if (fd.has("file")) {
                         element.prop("disabled", "disabled");
                         $http.post(url, fd,
@@ -862,14 +856,13 @@ angular
                                 }
                             }
                         ).success(function (data) {
-                                $log.log(data);
-                                element.prop("disabled", "");
-                                if (scope.uploaderOnCompleteUpload !== undefined)
-                                    scope.uploaderOnCompleteUpload(data);
-                                fd.delete("file");
-                                fd = new FormData();
-                            }
-                        );
+                            $log.log(data);
+                            element.prop("disabled", "");
+                            if (scope.uploaderOnCompleteUpload !== undefined && typeof scope.uploaderOnCompleteUpload === "function")
+                                scope.uploaderOnCompleteUpload(data);
+                            fd.delete("file");
+                            fd = new FormData();
+                        });
                     }
                 };
 

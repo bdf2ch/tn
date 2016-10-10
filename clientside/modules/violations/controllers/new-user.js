@@ -25,7 +25,7 @@ angular
             });
 
             newUserTree.onSelect = function (item) {
-                $log.log("selected division = ", item);
+                //$log.log("selected division = ", item);
                 $scope.selectDivision(item);
             };
 

@@ -31,7 +31,7 @@ angular
 
 
         $scope.onBeforeUploadAttachment = function () {
-            $log.info("data = ", $scope.uploaderData);
+            //$log.info("data = ", $scope.uploaderData);
             $scope.uploaderData.violationId = $violations.violations.getCurrent().id.value;
             $scope.uploaderData.divisionId = $violations.violations.getCurrent().divisionId.value;
             $scope.isUploadInProgress = true;
@@ -40,7 +40,7 @@ angular
 
 
         $scope.onCompleteUploadAttachment = function (data) {
-            $log.log(data);
+            //$log.log(data);
             var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
             attachment._model_.fromJSON(data);
             $violations.violations.getCurrent().attachments.push(attachment);
@@ -59,7 +59,7 @@ angular
                 var prev = item;
                 var parent = $tree.getItemByKey("global-divisions-tree", item.parentKey);
                 while (parent) {
-                    $log.log("parent found = ", parent);
+                    //$log.log("parent found = ", parent);
                     parent.data.attachmentsTotal += 1;
                     parent.notifications.getById("attachments").value += 1;
                     parent.notifications.getById("attachments").isVisible = parent.notifications.getById("attachments").value > 0 ? true : false;

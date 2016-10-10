@@ -83,5 +83,5 @@ angular
     .run(["$log", "$violations", "$navigation", function ($log, $violations, $navigation) {
         moment.locale("ru");
         $violations.violations.getNew().happened.value = new moment().hours(0).minutes(0).seconds(0).unix();
-        $log.log(window.initialData);
+        //$log.log(window.initialData);
     }]);

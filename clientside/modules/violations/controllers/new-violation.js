@@ -24,7 +24,7 @@
             $scope.today = new moment().hours(23).minutes(59).seconds(59).unix();
             $scope.hours = 0;
             $scope.minutes = 0;
-            $scope.uploaderLink = "/serverside/uploader.php";
+            $scope.uploaderLink = "test";
 
 
 
@@ -36,8 +36,18 @@
 
             $scope.gotoMain = function () {
                 $location.url("/");
+
+                var url = "";
+                var division = $divisions.getById($session.getCurrentUser().divisionId.value);
+                var departmentId = $divisions.getDepartmentByDivisionId($session.getCurrentUser().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($session.getCurrentUser().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
+
+                if (division.storage.value === "") {
+                    url = "/serverside/cancel.php";
+                } else
+                    url = division.storage.value + "/cancel.php";
+
                 if ($violations.violations.getNew().id.value !== 0) {
-                    $violations.violations.cancel($violations.violations.getNew().id.value, function () {
+                    $violations.violations.cancel($violations.violations.getNew().id.value, url, departmentId, function () {
                         $violations.attachments.getNew().splice(0, $violations.attachments.getNew().length);
                     });
                 }
@@ -115,7 +125,7 @@
 
                         var parent = $tree.getItemByKey("global-divisions-tree", item.parentKey);
                         while (parent) {
-                            $log.log("parent found = ", parent);
+                            //$log.log("parent found = ", parent);
                             parent.data.violationsTotal++;
                             parent.notifications.getById("violations").value += 1;
                             parent.notifications.getById("violations").isVisible = parent.notifications.getById("violations").value > 0 ? true : false;
@@ -132,24 +142,27 @@
 
 
             $scope.onBeforeUploadAttachment = function () {
+                //$log.info("uploader onBeforeUpload");
+
                 $scope.isUploadInProgress = true;
                 $scope.uploaderData.violationId = $violations.violations.getNew().id.value;
 
                 var division = $divisions.getById($session.getCurrentUser().divisionId.value);
-                $log.log("current division = ", division);
+                //$log.log("current division = ", division);
                 if (division.storage.value === "") {
                     $scope.uploaderLink = "/serverside/uploader.php";
                     $scope.uploaderData.departmentId = $divisions.getDepartmentByDivisionId($session.getCurrentUser().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($session.getCurrentUser().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
                 } else
-                    
                     $scope.uploaderLink = division.storage.value + "/uploader/share";
-                $log.log("uploaderlink = ", $scope.uploaderLink);
-                $log.log("currentUserDivision = ", division);
-                $log.log("currentUserDepartment = ", $scope.uploaderData.departmentId);
+                //$log.log("uploaderlink = ", $scope.uploaderLink);
+                //$log.log("currentUserDivision = ", division);
+                //$log.log("currentUserDepartment = ", $scope.uploaderData.departmentId);
             };
 
+
+
             $scope.onCompleteUploadAttachment = function (data) {
-                $log.log("upload complete", data);
+                //$log.log("upload complete", data);
                 var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
                 attachment._model_.fromJSON(data);
                 $violations.violations.addAttachmentToNew(attachment);
@@ -157,7 +170,7 @@
                 $scope.isUploadInProgress = false;
                 delete $scope.uploaderData.storage;
 
-                $log.log("attachment = ", attachment);
+                //$log.log("attachment = ", attachment);
 
                 if (attachment.violationId.value !== 0)
                     $violations.violations.getNew().id.value = attachment.violationId.value;

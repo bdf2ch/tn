@@ -41,7 +41,7 @@ angular.module("violations")
                                 group._backup_.setup();
                                 eskGroups.push(group);
                             }
-                            $log.log("esk groups = ", eskGroups);
+                            //$log.log("esk groups = ", eskGroups);
                         }
 
                         if (window.initialData.violations !== undefined) {
@@ -78,14 +78,14 @@ angular.module("violations")
                                 violations.push(violation);
                             }
                             start = totalViolations;
-                            $log.log("violations = ", violations);
+                            //$log.log("violations = ", violations);
                         }
 
 
 
                         if (window.initialData.divisions !== undefined) {
                             var userDivision = "/" + $session.getCurrentUser().divisionId.value + "/";
-                            $log.info("userDiv = ", userDivision);
+                            //$log.info("userDiv = ", userDivision);
                             var length = window.initialData.divisions.length;
                             for (var i = 0; i < length; i++) {
                                 var division = $factory({ classes: ["Division", "Model", "Backup", "States"], base_class: "Division" });
@@ -100,7 +100,7 @@ angular.module("violations")
                                     divisions.push(division);
                                 //}
                             }
-                            $log.log("divisions = ", divisions);
+                            //$log.log("divisions = ", divisions);
                             currentDivision = divisions[0];
 
                         }
@@ -156,7 +156,7 @@ angular.module("violations")
                             return false;
                         }
                         start = 0;
-                        $log.log("start = ", start);
+                        //$log.log("start = ", start);
 
                         var length = divisions.length;
                         for (var i = 0; i < length; i++) {
@@ -340,7 +340,7 @@ angular.module("violations")
                         var length = violations.length;
                         for (var i = 0; i < length; i++) {
                             if (violations[i].id.value === id) {
-                                $log.info("getting violation from cache");
+                                //$log.info("getting violation from cache");
                                 currentViolation = violations[i];
                                 return currentViolation;
                             }
@@ -354,7 +354,7 @@ angular.module("violations")
                         };
                         return $http.post("/serverside/api.php", params).then(
                             function success(response) {
-                                $log.info("promise success");
+                                //$log.info("promise success");
                                 var violation = $factory({classes: ["Violation", "Model", "Backup", "States"], base_class: "Violation"});
                                 violation._model_.fromJSON(response.data.violation);
                                 violation._backup_.setup();
@@ -406,7 +406,7 @@ angular.module("violations")
                     },
 
                     getByDivisionId: function (divisionId, callback) {
-                        $log.log("startDate = ", this.startDate, ", endDate = ", this.endDate);
+                        //$log.log("startDate = ", this.startDate, ", endDate = ", this.endDate);
                         if (divisionId === undefined) {
                             $errors.add(ERROR_TYPE_DEFAULT, "$violations -> violations -> selectByDivisionId: Не задан парметр - идентификатор структурного подразделения");
                             return false;
@@ -566,9 +566,21 @@ angular.module("violations")
                             });
                     },
 
-                    cancel: function (violationId, callback) {
+
+
+                    cancel: function (violationId, url, departmentId, callback) {
                         if (violationId === undefined) {
                             $errors.add(ERROR_TYPE_DEFAULT, "$violations -> violations -> cancel: Не задан параметр - идентификатор технологического нарушения");
+                            return false;
+                        }
+
+                        if (url === undefined) {
+                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> cancel: Не задан параметр - url");
+                            return false;
+                        }
+
+                        if (departmentId === undefined) {
+                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> violations -> cancel: Не задан параметр - идентификатор филиала организации");
                             return false;
                         }
 
@@ -576,12 +588,13 @@ angular.module("violations")
                             action: "cancelViolation",
                             data: {
                                 serviceId: "violations",
-                                id: newViolation.id.value
+                                id: newViolation.id.value,
+                                departmentId: departmentId
                             }
                         };
 
                         newViolation._states_.loading(true);
-                        $http.post("http://wfs.kolenergo.ru/cancel.php", params)
+                        $http.post(url, params)
                             .success(function (data) {
                                 newViolation._states_.loading(false);
                                 if (data !== undefined) {

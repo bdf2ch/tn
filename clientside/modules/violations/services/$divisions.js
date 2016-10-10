@@ -160,7 +160,7 @@ angular
                     expandOnSelect: true,
                     collapseOnDeselect: true,
                     onSelect: function (item) {
-                        $log.log("session divisions selected = ", sessionDivisionsTree.selectedItem);
+                        //$log.log("session divisions selected = ", sessionDivisionsTree.selectedItem);
                     }
                 });
                 sessionDivisionsTree.calcRoot = tree.calcRoot();
@@ -174,12 +174,12 @@ angular
                 }
 
                 sessionDivisionsTree.onSelect = function (item) {
-                    $log.log("selected item = ", item);
+                    //$log.log("selected item = ", item);
                     $violations.violations.setStart(0);
                     if (item.isSelected === true) {
                         $violations.violations.getNew().divisionId.value = item.key;
                         $violations.violations.getByDivisionId(item.key);
-                        $log.log("new = ", $violations.violations.getNew());
+                        //$log.log("new = ", $violations.violations.getNew());
 
                         var length = divisions.length;
                         var found = false;
@@ -212,7 +212,7 @@ angular
                         //var division = this.getById(item.key);
                         //$log.log("div = ", division);
                         $violations.violations.getNew().divisionId.value = item.key;
-                        $log.log("div id = ", item.key);
+                        //$log.log("div id = ", item.key);
                     }
 
                 });

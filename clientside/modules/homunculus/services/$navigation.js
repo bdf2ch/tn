@@ -21,8 +21,8 @@ angular
         };
 
         $rootScope.$on("$routeChangeStart", function (event, next, current) {
-            $log.log("current = ", current);
-            $log.log("next = ", next);
+            //$log.log("current = ", current);
+            //$log.log("next = ", next);
 
             breadcrumb = [];
             var length = menu.length;
@@ -38,7 +38,7 @@ angular
                     }
                     if (menu[i].parentId !== "") {
                         var parentId = menu[i].parentId;
-                        $log.log("parentId = ", parentId);
+                        //$log.log("parentId = ", parentId);
                         while (parentId !== "") {
                             for (var x = 0; x < length; x++) {
                                 if (menu[x].id === parentId) {
@@ -63,7 +63,7 @@ angular
                     menu[i].isActive = false;
             }
 
-            $log.log("breadcrumb = ", breadcrumb);
+            //$log.log("breadcrumb = ", breadcrumb);
         });
 
         return {
@@ -99,7 +99,7 @@ angular
                 item.isVisible = parameters.isVisible !== undefined ? parameters.isVisible : true;
 
                 menu.push(item);
-                $log.info("menus = ", menu);
+                //$log.info("menus = ", menu);
             },
 
             select: function (menuId, callback) {

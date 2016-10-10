@@ -2,7 +2,7 @@ angular
     .module("homunculus")
     .factory("$session", ["$log", "$http", "$classes", "$factory", "$errors", function ($log, $http, $classes, $factory, $errors) {
         var user = $factory({ classes: ["AppUser", "Model", "Backup", "States"], base_class: "AppUser" });
-        $log.log("user = ", user);
+        //$log.log("user = ", user);
 
         return {
 

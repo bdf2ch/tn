@@ -12,7 +12,7 @@ angular
         var add = function (title, definition) {
             if (title !== undefined && definition !== undefined && typeof(definition) == "object") {
                 items[title] = definition;
-                $log.info("Класс " + title + " добавлен в стек классов");
+                //$log.info("Класс " + title + " добавлен в стек классов");
                 //$log.log("total = ", items);
                 return true;
             } else

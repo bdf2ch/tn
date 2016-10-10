@@ -7,6 +7,10 @@
     $db_password = "iuh";
     $db_name = "wfs_base";
 
+    //$db_host = "localhost";
+    //$db_user = "root";
+    //$db_password = "";
+
     $ldap_host = "10.50.0.1";
 
     $itemsOnPage = 20;

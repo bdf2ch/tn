@@ -8,7 +8,7 @@ angular
 
 
             register: function (parameters) {
-                $log.log("parameters = ", parameters);
+                //$log.log("parameters = ", parameters);
                 if (parameters === undefined) {
                     $errors.add(ERROR_TYPE_DEFAULT, "$structure -> register: Не задан параметр - объект с настройками дерева");
                     return false;
@@ -33,7 +33,7 @@ angular
                 tree.showNotifications = parameters.showNotifications !== undefined ? parameters.showNotifications : true;
                 trees.push(tree);
 
-                $log.log("structures = ", trees);
+                //$log.log("structures = ", trees);
 
                 return tree;
             },
@@ -169,7 +169,7 @@ angular
 
 
             expandItem: function (treeId, key) {
-                $log.log("expand item called");
+                //$log.log("expand item called");
 
                 if (treeId === undefined) {
                     $errors.add(ERROR_TYPE_DEFAULT, "$structure -> expandItem: Не задан параметр - идентификатор дерева");
@@ -195,7 +195,7 @@ angular
 
                 if (item.childrenCount > 0)
                     item.isExpanded = true;
-                $log.log(item);
+                //$log.log(item);
                 return true;
             },
 

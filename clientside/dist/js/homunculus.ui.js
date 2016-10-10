@@ -21,7 +21,7 @@ angular
                     instance.minDate = scope.settings.minDate;
                     instance.maxDate = scope.settings.maxDate;
                     instances.push(instance);
-                    $log.log(instances);
+                    //$log.log(instances);
                     return instance;
                 } else
                     return $errors.add(ERROR_TYPE_DEFAULT, "krypton.ui -> dateTimePicker directive: Не задан параметр - объект с настройками директивы");
@@ -29,7 +29,7 @@ angular
 
 
             show: function (elementId) {
-                $log.log("instances before = ", instances);
+                //$log.log("instances before = ", instances);
                 if (elementId !== undefined) {
                     var length = instances.length;
                     for (var i = 0; i < length; i++) {
@@ -378,7 +378,7 @@ angular
 
 
             register: function (parameters) {
-                $log.log("parameters = ", parameters);
+                //$log.log("parameters = ", parameters);
                 if (parameters === undefined) {
                     $errors.add(ERROR_TYPE_DEFAULT, "$structure -> register: Не задан параметр - объект с настройками дерева");
                     return false;
@@ -403,7 +403,7 @@ angular
                 tree.showNotifications = parameters.showNotifications !== undefined ? parameters.showNotifications : true;
                 trees.push(tree);
 
-                $log.log("structures = ", trees);
+                //$log.log("structures = ", trees);
 
                 return tree;
             },
@@ -539,7 +539,7 @@ angular
 
 
             expandItem: function (treeId, key) {
-                $log.log("expand item called");
+                //$log.log("expand item called");
 
                 if (treeId === undefined) {
                     $errors.add(ERROR_TYPE_DEFAULT, "$structure -> expandItem: Не задан параметр - идентификатор дерева");
@@ -565,7 +565,7 @@ angular
 
                 if (item.childrenCount > 0)
                     item.isExpanded = true;
-                $log.log(item);
+                //$log.log(item);
                 return true;
             },
 
@@ -901,7 +901,7 @@ angular
                 };
 
 
-                $log.info("settings = ", scope.settings);
+                //$log.info("settings = ", scope.settings);
 
 
                 var recalculate = function (monthNumber) {
@@ -910,14 +910,14 @@ angular
                         var weekDayOfFirstDay = moment("01." + monthNumber + "." + scope.year, "DD.MM.YYYY").weekday();
                         var weekDayOfLastDay = moment(daysInMonth + "." + monthNumber + "." + scope.year, "DD.MM.YYYY").weekday();
                         var lastDayInSelectedMonth = "";
-                        $log.log("in month number " + monthNumber + " - " + daysInMonth + " days");
-                        $log.log("first day in month = ", weekDayOfFirstDay);
-                        $log.log("last day in month = ", weekDayOfLastDay);
+                        //$log.log("in month number " + monthNumber + " - " + daysInMonth + " days");
+                        //$log.log("first day in month = ", weekDayOfFirstDay);
+                        //$log.log("last day in month = ", weekDayOfLastDay);
 
                         days.splice(0, days.length);
                         if (weekDayOfFirstDay > 0) {
                             var start = moment("01." + monthNumber + "." + scope.year + " 00:00", "DD.MM.YYYY HH:mm").subtract(weekDayOfFirstDay, "days");
-                            $log.log("first day in calendar = ", moment(start).format("DD.MM.YYYY"));
+                            //$log.log("first day in calendar = ", moment(start).format("DD.MM.YYYY"));
                             for (var x = 0; x < weekDayOfFirstDay; x++) {
                                 var day = moment(start).add(x, "days");
                                 days.push(day);
@@ -928,10 +928,10 @@ angular
                             days.push(day);
                             if (moment(day).date() === daysInMonth) {
                                 lastDayInSelectedMonth = day;
-                                $log.log("last day = ", moment(lastDayInSelectedMonth).format("DD.MM.YYYY"));
+                                //$log.log("last day = ", moment(lastDayInSelectedMonth).format("DD.MM.YYYY"));
                             }
 
-                            $log.log("last day in month2 = ", weekDayOfLastDay);
+                            //$log.log("last day in month2 = ", weekDayOfLastDay);
 
                         }
                         if (weekDayOfLastDay < 6) {
@@ -1020,11 +1020,11 @@ angular
                 });
 
                 controller.$formatters.push(function(value) {
-                    $log.log("formatter value = ", value);
+                    //$log.log("formatter value = ", value);
                     if (value === 0) {
-                        $log.log("formatter value = ", value);
+                        //$log.log("formatter value = ", value);
                         if (scope.settings.noValue !== undefined) {
-                            $log.log("noValue = ", scope.settings.noValue);
+                            //$log.log("noValue = ", scope.settings.noValue);
                             return scope.settings.noValue;
                         } else
                             return moment.unix(value).format("DD MMM YYYY");
@@ -1048,7 +1048,7 @@ angular
                                     scope.value.hours(23);
                             } else
                                 scope.value.subtract(1, "hours");
-                            $log.log(scope.value.format("DD.MM.YYYY HH:mm"));
+                            //$log.log(scope.value.format("DD.MM.YYYY HH:mm"));
                         } else {
                             if (scope.settings.isTroughNavigationEnabled === false) {
                                 if (scope.value.minutes() > 0 && scope.value.minutes() <= 59)
@@ -1057,11 +1057,11 @@ angular
                                     scope.value.minutes(55);
                             } else
                                 scope.value.subtract(5, "minutes");
-                            $log.log(scope.value.format("DD.MM.YYYY HH:mm"));
+                            //$log.log(scope.value.format("DD.MM.YYYY HH:mm"));
                         }
                     } else {
                         scope.date.subtract(1, "months");
-                        $log.log("currentDate = " + scope.value.format("DD.MM.YYYY"));
+                        //$log.log("currentDate = " + scope.value.format("DD.MM.YYYY"));
                         scope.month = scope.date.month();
                         scope.year = scope.date.year();
                         recalculate(scope.date.month() + 1);
@@ -1084,7 +1084,7 @@ angular
                     } else {
                         scope.date.add(1, "months");
                         moment(scope.date).day(1);
-                        $log.log("currentDate = " + moment(scope.date).format("DD.MM.YYYY"));
+                        //$log.log("currentDate = " + moment(scope.date).format("DD.MM.YYYY"));
                         scope.month = moment(scope.date).month();
                         scope.year = moment(scope.date).year();
                         recalculate(scope.date.month() +1);
@@ -1094,7 +1094,7 @@ angular
 
                 scope.select = function (value) {
                     if (value !== undefined) {
-                        $log.log("selected value = ", value);
+                        //$log.log("selected value = ", value);
                         if (value >= scope.settings.minDate && value <= scope.settings.maxDate) {
                             if (scope.settings.isTimeEnabled === true) {
                                 if (scope.isInTimeSelectMode === false) {
@@ -1105,7 +1105,7 @@ angular
                                     controller.$setViewValue(scope.value.unix());
                                     //scope.ngModel = scope.value.unix();
                                     scope.isInTimeSelectMode = true;
-                                    $log.log(scope.value.format("DD.MM.YYYY HH:mm"), scope.value.unix());
+                                    //$log.log(scope.value.format("DD.MM.YYYY HH:mm"), scope.value.unix());
                                     //scope.$apply();
                                 } else {
                                     if (scope.isInMinutesSelectMode === false) {
@@ -1113,12 +1113,12 @@ angular
                                         //scope.ngModel = scope.value.unix();
                                         controller.$setViewValue(scope.value.unix());
                                         scope.isInMinutesSelectMode = true;
-                                        $log.log(scope.value.format("DD.MM.YYYY HH:mm"), scope.value.unix());
+                                        //$log.log(scope.value.format("DD.MM.YYYY HH:mm"), scope.value.unix());
                                     } else {
                                         scope.value.minutes(parseInt(value));
                                         //scope.ngModel = scope.value.unix();
                                         controller.$setViewValue(scope.value.unix());
-                                        $log.log(scope.value.format("DD.MM.YYYY HH:mm"), scope.value.unix());
+                                        //$log.log(scope.value.format("DD.MM.YYYY HH:mm"), scope.value.unix());
                                         scope.close();
                                         //scope.$apply();
                                     }
@@ -1130,7 +1130,7 @@ angular
                                 scope.value.month(scope.month).date(scope.day).hours(0).minutes(0).seconds(0);
                                 scope.ngModel = scope.value.unix();
                                 controller.$setViewValue(scope.value.unix());
-                                $log.log(scope.value.format("DD.MM.YYYY HH:mm"), scope.value.unix());
+                                //$log.log(scope.value.format("DD.MM.YYYY HH:mm"), scope.value.unix());
                                 scope.value = moment(new Date());
                                 scope.close();
                                 //scope.$apply();
@@ -1219,7 +1219,7 @@ angular
                 });
 
                 angular.element(angular.element(element).parent()).on("scroll", function () {
-                    $log.log("parent scrolled");
+                    //$log.log("parent scrolled");
                     redraw(container);
                 });
             }
