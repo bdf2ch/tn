@@ -2,9 +2,9 @@
 angular.module("violations")
         .factory("$violations", ["$log", "$classes", "$factory", "$http", "$errors", "$session", "$tree", function ($log, $classes, $factory, $http, $errors, $session, $tree) {
 
-            var divisions = [];
+            //var divisions = [];
             var violations = [];
-            var eskGroups = [];
+
             var attachments = [];
             var currentDivision = undefined;
             var newDivision = $factory({ classes: ["Division", "Model", "Backup", "States"], base_class: "Division" });
@@ -33,6 +33,7 @@ angular.module("violations")
                             thursday = window.initialData.thursday;
                         }
 
+                        /*
                         if (window.initialData.eskGroups !== undefined) {
                             var length = window.initialData.eskGroups.length;
                             for (var i = 0; i < length; i++) {
@@ -43,6 +44,7 @@ angular.module("violations")
                             }
                             //$log.log("esk groups = ", eskGroups);
                         }
+                        */
 
                         if (window.initialData.violations !== undefined) {
 
@@ -82,7 +84,7 @@ angular.module("violations")
                         }
 
 
-
+                        /*
                         if (window.initialData.divisions !== undefined) {
                             var userDivision = "/" + $session.getCurrentUser().divisionId.value + "/";
                             //$log.info("userDiv = ", userDivision);
@@ -105,6 +107,7 @@ angular.module("violations")
 
                         }
                         //divisions[0]._states_.selected(true);
+                        */
 
 
 
@@ -118,95 +121,6 @@ angular.module("violations")
                             }
                             //$log.log("attachments = ", attachments);
                         }
-                    }
-                },
-
-
-
-                divisions: {
-                    getAll: function () {
-                        return divisions;
-                    },
-
-                    getCurrent: function () {
-                        return currentDivision;
-                    },
-
-                    getNew: function () {
-                        return newDivision;
-                    },
-
-                    getById: function (id) {
-                        if (id === undefined) {
-                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> divisions -> getById: Не задан параметр - идентификатор структурного подразделения");
-                            return false;
-                        }
-
-                        var length = divisions.length;
-                        for (var i = 0; i < length; i++) {
-                            if (divisions[i].id.value === id)
-                                return divisions[i];
-                        }
-                        return false;
-                    },
-
-                    select: function (id, callback) {
-                        if (id === undefined) {
-                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> divisions -> select: Не задан параметр - идентификатор структурного подразделения");
-                            return false;
-                        }
-                        start = 0;
-                        //$log.log("start = ", start);
-
-                        var length = divisions.length;
-                        for (var i = 0; i < length; i++) {
-                            if (divisions[i].id.value === id) {
-                                if (divisions[i]._states_.selected() === false) {
-                                    divisions[i]._states_.selected(true);
-                                    currentDivision = divisions[i];
-                                } else {
-                                    divisions[i]._states_.selected(false);
-                                    currentDivision = undefined;
-                                }
-                            } else
-                                divisions[i]._states_.selected(false);
-                        }
-
-                        if (callback !== undefined && typeof callback === "function")
-                            callback(currentDivision);
-
-                        return true;
-                    },
-
-
-                    add: function (callback) {
-                       var params = {
-                           action: "addDivision",
-                           data: {
-                               title: newDivision.shortTitle.value,
-                               parentId: newDivision.parentId.value,
-                               isDepartment: newDivision.isDepartment.value === true ? 1 : 0
-                           }
-                       };
-
-                        $http.post("/serverside/api.php", params)
-                            .success(function (data) {
-                                if (data !== undefined) {
-                                    var division = $factory({ classes: ["Division", "Model", "Backup", "States"], base_class: "Division" });
-                                    division._model_.fromJSON(data);
-                                    division._backup_.setup();
-                                    divisions.push(division);
-                                    newDivision.shortTitle.value = "";
-                                    if (callback !== undefined && typeof callback === "function")
-                                        callback(division);
-                                    return true;
-                                } else
-                                    return false;
-                            })
-                            .error(function () {
-                                $errors.add(ERROR_TYPE_ENGINE, "$violations -> divisions -> add: Не удалось добавить структурное подразделение");
-                                return false;
-                            });
                     }
                 },
 
@@ -621,26 +535,6 @@ angular.module("violations")
                     }
                 },
 
-                eskGroups: {
-                    getAll: function () {
-                        return eskGroups;
-                    },
-
-                    getById: function (id) {
-                        if (id === undefined) {
-                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> eskGroups -> add: Не задан параметр - идентификатор группы ЭКС");
-                            return false;
-                        }
-
-                        var length = eskGroups.length;
-                        for (var i = 0; i < length; i++) {
-                            if (eskGroups[i].id.value === id)
-                                return eskGroups[i];
-                        }
-
-                        return false;
-                    }
-                },
 
                 attachments: {
                     getAll: function () {

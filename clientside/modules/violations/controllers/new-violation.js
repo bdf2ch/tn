@@ -4,8 +4,10 @@
 (function () {
     angular
         .module("violations")
-        .controller("NewViolationController", ["$log", "$scope", "$violations", "$divisions", "$factory", "$tree", "$location", "$modals", "$session", function ($log, $scope, $violations, $divisions, $factory, $tree, $location, $modals, $session) {
+        .controller("NewViolationController", ["$log", "$scope", "$violations", "$divisions", "$misc", "$factory", "$tree", "$location", "$modals", "$session", function ($log, $scope, $violations, $divisions, $misc, $factory, $tree, $location, $modals, $session) {
             $scope.violations = $violations;
+            $scope.divisions = $divisions;
+            $scope.misc = $misc;
             $scope.modals = $modals;
             $scope.submitted = false;
             $scope.isUploadInProgress = false;
@@ -52,7 +54,7 @@
                     });
                 }
 
-                if ($violations.divisions.getCurrent() !== undefined && $violations.divisions.getCurrent().id.value === 1) {
+                if ($divisions.getCurrent() !== undefined && $divisions.getCurrent().id.value === 1) {
                     $violations.violations.getNew().divisionId.value = 0;
                 }
             };
@@ -148,7 +150,7 @@
                 $scope.uploaderData.violationId = $violations.violations.getNew().id.value;
 
                 var division = $divisions.getById($session.getCurrentUser().divisionId.value);
-                //$log.log("current division = ", division);
+                $log.log("current division = ", division);
                 if (division.storage.value === "") {
                     $scope.uploaderLink = "/serverside/uploader.php";
                     $scope.uploaderData.departmentId = $divisions.getDepartmentByDivisionId($session.getCurrentUser().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($session.getCurrentUser().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;

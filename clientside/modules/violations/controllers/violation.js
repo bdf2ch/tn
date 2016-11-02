@@ -1,7 +1,9 @@
 angular
     .module("violations")
-    .controller("ViolationController", ["$log", "$scope", "$routeParams", "$location", "$violations", "$factory", "$tree", "$session", function ($log, $scope, $routeParams, $location, $violations, $factory, $tree, $session) {
+    .controller("ViolationController", ["$log", "$scope", "$routeParams", "$location", "$violations", "$divisions", "$misc", "$factory", "$tree", "$session", function ($log, $scope, $routeParams, $location, $violations, $divisions, $misc, $factory, $tree, $session) {
         $scope.violations = $violations;
+        $scope.divisions = $divisions;
+        $scope.misc = $misc;
         $scope.session = $session;
         $scope.violation = undefined;
         $scope.uploaderData = {

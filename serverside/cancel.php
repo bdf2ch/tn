@@ -1,6 +1,7 @@
 <?php
     require_once("config.php");
 
+    $ds = DIRECTORY_SEPARATOR;
     $postdata = json_decode(file_get_contents("php://input"));
     $serviceId = $postdata -> data -> serviceId;
     $id = $postdata -> data -> id;
@@ -21,13 +22,13 @@
         echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
     }
 
-    if (file_exists($_SERVER["DOCUMENT_ROOT"].DIRECTORY_SEPARATOR."uploads".DIRECTORY_SEPARATOR.$serviceId.DIRECTORY_SEPARATOR.$departmentId.DIRECTORY_SEPARATOR.$id)) {
-        foreach(scandir($_SERVER["DOCUMENT_ROOT"].DIRECTORY_SEPARATOR."uploads".DIRECTORY_SEPARATOR.$serviceId.DIRECTORY_SEPARATOR.$departmentId.DIRECTORY_SEPARATOR.$id) as $file) {
-                if ('.' === $file || '..' === $file) continue;
-                if (is_dir($_SERVER["DOCUMENT_ROOT"].DIRECTORY_SEPARATOR."uploads".DIRECTORY_SEPARATOR.$serviceId.DIRECTORY_SEPARATOR.$departmentId.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.$file)) rmdir_recursive($_SERVER["DOCUMENT_ROOT"].DIRECTORY_SEPARATOR."uploads".DIRECTORY_SEPARATOR.$serviceId.DIRECTORY_SEPARATOR.$departmentId.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.$file);
-                else unlink($_SERVER["DOCUMENT_ROOT"].DIRECTORY_SEPARATOR."uploads".DIRECTORY_SEPARATOR.$serviceId.DIRECTORY_SEPARATOR.$departmentId.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.$file);
+    if (file_exists($_SERVER["DOCUMENT_ROOT"].$ds."uploads".$ds.$serviceId.$ds.$departmentId.$ds.$id)) {
+        foreach(scandir($_SERVER["DOCUMENT_ROOT"].$ds."uploads".$ds.$serviceId.$ds.$departmentId.$ds.$id) as $file) {
+            if ('.' === $file || '..' === $file) continue;
+                if (is_dir($_SERVER["DOCUMENT_ROOT"].$ds."uploads".$ds.$serviceId.$ds.$departmentId.$ds.$id.$ds.$file)) rmdir_recursive($_SERVER["DOCUMENT_ROOT"].DIRECTORY_SEPARATOR."uploads".DIRECTORY_SEPARATOR.$serviceId.$ds.$departmentId.$ds.$id.$ds.$file);
+                else unlink($_SERVER["DOCUMENT_ROOT"].$ds."uploads".$ds.$serviceId.$ds.$departmentId.$ds.$id.$ds.$file);
             }
-            rmdir($_SERVER["DOCUMENT_ROOT"].DIRECTORY_SEPARATOR."uploads".DIRECTORY_SEPARATOR.$serviceId.DIRECTORY_SEPARATOR.$departmentId.DIRECTORY_SEPARATOR.$id);
+            rmdir($_SERVER["DOCUMENT_ROOT"].$ds."uploads".$ds.$serviceId.$ds.$departmentId.$ds.$id);
     }
 
 

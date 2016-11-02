@@ -1,11 +1,12 @@
 angular.module("violations", [])
-    .run(["$log", "$divisions", "$violations", "$session", "$users", "$navigation", function ($log, $divisions, $violations, $session, $users, $navigation) {
+    .run(["$log", "$divisions", "$violations", "$misc", "$session", "$users", "$navigation", function ($log, $divisions, $violations, $misc, $session, $users, $navigation) {
         //$log.log("violations module run...");
 
         $session.init(window.initialData);
         $users.users.init(window.initialData.users);
         $divisions.init(window.initialData.divisions);
         $violations.init();
+        $misc.init(window.initialData);
         $violations.violations.getNew().userId.value = $session.getCurrentUser().id.value;
         //$violations.violations.startDate = new moment().unix();
 
@@ -107,174 +108,70 @@ $classesInjector
     });
 angular
     .module("violations")
-    .directive("structure", ["$log", "$templateCache", "$errors", "$structure", function ($log, $templateCache, $errors, $structure) {
-
-        var template =
-            "<div class='container nested'>" +
-            "<div class=\"tree-item\" ng-class='{ \"with-children\": node.childrenCount > 0, \"expanded\": node.isExpanded === true && node.childrenCount > 0, \"active\": node.isSelected === true }' ng-repeat=\"node in node.children | toArray | orderBy: \'order\' track by $index\">" +
-            "<div class='tree-item-content' ng-click='expand(node)'>" +
-            "<div class='item-label' ng-class='{ \"active\": node.isSelected === true }' ng-click='select(node, $event)'>" +
-            "<span>{{ node.display }}</span>" +
-            "</div>" +
-            "<div class='item-controls'>" +
-            "<span class='expand fa fa-chevron-down' ng-click='expand(node)' ng-show='node.childrenCount > 0 && node.isExpanded === false'></span>" +
-            "<span class='collapse fa fa-chevron-up' ng-if='node.isExpanded === true && node.childrenCount > 0' ng-click='collapse(node)'></span>" +
-            "</div>" +
-                "<div class='item-notifications' ng-show='node.notifications.items.length === 0'>" +
-                    "<div class='notification {{ notification.class }}' ng-repeat='notification in node.notifications.items track by $index' ng-show='notification.isVisible === true'>" +
-                        "<span class='fa {{ notification.icon }} notification.class' ng-show='notification.icon !== \"\"'></span>" +
-                        "<span class='value'>{{ notification.value }}</span>" +
-                    "</div>" +
-                    "<div class='notification violation-notification' ng-show='node.data.violationsTotal > 0'>" +
-                        "<span class='fa fa-bolt'></span>" +
-                        "<span class='value'>{{ node.data.violationsTotal }}</span>" +
-                    "</div>" +
-                    "<div class='notification attachment-notification' ng-show='node.data.attachmentsTotal > 0'>" +
-                        "<span class='fa fa-file'></span>" +
-                        "<span class='value'>{{ node.data.attachmentsTotal }}</span>" +
-                    "</div>" +
-                "</div>" +
-            "</div>" +
-            "<div ng-show='node.isExpanded === true' ng-include=\"\'structure'\"></div>" +
-            "</div>" +
-            "</div>";
-
-        return {
-            restrict: "E",
-            scope: {
-                class: "@"
-            },
-            template:
-                "<div class='{{ \"krypton-ui-tree \" + class }}'>" +
-                    "<div class='container root'>" +
-                        "<div class='tree-item' ng-class='{ \"with-children\": node.childrenCount > 0, \"expanded\": node.isExpanded === true, \"active\": node.isSelected === true }' ng-repeat='node in initial | orderBy:\"order\" track by $index' ng-init='this.nv = this.nv + node.data.violationsAdded'>" +
-                            "<div class='tree-item-content' ng-click='expand(node)'>" +
-                                "<div class='item-label' ng-class='{ active: node.isSelected === true }' ng-click='select(node, $event)'>" +
-                                    "<span>{{ node.display }}</span>" +
-                                "</div>" +
-                                "<div class='item-controls'>" +
-                                    "<span class='expand fa fa-chevron-down' ng-click='expand(node)' ng-show='node.children.length > 0 && node.isExpanded === false'></span>" +
-                                    "<span class='collapse fa fa-chevron-up' ng-if='node.isExpanded === true' ng-click='collapse(node)'></span>" +
-                                "</div>" +
-                                "<div class='item-notifications' ng-show='node.notifications.items.length === 0'>" +
-                                    "<div class='notification {{ notification.class }}' ng-repeat='notification in node.notifications.items track by $index' ng-show='notification.isVisible === true'>" +
-                                        "<span class='fa {{ notification.icon }}' ng-show='notification.icon !== \"\"'></span>" +
-                                        "<span class='value'>{{ notification.value }}</span>" +
-                                    "</div>" +
-                                    "<div class='notification violation-notification' ng-show='node.data.violationsTotal > 0'>" +
-                                        "<span class='fa fa-bolt'></span>" +
-                                        "<span class='value'>{{ node.data.violationsTotal }}</span>" +
-                                    "</div>" +
-                                    "<div class='notification attachment-notification' ng-show='node.data.attachmentsTotal > 0'>" +
-                                        "<span class='fa fa-file'></span>" +
-                                        "<span class='value'>{{ node.data.attachmentsTotal }}</span>" +
-                                    "</div>" +
-                                "</div>" +
-                            "</div>" +
-                            "<div ng-init='this.parent = this' ng-include=\"\'structure'\" ng-show='node.isExpanded === true'></div>" +
-                        "</div>" +
-                    "</div>" +
-                "</div>",
-            link: function (scope, element, attrs) {
-
-                if (attrs.id === undefined || attrs.id === "") {
-                    $errors.add(ERROR_TYPE_ENGINE, "structure directive -> Не задан параметр - идентификатор дерева");
-                    return false;
+    .filter("byViolationId", ["$log", function ($log) {
+        return function (input, violationId) {
+            if (violationId !== undefined && violationId !== 0) {
+                var length = input.length;
+                var result = [];
+                
+                for (var i = 0; i < length; i++) {
+                    if (input[i].violationId.value === violationId)
+                        result.push(input[i]);
                 }
+                return result;
+            } else
+                return input;
 
-                if (attrs.rootKey === undefined || attrs.rootKey === "") {
-                    $errors.add(ERROR_TYPE_ENGINE, "structure directive -> Не задан параметр - значение коюча корневого элемента дерева");
-                    return false;
-                }
-
-                if (attrs.rootKeyDataType === undefined || attrs.rootKeyDataType === "") {
-                    $errors.add(ERROR_TYPE_ENGINE, "structure directive -> Не задан параметр - тип данных коюча корневого элемента дерева");
-                    return false;
-                }
-
-
-                var initial = scope.initial = {};
-                var stack = scope.stack = {};
-
-                var root = 0;
-                switch (attrs.rootKeyDataType) {
-                    case "DATA_TYPE_INTEGER":
-                        if (isNaN(parseInt(attrs.rootKey))) {
-                            $errors.add(ERROR_TYPE_ENGINE, "structure directive -> Значение ключа корневого элемента не соответствует типу данных коючевого элемента");
-                            return false;
-                        }
-                        root = parseInt(attrs.rootKey);
-                        break;
-                    case "DATA_TYPE_FLOAT":
-                        if (isNaN(parseFloat(attrs.rootKey))) {
-                            $errors.add(ERROR_TYPE_ENGINE, "structure directive -> Значение ключа корневого элемента не соответствует типу данных коючевого элемента");
-                            return false;
-                        }
-                        root = parseFloat(attrs.rootKey);
-                        break;
-                    case "DATA_TYPE_STRING":
-                        root = attrs.rootKey.toString();
-                        break;
-                    default:
-                        $errors.add(ERROR_TYPE_ENGINE, "structure directive -> Неверно задан тип данных корневого элемента");
-                        return false;
-                        break;
-                }
-
-
-                $log.log(attrs);
-
-
-                $templateCache.put("structure", template);
-                var tree = $structure.getById(attrs.id);
-                if (tree !== false) {
-                    scope.initial = tree.initial;
-                    scope.stack = tree.stack;
-                } else {
-                    $structure.register({
-                        id: attrs.id,
-                        rootKey: root,
-                        expandOnSelect: attrs.expandOnSelect !== undefined ? true : false,
-                        collapseOnDeselect: attrs.collapseOnDeselect !== undefined ? true : false
-                    });
-                }
-
-
-
-                scope.select = function (item, event) {
-                    event.stopPropagation();
-                    if (item !== undefined) {
-                        if (!$structure.selectItem(attrs.id, item.key)) {
-                            $errors.add(ERROR_TYPE_ENGINE, "structure directive -> '" + attrs.id + "' select: Не удалось выбрать элемент с идентификатором " + item.key);
-                            return false;
-                        }
-                        return true;
-                    }
-                };
-
-
-
-                scope.expand = function (item) {
-                    if (item !== undefined) {
-                        $log.log(item);
-                        if (item.isExpanded == false) {
-                            if (!$structure.expandItem(attrs.id, item.key)) {
-                                $errors.add(ERROR_TYPE_ENGINE, "structure directive -> expand: не удвлось развернуть элемент с идентификатором " + item.key);
-                                return false;
-                            }
-                        } else {
-                            if (!$structure.collapseItem(attrs.id, item.key)) {
-                                $errors.add(ERROR_TYPE_ENGINE, "structure directive -> expand: Не удалось свернуть элемент с идентификатором " + item.key);
-                                return false;
-                            }
-                        }
-                        return true;
-                    }
-                };
-
-            }
         }
     }]);
+angular.module("violations")
+    .filter("dateFilter", ["$log", function ($log) {
+        return function (input) {
+            return moment.unix(input).format("DD MMMM YYYY, HH:mm");
+        }
+    }]);
+angular.module("violations")
+    .filter("dateShort", ["$log", function ($log) {
+        return function (input) {
+            return moment.unix(input).format("DD.MM.YYYY");
+        }
+    }]);
+angular.module("violations")
+    .filter("day", ["$log", function ($log) {
+        return function (input) {
+            return moment.unix(input).format("DD MMMM YYYY");
+        }
+    }]);
+
+angular
+    .module("violations")
+    .filter("filesize", [function () {
+        return function (input, precision) {
+            if (typeof precision === 'undefined') precision = 1;
+            var units = ['байт', 'кб', 'мб', 'гб', 'тв', 'пб'];
+            var number = Math.floor(Math.log(input) / Math.log(1024));
+            return (input / Math.pow(1024, Math.floor(number))).toFixed(precision) +  ' ' + units[number];
+        }
+    }]);
+
+angular.module("violations")
+    .filter("time", ["$log", function ($log) {
+        return function (input) {
+            return moment.unix(input).format("HH:mm");
+        }
+    }]);
+angular
+    .module("violations")
+    .filter('toArray', [function () {
+        return function (input) {
+            var result = [];
+            for (var index in input) {
+                result.push(input[index]);
+            }
+            return result;
+        }
+    }]);
+
 angular
     .module("violations")
     .controller("DivisionsController", ["$log", "$scope", "$divisions", "$violations", "$tree", "$modals", function ($log, $scope, $divisions, $violations, $tree, $modals) {
@@ -526,8 +423,10 @@ angular
 (function () {
     angular
         .module("violations")
-        .controller("NewViolationController", ["$log", "$scope", "$violations", "$divisions", "$factory", "$tree", "$location", "$modals", "$session", function ($log, $scope, $violations, $divisions, $factory, $tree, $location, $modals, $session) {
+        .controller("NewViolationController", ["$log", "$scope", "$violations", "$divisions", "$misc", "$factory", "$tree", "$location", "$modals", "$session", function ($log, $scope, $violations, $divisions, $misc, $factory, $tree, $location, $modals, $session) {
             $scope.violations = $violations;
+            $scope.divisions = $divisions;
+            $scope.misc = $misc;
             $scope.modals = $modals;
             $scope.submitted = false;
             $scope.isUploadInProgress = false;
@@ -574,7 +473,7 @@ angular
                     });
                 }
 
-                if ($violations.divisions.getCurrent() !== undefined && $violations.divisions.getCurrent().id.value === 1) {
+                if ($divisions.getCurrent() !== undefined && $divisions.getCurrent().id.value === 1) {
                     $violations.violations.getNew().divisionId.value = 0;
                 }
             };
@@ -670,7 +569,7 @@ angular
                 $scope.uploaderData.violationId = $violations.violations.getNew().id.value;
 
                 var division = $divisions.getById($session.getCurrentUser().divisionId.value);
-                //$log.log("current division = ", division);
+                $log.log("current division = ", division);
                 if (division.storage.value === "") {
                     $scope.uploaderLink = "/serverside/uploader.php";
                     $scope.uploaderData.departmentId = $divisions.getDepartmentByDivisionId($session.getCurrentUser().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($session.getCurrentUser().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
@@ -701,9 +600,10 @@ angular
 })();
 angular
     .module("violations")
-    .controller("UserController", ["$log", "$scope", "$location", "$users", "$violations", "$tree", "$modals", function ($log, $scope, $location, $users, $violations, $tree, $modals) {
+    .controller("UserController", ["$log", "$scope", "$location", "$users", "$violations", "$divisions", "$tree", "$modals", function ($log, $scope, $location, $users, $violations, $divisions, $tree, $modals) {
         $scope.users = $users;
         $scope.violations = $violations;
+        $scope.divisions = $divisions;
         $scope.modals = $modals;
         $scope.errors = {
             divisionId: undefined,
@@ -744,9 +644,9 @@ angular
             };
 
 
-            var length = $violations.divisions.getAll().length;
+            var length = $divisions.getAll().length;
             for (var i = 0; i < length; i++) {
-                var division = $violations.divisions.getAll()[i];
+                var division = $divisions.getAll()[i];
                 var item = $tree.addItem({
                     treeId: "current-user-tree",
                     key: division.id.value,
@@ -819,8 +719,10 @@ angular
     }]);
 angular
     .module("violations")
-    .controller("ViolationController", ["$log", "$scope", "$routeParams", "$location", "$violations", "$factory", "$tree", "$session", function ($log, $scope, $routeParams, $location, $violations, $factory, $tree, $session) {
+    .controller("ViolationController", ["$log", "$scope", "$routeParams", "$location", "$violations", "$divisions", "$misc", "$factory", "$tree", "$session", function ($log, $scope, $routeParams, $location, $violations, $divisions, $misc, $factory, $tree, $session) {
         $scope.violations = $violations;
+        $scope.divisions = $divisions;
+        $scope.misc = $misc;
         $scope.session = $session;
         $scope.violation = undefined;
         $scope.uploaderData = {
@@ -1415,13 +1317,78 @@ angular
             }
         }
     }]);
+angular
+    .module("violations")
+    .factory("$misc", ["$log", "$http", "$errors", "$factory", function ($log, $http, $errors, $factory) {
+
+        var eskGroups = [];
+        var weekdays = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресение"];
+
+        return {
+
+            init: function (source) {
+                if (source === undefined) {
+                    $errors.add(ERROR_TYPE_DEFAULT, "$misc -> init: Не задан параметр - источник данных");
+                    return false;
+                }
+
+                if (source.eskGroups === undefined || source.eskGroups === null) {
+                    $errors.add(ERROR_TYPE_DEFAULT, "$misc -> init: Данные о группах ЭСК не найдены");
+                    return false;
+                }
+
+                var length = source.eskGroups.length;
+                for (var i = 0; i < length; i++) {
+                    var group = $factory({ classes: ["ESKGroup", "Model", "Backup", "States"], base_class: "ESKGroup" });
+                    group._model_.fromJSON(source.eskGroups[i]);
+                    group._backup_.setup();
+                    eskGroups.push(group);
+                }
+
+                return true;
+            },
+
+
+            eskGroups: {
+
+                getAll: function () {
+                    return eskGroups;
+                },
+
+                getById: function (id) {
+                    if (id === undefined) {
+                        $errors.add(ERROR_TYPE_DEFAULT, "$misc -> eskGroups -> getById: Не задан параметр - идентификатор группы ЭСК");
+                        return false;
+                    }
+
+                    var length = eskGroups.length;
+                    for (var i = 0; i < length; i++) {
+                        if (eskGroups[i].id.value === id)
+                            return eskGroups[i];
+                    }
+
+                    return false;
+                }
+            },
+
+
+            weekdays: {
+
+                getAll: function () {
+                    return weekdays;
+                }
+            }
+
+        }
+    }]);
+
 
 angular.module("violations")
         .factory("$violations", ["$log", "$classes", "$factory", "$http", "$errors", "$session", "$tree", function ($log, $classes, $factory, $http, $errors, $session, $tree) {
 
-            var divisions = [];
+            //var divisions = [];
             var violations = [];
-            var eskGroups = [];
+
             var attachments = [];
             var currentDivision = undefined;
             var newDivision = $factory({ classes: ["Division", "Model", "Backup", "States"], base_class: "Division" });
@@ -1450,6 +1417,7 @@ angular.module("violations")
                             thursday = window.initialData.thursday;
                         }
 
+                        /*
                         if (window.initialData.eskGroups !== undefined) {
                             var length = window.initialData.eskGroups.length;
                             for (var i = 0; i < length; i++) {
@@ -1460,6 +1428,7 @@ angular.module("violations")
                             }
                             //$log.log("esk groups = ", eskGroups);
                         }
+                        */
 
                         if (window.initialData.violations !== undefined) {
 
@@ -1499,7 +1468,7 @@ angular.module("violations")
                         }
 
 
-
+                        /*
                         if (window.initialData.divisions !== undefined) {
                             var userDivision = "/" + $session.getCurrentUser().divisionId.value + "/";
                             //$log.info("userDiv = ", userDivision);
@@ -1522,6 +1491,7 @@ angular.module("violations")
 
                         }
                         //divisions[0]._states_.selected(true);
+                        */
 
 
 
@@ -1535,95 +1505,6 @@ angular.module("violations")
                             }
                             //$log.log("attachments = ", attachments);
                         }
-                    }
-                },
-
-
-
-                divisions: {
-                    getAll: function () {
-                        return divisions;
-                    },
-
-                    getCurrent: function () {
-                        return currentDivision;
-                    },
-
-                    getNew: function () {
-                        return newDivision;
-                    },
-
-                    getById: function (id) {
-                        if (id === undefined) {
-                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> divisions -> getById: Не задан параметр - идентификатор структурного подразделения");
-                            return false;
-                        }
-
-                        var length = divisions.length;
-                        for (var i = 0; i < length; i++) {
-                            if (divisions[i].id.value === id)
-                                return divisions[i];
-                        }
-                        return false;
-                    },
-
-                    select: function (id, callback) {
-                        if (id === undefined) {
-                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> divisions -> select: Не задан параметр - идентификатор структурного подразделения");
-                            return false;
-                        }
-                        start = 0;
-                        //$log.log("start = ", start);
-
-                        var length = divisions.length;
-                        for (var i = 0; i < length; i++) {
-                            if (divisions[i].id.value === id) {
-                                if (divisions[i]._states_.selected() === false) {
-                                    divisions[i]._states_.selected(true);
-                                    currentDivision = divisions[i];
-                                } else {
-                                    divisions[i]._states_.selected(false);
-                                    currentDivision = undefined;
-                                }
-                            } else
-                                divisions[i]._states_.selected(false);
-                        }
-
-                        if (callback !== undefined && typeof callback === "function")
-                            callback(currentDivision);
-
-                        return true;
-                    },
-
-
-                    add: function (callback) {
-                       var params = {
-                           action: "addDivision",
-                           data: {
-                               title: newDivision.shortTitle.value,
-                               parentId: newDivision.parentId.value,
-                               isDepartment: newDivision.isDepartment.value === true ? 1 : 0
-                           }
-                       };
-
-                        $http.post("/serverside/api.php", params)
-                            .success(function (data) {
-                                if (data !== undefined) {
-                                    var division = $factory({ classes: ["Division", "Model", "Backup", "States"], base_class: "Division" });
-                                    division._model_.fromJSON(data);
-                                    division._backup_.setup();
-                                    divisions.push(division);
-                                    newDivision.shortTitle.value = "";
-                                    if (callback !== undefined && typeof callback === "function")
-                                        callback(division);
-                                    return true;
-                                } else
-                                    return false;
-                            })
-                            .error(function () {
-                                $errors.add(ERROR_TYPE_ENGINE, "$violations -> divisions -> add: Не удалось добавить структурное подразделение");
-                                return false;
-                            });
                     }
                 },
 
@@ -2038,26 +1919,6 @@ angular.module("violations")
                     }
                 },
 
-                eskGroups: {
-                    getAll: function () {
-                        return eskGroups;
-                    },
-
-                    getById: function (id) {
-                        if (id === undefined) {
-                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> eskGroups -> add: Не задан параметр - идентификатор группы ЭКС");
-                            return false;
-                        }
-
-                        var length = eskGroups.length;
-                        for (var i = 0; i < length; i++) {
-                            if (eskGroups[i].id.value === id)
-                                return eskGroups[i];
-                        }
-
-                        return false;
-                    }
-                },
 
                 attachments: {
                     getAll: function () {
@@ -2103,80 +1964,174 @@ angular.module("violations")
         }]);
 angular
     .module("violations")
-    .filter("byViolationId", ["$log", function ($log) {
-        return function (input, violationId) {
-            if (violationId !== undefined && violationId !== 0) {
-                var length = input.length;
-                var result = [];
-                
-                for (var i = 0; i < length; i++) {
-                    if (input[i].violationId.value === violationId)
-                        result.push(input[i]);
+    .directive("structure", ["$log", "$templateCache", "$errors", "$structure", function ($log, $templateCache, $errors, $structure) {
+
+        var template =
+            "<div class='container nested'>" +
+            "<div class=\"tree-item\" ng-class='{ \"with-children\": node.childrenCount > 0, \"expanded\": node.isExpanded === true && node.childrenCount > 0, \"active\": node.isSelected === true }' ng-repeat=\"node in node.children | toArray | orderBy: \'order\' track by $index\">" +
+            "<div class='tree-item-content' ng-click='expand(node)'>" +
+            "<div class='item-label' ng-class='{ \"active\": node.isSelected === true }' ng-click='select(node, $event)'>" +
+            "<span>{{ node.display }}</span>" +
+            "</div>" +
+            "<div class='item-controls'>" +
+            "<span class='expand fa fa-chevron-down' ng-click='expand(node)' ng-show='node.childrenCount > 0 && node.isExpanded === false'></span>" +
+            "<span class='collapse fa fa-chevron-up' ng-if='node.isExpanded === true && node.childrenCount > 0' ng-click='collapse(node)'></span>" +
+            "</div>" +
+                "<div class='item-notifications' ng-show='node.notifications.items.length === 0'>" +
+                    "<div class='notification {{ notification.class }}' ng-repeat='notification in node.notifications.items track by $index' ng-show='notification.isVisible === true'>" +
+                        "<span class='fa {{ notification.icon }} notification.class' ng-show='notification.icon !== \"\"'></span>" +
+                        "<span class='value'>{{ notification.value }}</span>" +
+                    "</div>" +
+                    "<div class='notification violation-notification' ng-show='node.data.violationsTotal > 0'>" +
+                        "<span class='fa fa-bolt'></span>" +
+                        "<span class='value'>{{ node.data.violationsTotal }}</span>" +
+                    "</div>" +
+                    "<div class='notification attachment-notification' ng-show='node.data.attachmentsTotal > 0'>" +
+                        "<span class='fa fa-file'></span>" +
+                        "<span class='value'>{{ node.data.attachmentsTotal }}</span>" +
+                    "</div>" +
+                "</div>" +
+            "</div>" +
+            "<div ng-show='node.isExpanded === true' ng-include=\"\'structure'\"></div>" +
+            "</div>" +
+            "</div>";
+
+        return {
+            restrict: "E",
+            scope: {
+                class: "@"
+            },
+            template:
+                "<div class='{{ \"krypton-ui-tree \" + class }}'>" +
+                    "<div class='container root'>" +
+                        "<div class='tree-item' ng-class='{ \"with-children\": node.childrenCount > 0, \"expanded\": node.isExpanded === true, \"active\": node.isSelected === true }' ng-repeat='node in initial | orderBy:\"order\" track by $index' ng-init='this.nv = this.nv + node.data.violationsAdded'>" +
+                            "<div class='tree-item-content' ng-click='expand(node)'>" +
+                                "<div class='item-label' ng-class='{ active: node.isSelected === true }' ng-click='select(node, $event)'>" +
+                                    "<span>{{ node.display }}</span>" +
+                                "</div>" +
+                                "<div class='item-controls'>" +
+                                    "<span class='expand fa fa-chevron-down' ng-click='expand(node)' ng-show='node.children.length > 0 && node.isExpanded === false'></span>" +
+                                    "<span class='collapse fa fa-chevron-up' ng-if='node.isExpanded === true' ng-click='collapse(node)'></span>" +
+                                "</div>" +
+                                "<div class='item-notifications' ng-show='node.notifications.items.length === 0'>" +
+                                    "<div class='notification {{ notification.class }}' ng-repeat='notification in node.notifications.items track by $index' ng-show='notification.isVisible === true'>" +
+                                        "<span class='fa {{ notification.icon }}' ng-show='notification.icon !== \"\"'></span>" +
+                                        "<span class='value'>{{ notification.value }}</span>" +
+                                    "</div>" +
+                                    "<div class='notification violation-notification' ng-show='node.data.violationsTotal > 0'>" +
+                                        "<span class='fa fa-bolt'></span>" +
+                                        "<span class='value'>{{ node.data.violationsTotal }}</span>" +
+                                    "</div>" +
+                                    "<div class='notification attachment-notification' ng-show='node.data.attachmentsTotal > 0'>" +
+                                        "<span class='fa fa-file'></span>" +
+                                        "<span class='value'>{{ node.data.attachmentsTotal }}</span>" +
+                                    "</div>" +
+                                "</div>" +
+                            "</div>" +
+                            "<div ng-init='this.parent = this' ng-include=\"\'structure'\" ng-show='node.isExpanded === true'></div>" +
+                        "</div>" +
+                    "</div>" +
+                "</div>",
+            link: function (scope, element, attrs) {
+
+                if (attrs.id === undefined || attrs.id === "") {
+                    $errors.add(ERROR_TYPE_ENGINE, "structure directive -> Не задан параметр - идентификатор дерева");
+                    return false;
                 }
-                return result;
-            } else
-                return input;
 
-        }
-    }]);
-angular.module("violations")
-    .filter("dateFilter", ["$log", function ($log) {
-        return function (input) {
-            return moment.unix(input).format("DD MMMM YYYY, HH:mm");
-        }
-    }]);
-angular.module("violations")
-    .filter("dateShort", ["$log", function ($log) {
-        return function (input) {
-            return moment.unix(input).format("DD.MM.YYYY");
-        }
-    }]);
-angular.module("violations")
-    .filter("day", ["$log", function ($log) {
-        return function (input) {
-            return moment.unix(input).format("DD MMMM YYYY");
-        }
-    }]);
+                if (attrs.rootKey === undefined || attrs.rootKey === "") {
+                    $errors.add(ERROR_TYPE_ENGINE, "structure directive -> Не задан параметр - значение коюча корневого элемента дерева");
+                    return false;
+                }
 
-angular
-    .module("violations")
-    .filter("filesize", [function () {
-        return function (input, precision) {
-            if (typeof precision === 'undefined') precision = 1;
-            var units = ['байт', 'кб', 'мб', 'гб', 'тв', 'пб'];
-            var number = Math.floor(Math.log(input) / Math.log(1024));
-            return (input / Math.pow(1024, Math.floor(number))).toFixed(precision) +  ' ' + units[number];
-        }
-    }]);
+                if (attrs.rootKeyDataType === undefined || attrs.rootKeyDataType === "") {
+                    $errors.add(ERROR_TYPE_ENGINE, "structure directive -> Не задан параметр - тип данных коюча корневого элемента дерева");
+                    return false;
+                }
 
-angular
-    .module("violations")
-    .filter("noDateSelected", ["$log", function ($log) {
-        return function (input) {
-            if (input === 0)
-                return "Не выбрано";
-            else
-                return input;
-        }
-    }]);
-angular.module("violations")
-    .filter("time", ["$log", function ($log) {
-        return function (input) {
-            return moment.unix(input).format("HH:mm");
-        }
-    }]);
-angular
-    .module("violations")
-    .filter('toArray', [function () {
-        return function (input) {
-            var result = [];
-            for (var index in input) {
-                result.push(input[index]);
+
+                var initial = scope.initial = {};
+                var stack = scope.stack = {};
+
+                var root = 0;
+                switch (attrs.rootKeyDataType) {
+                    case "DATA_TYPE_INTEGER":
+                        if (isNaN(parseInt(attrs.rootKey))) {
+                            $errors.add(ERROR_TYPE_ENGINE, "structure directive -> Значение ключа корневого элемента не соответствует типу данных коючевого элемента");
+                            return false;
+                        }
+                        root = parseInt(attrs.rootKey);
+                        break;
+                    case "DATA_TYPE_FLOAT":
+                        if (isNaN(parseFloat(attrs.rootKey))) {
+                            $errors.add(ERROR_TYPE_ENGINE, "structure directive -> Значение ключа корневого элемента не соответствует типу данных коючевого элемента");
+                            return false;
+                        }
+                        root = parseFloat(attrs.rootKey);
+                        break;
+                    case "DATA_TYPE_STRING":
+                        root = attrs.rootKey.toString();
+                        break;
+                    default:
+                        $errors.add(ERROR_TYPE_ENGINE, "structure directive -> Неверно задан тип данных корневого элемента");
+                        return false;
+                        break;
+                }
+
+
+                $log.log(attrs);
+
+
+                $templateCache.put("structure", template);
+                var tree = $structure.getById(attrs.id);
+                if (tree !== false) {
+                    scope.initial = tree.initial;
+                    scope.stack = tree.stack;
+                } else {
+                    $structure.register({
+                        id: attrs.id,
+                        rootKey: root,
+                        expandOnSelect: attrs.expandOnSelect !== undefined ? true : false,
+                        collapseOnDeselect: attrs.collapseOnDeselect !== undefined ? true : false
+                    });
+                }
+
+
+
+                scope.select = function (item, event) {
+                    event.stopPropagation();
+                    if (item !== undefined) {
+                        if (!$structure.selectItem(attrs.id, item.key)) {
+                            $errors.add(ERROR_TYPE_ENGINE, "structure directive -> '" + attrs.id + "' select: Не удалось выбрать элемент с идентификатором " + item.key);
+                            return false;
+                        }
+                        return true;
+                    }
+                };
+
+
+
+                scope.expand = function (item) {
+                    if (item !== undefined) {
+                        $log.log(item);
+                        if (item.isExpanded == false) {
+                            if (!$structure.expandItem(attrs.id, item.key)) {
+                                $errors.add(ERROR_TYPE_ENGINE, "structure directive -> expand: не удвлось развернуть элемент с идентификатором " + item.key);
+                                return false;
+                            }
+                        } else {
+                            if (!$structure.collapseItem(attrs.id, item.key)) {
+                                $errors.add(ERROR_TYPE_ENGINE, "structure directive -> expand: Не удалось свернуть элемент с идентификатором " + item.key);
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                };
+
             }
-            return result;
         }
     }]);
-
 angular
     .module("application", ["ngRoute", "ngCookies", "ngAnimate", "violations", "homunculus", "homunculus.ui"])
     .config(["$routeProvider", "$locationProvider", "$httpProvider", function ($routeProvider, $locationProvider, $httpProvider) {

@@ -1,8 +1,9 @@
 angular
     .module("violations")
-    .controller("UserController", ["$log", "$scope", "$location", "$users", "$violations", "$tree", "$modals", function ($log, $scope, $location, $users, $violations, $tree, $modals) {
+    .controller("UserController", ["$log", "$scope", "$location", "$users", "$violations", "$divisions", "$tree", "$modals", function ($log, $scope, $location, $users, $violations, $divisions, $tree, $modals) {
         $scope.users = $users;
         $scope.violations = $violations;
+        $scope.divisions = $divisions;
         $scope.modals = $modals;
         $scope.errors = {
             divisionId: undefined,
@@ -43,9 +44,9 @@ angular
             };
 
 
-            var length = $violations.divisions.getAll().length;
+            var length = $divisions.getAll().length;
             for (var i = 0; i < length; i++) {
-                var division = $violations.divisions.getAll()[i];
+                var division = $divisions.getAll()[i];
                 var item = $tree.addItem({
                     treeId: "current-user-tree",
                     key: division.id.value,

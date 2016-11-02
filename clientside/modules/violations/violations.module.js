@@ -1,11 +1,12 @@
 angular.module("violations", [])
-    .run(["$log", "$divisions", "$violations", "$session", "$users", "$navigation", function ($log, $divisions, $violations, $session, $users, $navigation) {
+    .run(["$log", "$divisions", "$violations", "$misc", "$session", "$users", "$navigation", function ($log, $divisions, $violations, $misc, $session, $users, $navigation) {
         //$log.log("violations module run...");
 
         $session.init(window.initialData);
         $users.users.init(window.initialData.users);
         $divisions.init(window.initialData.divisions);
         $violations.init();
+        $misc.init(window.initialData);
         $violations.violations.getNew().userId.value = $session.getCurrentUser().id.value;
         //$violations.violations.startDate = new moment().unix();
 

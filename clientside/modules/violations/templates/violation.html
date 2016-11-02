@@ -66,7 +66,7 @@
                            name="division"
                            id="current-violation-division"
                            class="width-100"
-                           ng-model="violations.divisions.getById(violations.violations.getCurrent().divisionId.value).shortTitle.value"
+                           ng-model="divisions.getById(violations.violations.getCurrent().divisionId.value).shortTitle.value"
                            disabled>
                 </div>
             </div>
@@ -82,7 +82,7 @@
                         ng-disabled="violations.violations.getCurrent().isConfirmed.value === true || user.allowEdit.value === false"
                         ng-model="violations.violations.getCurrent().eskGroupId.value"
                         ng-change="violations.violations.getCurrent()._states_.changed(true)"
-                        ng-options="group.id.value as group.title.value for group in violations.eskGroups.getAll()">
+                        ng-options="group.id.value as group.title.value for group in misc.eskGroups.getAll()">
                 </select>
             </div>
 

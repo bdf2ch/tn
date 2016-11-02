@@ -58,7 +58,7 @@
                            name=""
                            id=""
                            class="width-100"
-                           ng-model="violations.divisions.getById(violations.violations.getNew().divisionId.value).shortTitle.value"
+                           ng-model="divisions.getById(violations.violations.getNew().divisionId.value).shortTitle.value"
                            disabled>
                 </div>
                 <div class="width-10">
@@ -77,7 +77,7 @@
                         name="esk_group"
                         id="new-violation-esk-group"
                         ng-model="violations.violations.getNew().eskGroupId.value"
-                        ng-options="group.id.value as group.title.value for group in violations.eskGroups.getAll()">
+                        ng-options="group.id.value as group.title.value for group in misc.eskGroups.getAll()">
                 </select>
             </div>
 
