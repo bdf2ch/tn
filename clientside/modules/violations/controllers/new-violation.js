@@ -40,8 +40,10 @@
                 $location.url("/");
 
                 var url = "";
-                var division = $divisions.getById($session.getCurrentUser().divisionId.value);
-                var departmentId = $divisions.getDepartmentByDivisionId($session.getCurrentUser().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($session.getCurrentUser().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
+                var division = $divisions.getDepartmentByDivisionId($session.getCurrentUser().divisionId.value);
+                //var departmentId = $divisions.getDepartmentByDivisionId($session.getCurrentUser().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($session.getCurrentUser().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
+                var departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
+
 
                 if (division.storage.value === "") {
                     url = "/serverside/cancel.php";
@@ -149,11 +151,13 @@
                 $scope.isUploadInProgress = true;
                 $scope.uploaderData.violationId = $violations.violations.getNew().id.value;
 
-                var division = $divisions.getById($session.getCurrentUser().divisionId.value);
+                //var division = $divisions.getById($session.getCurrentUser().divisionId.value);
+                var division = $divisions.getById($violations.violations.getNew().divisionId.value);
                 $log.log("current division = ", division);
                 if (division.storage.value === "") {
                     $scope.uploaderLink = "/serverside/uploader.php";
-                    $scope.uploaderData.departmentId = $divisions.getDepartmentByDivisionId($session.getCurrentUser().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($session.getCurrentUser().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
+                    $log.log("departments = ", $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value));
+                    $scope.uploaderData.departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
                 } else
                     $scope.uploaderLink = division.storage.value + "/uploader/share";
                 //$log.log("uploaderlink = ", $scope.uploaderLink);

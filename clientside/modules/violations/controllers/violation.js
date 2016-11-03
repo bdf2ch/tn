@@ -18,6 +18,7 @@ angular
             description: undefined
         };
         $scope.isUploadInProgress = false;
+        $scope.uploaderLink = "test";
 
 
 
@@ -34,9 +35,21 @@ angular
 
         $scope.onBeforeUploadAttachment = function () {
             //$log.info("data = ", $scope.uploaderData);
-            $scope.uploaderData.violationId = $violations.violations.getCurrent().id.value;
+            //$scope.uploaderData.violationId = $violations.violations.getCurrent().id.value;
             $scope.uploaderData.divisionId = $violations.violations.getCurrent().divisionId.value;
+            //$scope.isUploadInProgress = true;
+
             $scope.isUploadInProgress = true;
+            $scope.uploaderData.violationId = $violations.violations.getCurrent().id.value;
+
+            //var division = $divisions.getById($session.getCurrentUser().divisionId.value);
+            var division = $divisions.getById($violations.violations.getCurrent().divisionId.value);
+            $log.log("current division = ", division);
+            if (division.storage.value === "") {
+                $scope.uploaderLink = "/serverside/uploader.php";
+                $scope.uploaderData.departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getCurrent().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getCurrent().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
+            } else
+                $scope.uploaderLink = division.storage.value + "/uploader/share";
         };
 
 

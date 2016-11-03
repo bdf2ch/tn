@@ -1,8 +1,9 @@
 angular
     .module("violations")
-    .controller("UsersController", ["$log", "$scope", "$location", "$users", "$violations", function ($log, $scope, $location, $users, $violations) {
+    .controller("UsersController", ["$log", "$scope", "$location", "$users", "$violations", "$divisions", function ($log, $scope, $location, $users, $violations, $divisions) {
         $scope.users = $users;
         $scope.violations = $violations;
+        $scope.divisions = $divisions;
 
 
         $scope.gotoNewUser = function () {

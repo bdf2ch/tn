@@ -445,7 +445,7 @@ angular.module("violations")
                                         violation.attachments.push(attachment);
                                     }
 
-                                    violations.push(violation);
+                                    //violations.push(violation);
 
                                     if (callback !== undefined && typeof callback === "function")
                                         callback(violation);

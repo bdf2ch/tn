@@ -648,6 +648,7 @@
         global $db_password;
         global $db_name;
         global $itemsOnPage;
+        global $mysqli;
         $result = array();
 
         $divisionId = $data -> divisionId;
@@ -661,6 +662,7 @@
             $limit = " LIMIT $start, $itemsOnPage";
         //echo("limit = ".$limit);
 
+        /*
         $link = mysql_connect($db_host, $db_user, $db_password);
         if (!$link) {
             echo("Error connecting DB: ".mysql_error());
@@ -678,53 +680,85 @@
             echo("Error setting encoding: ".mysql_error());
             return false;
         }
-
+        */
+        /*
         $divisions = mysql_query("SELECT * FROM divisions WHERE PATH LIKE '%/$divisionId/%'", $link);
         if (!$divisions) {
             echo("Error executing query");
             return false;
         }
+        */
+        $divisions = mysqli_query($mysqli, "SELECT * FROM divisions WHERE PATH LIKE '%/$divisionId/%'");
+        if (!$divisions) {
+            echo(json_encode(false));
+            return false;
+        }
 
         $divs = " (";
-        while ($division = mysql_fetch_assoc($divisions)) {
+        while ($division = mysqli_fetch_assoc($divisions)) {
             $divs = $divs.$division["ID"].",";
         }
         $divs = rtrim($divs, ",");
         $divs = $divs.")";
-
+        /*
         $total = mysql_query("SELECT COUNT(*) AS total FROM violations WHERE DIVISION_ID IN $divs AND DATE_HAPPENED >= $startDate AND DATE_HAPPENED <= $endDate", $link);
         if (!$total) {
             echo("Error executing query");
             return false;
         }
-
+        */
+        $total = mysqli_query($mysqli, "SELECT COUNT(*) AS total FROM violations WHERE DIVISION_ID IN $divs AND DATE_HAPPENED >= $startDate AND DATE_HAPPENED <= $endDate");
+        if (!$total) {
+            echo(json_encode(false));
+            return false;
+        }
+        /*
         $violations = mysql_query("SELECT * FROM violations WHERE DIVISION_ID IN $divs AND DATE_HAPPENED >= $startDate AND DATE_HAPPENED <= $endDate ORDER BY DATE_HAPPENED DESC ".$limit, $link);
         if (!$violations) {
             echo("Error executing query");
             return false;
         }
+        */
+        $violations = mysqli_query($mysqli, "SELECT * FROM violations WHERE DIVISION_ID IN $divs AND DATE_HAPPENED >= $startDate AND DATE_HAPPENED <= $endDate ORDER BY DATE_HAPPENED DESC ".$limit);
+        if (!$violations) {
+            echo(json_encode(false));
+            return false;
+        }
 
-        while ($violation = mysql_fetch_assoc($violations)) {
+        while ($violation = mysqli_fetch_assoc($violations)) {
             $violationItem = new stdClass();
             $violationItem -> attachments = array();
             $violationItem -> violation = $violation;
-            $violationItem -> total = intval(mysql_fetch_assoc($total)["total"]);
+            $violationItem -> total = intval(mysqli_fetch_assoc($total)["total"]);
             $userId = intval($violation["USER_ID"]);
-
+            /*
             $user = mysql_query("SELECT * FROM users WHERE ID = $userId LIMIT 1", $link);
             if (!$user) {
                 echo("Error executing query");
                 return false;
             }
-            $violationItem -> user = mysql_fetch_assoc($user);
+            */
+            $user = mysqli_query($mysqli, "SELECT * FROM users WHERE ID = $userId LIMIT 1");
+            if (!$user) {
+                echo(json_encode(false));
+                return false;
+            }
+            $violationItem -> user = mysqli_fetch_assoc($user);
 
             $violationId = intval($violation["ID"]);
+            /*
             $attachments = mysql_query("SELECT * FROM attachments WHERE VIOLATION_ID = $violationId", $link);
             if (!$attachments) {
                 echo("Error executing query");
                 return false;
             }
-            while ($attachment = mysql_fetch_assoc($attachments)) {
+            */
+            $attachments = mysqli_query($mysqli, "SELECT * FROM attachments WHERE VIOLATION_ID = $violationId");
+            if (!$attachments) {
+                echo(json_encode(false));
+                return false;
+            }
+            while ($attachment = mysqli_fetch_assoc($attachments)) {
                 array_push($violationItem -> attachments, $attachment);
             }
 
@@ -744,6 +778,7 @@
         global $db_password;
         global $db_name;
         global $ldap_host;
+        global $mysqli;
 
         $login = $data -> login;
         $password = $data -> password;
@@ -792,6 +827,7 @@
         $fname = $fio[2];
         $email = $result[0]["mail"][0];
 
+        /*
         $link = mysql_connect($db_host, $db_user, $db_password);
         if (!$link) {
             echo("Error connecting DB: ".mysql_error());
@@ -809,16 +845,23 @@
             echo("Error setting encoding: ".mysql_error());
             return false;
         }
-
+        */
+        /*
         $query = mysql_query("SELECT * FROM users WHERE LOGIN = '$login' LIMIT 1", $link);
         if (!$query) {
             //echo("Ошибка при выполнении запроса");
             echo(json_encode(false));
             return false;
         }
+        */
+        $query = mysqli_query($mysqli, "SELECT * FROM users WHERE LOGIN = '$login' LIMIT 1");
+        if (!$query) {
+            echo(json_encode(false));
+            return false;
+        }
 
-        if (mysql_num_rows($query) > 0) {
-            $result = mysql_fetch_assoc($query);
+        if (mysqli_num_rows($query) > 0) {
+            $result = mysqli_fetch_assoc($query);
             setcookie("tn_user_id", $result["ID"], time() + 2592000, "/");
             echo(json_encode($result));
         } else
@@ -847,6 +890,7 @@
         global $db_user;
         global $db_password;
         global $db_name;
+        global $mysqli;
 
         $divisionId = $data -> divisionId;
         $surname = $data -> surname;
@@ -859,6 +903,7 @@
         $allowEdit = $data -> allowEdit;
         $allowConfirm = $data -> allowConfirm;
 
+        /*
         $link = mysql_connect($db_host, $db_user, $db_password);
         if (!$link) {
             echo("Error connecting DB: ".mysql_error());
@@ -876,21 +921,40 @@
             echo("Error setting encoding: ".mysql_error());
             return false;
         }
+        */
 
+        /*
         $user = mysql_query("INSERT INTO users (DIVISION_ID, SURNAME, NAME, FNAME, EMAIL, LOGIN, PASSWORD, IS_ADMINISTRATOR, ALLOW_EDIT, ALLOW_CONFIRM) VALUES ($divisionId, '$surname', '$name', '$fname', '$email', '$login', '$password', $isAdministrator, $allowEdit, $allowConfirm)", $link);
         if (!$user) {
             echo("Error executing query: ".mysql_error());
             return false;
         }
+        */
 
-        $id = mysql_insert_id();
+        $user = mysqli_query($mysqli, "INSERT INTO users (DIVISION_ID, SURNAME, NAME, FNAME, EMAIL, LOGIN, PASSWORD, IS_ADMINISTRATOR, ALLOW_EDIT, ALLOW_CONFIRM) VALUES ($divisionId, '$surname', '$name', '$fname', '$email', '$login', '$password', $isAdministrator, $allowEdit, $allowConfirm)");
+        if (!$user) {
+            echo(json_encode(false));
+            return false;
+        }
+
+
+        $id = mysqli_insert_id($mysqli);
+        /*
         $user = mysql_query("SELECT ID, DIVISION_ID, SURNAME, NAME, FNAME, EMAIL, LOGIN, PASSWORD, IS_ADMINISTRATOR, ALLOW_EDIT, ALLOW_CONFIRM FROM users WHERE ID = $id", $link);
         if (!$user) {
             echo("Error executing query: ".mysql_error());
             return false;
         }
+        */
 
-        echo(json_encode(mysql_fetch_assoc($user)));
+
+        $user = mysqli_query($mysqli, "SELECT ID, DIVISION_ID, SURNAME, NAME, FNAME, EMAIL, LOGIN, PASSWORD, IS_ADMINISTRATOR, ALLOW_EDIT, ALLOW_CONFIRM FROM users WHERE ID = $id");
+        if (!$user) {
+            echo(json_encode(false));
+            return false;
+        }
+
+        echo(json_encode(mysqli_fetch_assoc($user)));
         return true;
     }
 
@@ -903,6 +967,7 @@
         global $db_user;
         global $db_password;
         global $db_name;
+        global $mysqli;
 
         $id = $data -> id;
         $divisionId = $data -> divisionId;
@@ -916,6 +981,7 @@
         $allowEdit = $data -> allowEdit;
         $allowConfirm = $data -> allowConfirm;
 
+        /*
         $link = mysql_connect($db_host, $db_user, $db_password);
         if (!$link) {
             echo("Error connecting DB: ".mysql_error());
@@ -933,20 +999,34 @@
             echo("Error setting encoding: ".mysql_error());
             return false;
         }
+        */
 
+        /*
         $user = mysql_query("UPDATE users SET DIVISION_ID = $divisionId, SURNAME = '$surname', NAME = '$name', FNAME = '$fname', EMAIL = '$email', LOGIN = '$login', PASSWORD = '$password', IS_ADMINISTRATOR = $isAdministrator, ALLOW_EDIT = $allowEdit, ALLOW_CONFIRM = $allowConfirm WHERE ID = $id", $link);
         if (!$user) {
             echo("Error executing query: ".mysql_error());
             return false;
         }
-
+        */
+        $user = mysqli_query($mysqli, "UPDATE users SET DIVISION_ID = $divisionId, SURNAME = '$surname', NAME = '$name', FNAME = '$fname', EMAIL = '$email', LOGIN = '$login', PASSWORD = '$password', IS_ADMINISTRATOR = $isAdministrator, ALLOW_EDIT = $allowEdit, ALLOW_CONFIRM = $allowConfirm WHERE ID = $id");
+        if (!$user) {
+            echo(json_encode(false));
+            return false;
+        }
+        /*
         $user = mysql_query("SELECT ID, DIVISION_ID, SURNAME, NAME, FNAME, EMAIL, LOGIN, PASSWORD, IS_ADMINISTRATOR, ALLOW_EDIT, ALLOW_CONFIRM FROM users WHERE ID = $id", $link);
         if (!$user) {
             echo("Error executing query: ".mysql_error());
             return false;
         }
+        */
+        $user = mysqli_query($mysqli, "SELECT ID, DIVISION_ID, SURNAME, NAME, FNAME, EMAIL, LOGIN, PASSWORD, IS_ADMINISTRATOR, ALLOW_EDIT, ALLOW_CONFIRM FROM users WHERE ID = $id");
+        if (!$user) {
+            echo(json_encode(false));
+            return false;
+        }
 
-        echo(json_encode(mysql_fetch_assoc($user)));
+        echo(json_encode(mysqli_fetch_assoc($user)));
         return true;
     }
 
@@ -959,6 +1039,7 @@
         global $db_user;
         global $db_password;
         global $db_name;
+        global $mysqli;
 
         $fullTitle = $data -> fullTitle;
         $shortTitle = $data -> shortTitle;
@@ -967,6 +1048,7 @@
         $isDepartment = $data -> isDepartment;
         $path = "";
 
+        /*
         $link = mysql_connect($db_host, $db_user, $db_password);
         if (!$link) {
             echo("Error connecting DB: ".mysql_error());
@@ -984,40 +1066,67 @@
             echo("Error setting encoding: ".mysql_error());
             return false;
         }
+        */
 
         if ($parentId != 0) {
+            /*
             $parent = mysql_query("SELECT * FROM divisions WHERE id = $parentId", $link);
             if (!$parent) {
                 echo("Error executing query: ".mysql_error());
                 return false;
             }
-            if (mysql_num_rows($parent) > 0) {
-                $par = mysql_fetch_assoc($parent);
+            */
+            $parent = mysqli_query($mysqli, "SELECT * FROM divisions WHERE id = $parentId");
+            if (!$parent) {
+                echo(json_encode(false));
+                return false;
+            }
+            if (mysqli_num_rows($parent) > 0) {
+                $par = mysqli_fetch_assoc($parent);
                 $path = $par["PATH"];
             }
         }
-
+        /*
         $division = mysql_query("INSERT INTO divisions (PARENT_ID, TITLE_SHORT, TITLE_FULL, FILE_STORAGE_HOST, IS_DEPARTMENT, PATH) VALUES ($parentId, '$shortTitle', '$fullTitle', '$storage', $isDepartment, '')", $link);
         if (!$division) {
             echo("Error executing query: ".mysql_error());
             return false;
         }
+        */
+        $division = mysqli_query($mysqli, "INSERT INTO divisions (PARENT_ID, TITLE_SHORT, TITLE_FULL, FILE_STORAGE_HOST, IS_DEPARTMENT, PATH) VALUES ($parentId, '$shortTitle', '$fullTitle', '$storage', $isDepartment, '')");
+        if (!$division) {
+            echo(json_encode(false));
+            return false;
+        }
 
-        $id = mysql_insert_id();
+        $id = mysqli_insert_id($mysqli);
         $path .= $id."/";
+        /*
         $divUpd = mysql_query("UPDATE divisions SET PATH = '$path' WHERE ID = $id", $link);
         if (!$divUpd) {
             echo("Error executing query: ".mysql_error());
             return false;
         }
-
+        */
+        $divUpd = mysqli_query($mysqli, "UPDATE divisions SET PATH = '$path' WHERE ID = $id");
+        if (!$divUpd) {
+            echo(json_encode(false));
+            return false;
+        }
+        /*
         $division  = mysql_query("SELECT * FROM divisions WHERE ID = $id", $link);
         if (!$division) {
             echo("Error executing query: ".mysql_error());
             return false;
         }
+        */
+        $division = mysqli_query($mysqli, "SELECT * FROM divisions WHERE ID = $id");
+        if (!$division) {
+            echo(json_encode(false));
+            return false;
+        }
 
-        echo(json_encode(mysql_fetch_assoc($division)));
+        echo(json_encode(mysqli_fetch_assoc($division)));
         return true;
     }
 
@@ -1030,6 +1139,7 @@
         global $db_user;
         global $db_password;
         global $db_name;
+        global $mysqli;
 
         $id = $data -> id;
         $fullTitle = $data -> fullTitle;
@@ -1039,6 +1149,7 @@
         $storage = $data -> storage;
         $isDepartment = $data -> isDepartment;
 
+        /*
         $link = mysql_connect($db_host, $db_user, $db_password);
         if (!$link) {
             echo("Error connecting DB: ".mysql_error());
@@ -1056,20 +1167,33 @@
             echo("Error setting encoding: ".mysql_error());
             return false;
         }
-
+        */
+        /*
         $division = mysql_query("UPDATE divisions SET TITLE_SHORT = '$shortTitle', TITLE_FULL = '$fullTitle', FILE_STORAGE_HOST = '$storage', IS_DEPARTMENT = $isDepartment WHERE ID = $id", $link);
         if (!$division) {
             echo("Error executing query: ".mysql_error());
             return false;
         }
-
+        */
+        $division = mysqli_query($mysqli, "UPDATE divisions SET TITLE_SHORT = '$shortTitle', TITLE_FULL = '$fullTitle', FILE_STORAGE_HOST = '$storage', IS_DEPARTMENT = $isDepartment WHERE ID = $id");
+        if (!$division) {
+            echo(json_encode(false));
+            return false;
+        }
+        /*
         $attachments = mysql_query("SELECT * FROM attachments WHERE DIVISION_ID = $id", $link);
         if (!$attachments) {
             echo("Error executing attachments query: ".mysql_error());
             return false;
         }
+        */
+        $attachments = mysqli_query($mysqli, "SELECT * FROM attachments WHERE DIVISION_ID = $id");
+        if (!$attachments) {
+            echo(json_encode(false));
+            return false;
+        }
 
-        while ($attachment = mysql_fetch_assoc($attachments)) {
+        while ($attachment = mysqli_fetch_assoc($attachments)) {
             $attachmentId = $attachment["ID"];
             $violationId = $attachment["VIOLATION_ID"];
             $title = $attachment["TITLE"];
@@ -1077,20 +1201,33 @@
                 $link = $storage."/uploads/violations/".$violationId."/".$title;
             else
                 $link = "/uploads/violations/".$departmentId."/".$violationId."/".$title;
+            /*
             $url = mysql_query("UPDATE attachments SET URL = '$link' WHERE ID = $attachmentId", $link);
             if (!$url) {
                 echo("Error executing url query: ".mysql_error());
                 return false;
             }
+            */
+            $url = mysqli_query($mysqli, "UPDATE attachments SET URL = '$link' WHERE ID = $attachmentId");
+            if (!$url) {
+                echo(json_encode(false));
+                return false;
+            }
         }
-
+        /*
         $division = mysql_query("SELECT * FROM divisions WHERE ID = $id", $link);
         if (!$division) {
             echo("Error executing query: ".mysql_error());
             return false;
         }
+        */
+        $division = mysqli_query($mysqli, "SELECT * FROM divisions WHERE ID = $id");
+        if (!$division) {
+            echo(json_encode(false));
+            return false;
+        }
 
-        echo(json_encode(mysql_fetch_assoc($division)));
+        echo(json_encode(mysqli_fetch_assoc($division)));
         return true;
     }
 

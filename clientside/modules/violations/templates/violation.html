@@ -131,7 +131,7 @@
                         id="userfile"
                         ng-disabled="isUploadComplete === false"
                         uploader
-                        uploader-url="/serverside/uploader.php"
+                        uploader-url="{{ uploaderLink }}"
                         uploader-data="uploaderData"
                         uploader-on-before-upload="onBeforeUploadAttachment"
                         uploader-on-complete-upload="onCompleteUploadAttachment"/>
