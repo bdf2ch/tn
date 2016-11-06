@@ -49,7 +49,7 @@ angular
                 $scope.uploaderLink = "/serverside/uploader.php";
                 $scope.uploaderData.departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getCurrent().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getCurrent().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
             } else
-                $scope.uploaderLink = division.storage.value + "/uploader/share";
+                $scope.uploaderLink = division.storage.value + "/upload/share";
         };
 
 

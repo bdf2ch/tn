@@ -980,47 +980,15 @@
         $isAdministrator = $data -> isAdministrator;
         $allowEdit = $data -> allowEdit;
         $allowConfirm = $data -> allowConfirm;
+        $isLDAPEnabled = $data -> isLDAPEnabled;
 
-        /*
-        $link = mysql_connect($db_host, $db_user, $db_password);
-        if (!$link) {
-            echo("Error connecting DB: ".mysql_error());
-            return false;
-        }
-
-        $db = mysql_select_db($db_name, $link);
-        if (!$db) {
-            echo("Error selecting DB: ".mysql_error());
-            return false;
-        }
-
-        $encoding = mysql_query("SET NAMES utf8");
-        if (!$encoding) {
-            echo("Error setting encoding: ".mysql_error());
-            return false;
-        }
-        */
-
-        /*
-        $user = mysql_query("UPDATE users SET DIVISION_ID = $divisionId, SURNAME = '$surname', NAME = '$name', FNAME = '$fname', EMAIL = '$email', LOGIN = '$login', PASSWORD = '$password', IS_ADMINISTRATOR = $isAdministrator, ALLOW_EDIT = $allowEdit, ALLOW_CONFIRM = $allowConfirm WHERE ID = $id", $link);
-        if (!$user) {
-            echo("Error executing query: ".mysql_error());
-            return false;
-        }
-        */
-        $user = mysqli_query($mysqli, "UPDATE users SET DIVISION_ID = $divisionId, SURNAME = '$surname', NAME = '$name', FNAME = '$fname', EMAIL = '$email', LOGIN = '$login', PASSWORD = '$password', IS_ADMINISTRATOR = $isAdministrator, ALLOW_EDIT = $allowEdit, ALLOW_CONFIRM = $allowConfirm WHERE ID = $id");
+        $user = mysqli_query($mysqli, "UPDATE users SET DIVISION_ID = $divisionId, SURNAME = '$surname', NAME = '$name', FNAME = '$fname', EMAIL = '$email', LOGIN = '$login', PASSWORD = '$password', IS_ADMINISTRATOR = $isAdministrator, ALLOW_EDIT = $allowEdit, ALLOW_CONFIRM = $allowConfirm, IS_LDAP_ENABLED = $isLDAPEnabled WHERE ID = $id");
         if (!$user) {
             echo(json_encode(false));
             return false;
         }
-        /*
-        $user = mysql_query("SELECT ID, DIVISION_ID, SURNAME, NAME, FNAME, EMAIL, LOGIN, PASSWORD, IS_ADMINISTRATOR, ALLOW_EDIT, ALLOW_CONFIRM FROM users WHERE ID = $id", $link);
-        if (!$user) {
-            echo("Error executing query: ".mysql_error());
-            return false;
-        }
-        */
-        $user = mysqli_query($mysqli, "SELECT ID, DIVISION_ID, SURNAME, NAME, FNAME, EMAIL, LOGIN, PASSWORD, IS_ADMINISTRATOR, ALLOW_EDIT, ALLOW_CONFIRM FROM users WHERE ID = $id");
+
+        $user = mysqli_query($mysqli, "SELECT ID, DIVISION_ID, SURNAME, NAME, FNAME, EMAIL, LOGIN, PASSWORD, IS_ADMINISTRATOR, ALLOW_EDIT, ALLOW_CONFIRM, IS_LDAP_ENABLED FROM users WHERE ID = $id");
         if (!$user) {
             echo(json_encode(false));
             return false;

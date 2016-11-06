@@ -90,18 +90,39 @@ angular
                 $scope.errors.fname = "Вы не указали отчество";
             if ($users.users.getNew().email.value === "")
                 $scope.errors.email = "Вы не указали e-mail";
-            if ($users.users.getNew().login.value === "")
-                $scope.errors.login = "Вы не указали учетную запись в AD";
-            if ($users.users.getNew().password.value === "")
-                $scope.errors.password = "Вы не указали пароль";
+
+            if ($users.users.getNew().isLDAPEnabled.value === true) {
+                if ($users.users.getNew().login.value === "")
+                    $scope.errors.login = "Вы не указали учетную запись Active Directory";
+            } else {
+                if ($users.users.getNew().password.value === "")
+                    $scope.errors.password = "Вы не указали пароль";
+            }
 
             if ($scope.errors.divisionId === undefined && $scope.errors.surname === undefined &&
                 $scope.errors.name === undefined && $scope.errors.fname === undefined &&
                 $scope.errors.email === undefined && $scope.errors.login === undefined && $scope.errors.password === undefined) {
+                if ($users.users.getNew().isLDAPEnabled.value === true) {
+                    if ($scope.errors.login === undefined)
+                        $users.users.add(function () {
+                            $location.url("/users");
+                            $users.users.getNew()._backup_.restore();
+                        });
+                } else {
+                    if ($scope.errors.password === undefined)
+                        $users.users.add(function () {
+                            $location.url("/users");
+                            $users.users.getNew()._backup_.restore();
+                        });
+                }
+
+
+                /*
                 $users.users.add(function () {
                     $location.url("/users");
                     $users.users.getNew()._backup_.restore();
                 });
+                */
             }
         };
 

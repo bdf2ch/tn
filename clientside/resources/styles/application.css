@@ -316,6 +316,10 @@ table tfoot td.buttoned:hover {
 #edit-user #user-permissions #current-violation-files .attachment.ng-enter.ng-enter-active {
   background: #C8E6C9;
 }
+#new-user input[type="radio"],
+#edit-user input[type="radio"] {
+  display: inline-block;
+}
 /**
 *
 **/
@@ -1181,4 +1185,20 @@ body {
   float: right;
   line-height: 35px;
   font-size: 15px;
+}
+.block-title {
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-family: "Roboto";
+  font-size: 15px;
+  text-transform: uppercase;
+  color: #00796B;
+}
+.block-title hr {
+  margin-top: 3px;
+  margin-bottom: 0px;
+  color: lightgrey;
+  border-top: 1px solid #00796B;
 }

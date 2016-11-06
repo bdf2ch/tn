@@ -18,6 +18,10 @@
             <div class="row" ng-show=""></div>
 
 
+            <div class="row block-title">
+                Личные данные <hr>
+            </div>
+
             <div class="row padding-10">
                 <label class="width-100" for="new-user-surname">
                     Фамилия
@@ -57,6 +61,11 @@
                        ng-model="users.users.getCurrent().fname.value">
             </div>
 
+
+
+            <div class="row block-title">
+                Контактные данные <hr>
+            </div>
             <div class="row padding-10">
                 <label class="width-100" for="new-user-email">
                     E-mail
@@ -70,32 +79,11 @@
                        ng-model="users.users.getCurrent().email.value">
             </div>
 
-            <div class="row padding-10">
-                <label class="width-100" for="current-user-login">
-                    Учетная запись в AD
-                    <span class="right form-error" ng-show="errors.login !== undefined">{{ errors.login }}</span>
-                </label>
-                <input type="text"
-                       name="password"
-                       id="current-user-login"
-                       class="width-100"
-                       ng-change="users.users.getCurrent()._states_.changed(true)"
-                       ng-model="users.users.getCurrent().login.value">
-            </div>
 
-            <div class="row padding-10">
-                <label class="width-100" for="new-user-password">
-                    Пароль
-                    <span class="right form-error" ng-show="errors.password !== undefined">{{ errors.password }}</span>
-                </label>
-                <input type="text"
-                       name="password"
-                       id="new-user-password"
-                       class="width-100"
-                       ng-change="users.users.getCurrent()._states_.changed(true)"
-                       ng-model="users.users.getCurrent().password.value">
-            </div>
 
+            <div class="row block-title">
+                Структурное подразделение <hr>
+            </div>
             <div class="row padding-10">
                 <label class="width-100" for="new-user-division">
                     Структурное подразделение
@@ -116,6 +104,56 @@
                     </button>
                 </div>
             </div>
+
+
+
+            <div class="row block-title">
+                Автризация <hr>
+            </div>
+            <div class="row padding-10">
+                <div class="width-50">
+                    <input type="radio"
+                           ng-model="users.users.getCurrent().isLDAPEnabled.value"
+                           ng-value="false"
+                           ng-change="users.users.getCurrent()._states_.changed(true)"> Используя электронную почту
+                </div>
+                <div class="width-50">
+                    <input type="radio"
+                           ng-model="users.users.getCurrent().isLDAPEnabled.value"
+                           ng-value="true"
+                           ng-change="users.users.getCurrent()._states_.changed(true)"> Используя учетную запись Active Directory
+                </div>
+            </div>
+
+
+
+            <div class="row padding-10" ng-show="users.users.getCurrent().isLDAPEnabled.value === true">
+                <label class="width-100" for="current-user-login">
+                    Учетная запись Active Directory
+                    <span class="right form-error" ng-show="errors.login !== undefined">{{ errors.login }}</span>
+                </label>
+                <input type="text"
+                       name="password"
+                       id="current-user-login"
+                       class="width-100"
+                       ng-change="users.users.getCurrent()._states_.changed(true)"
+                       ng-model="users.users.getCurrent().login.value">
+            </div>
+
+            <div class="row padding-10" ng-show="users.users.getCurrent().isLDAPEnabled.value === false">
+                <label class="width-100" for="new-user-password">
+                    Пароль
+                    <span class="right form-error" ng-show="errors.password !== undefined">{{ errors.password }}</span>
+                </label>
+                <input type="text"
+                       name="password"
+                       id="new-user-password"
+                       class="width-100"
+                       ng-change="users.users.getCurrent()._states_.changed(true)"
+                       ng-model="users.users.getCurrent().password.value">
+            </div>
+
+
         </div>
     </div>
     <div id="user-permissions" class="block">

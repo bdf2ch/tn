@@ -709,7 +709,8 @@ angular
                             password: currentUser.password.value,
                             isAdministrator: currentUser.isAdministrator.value === true ? 1 : 0,
                             allowEdit: currentUser.allowEdit.value === true ? 1: 0,
-                            allowConfirm: currentUser.allowConfirm.value === true ? 1 : 0
+                            allowConfirm: currentUser.allowConfirm.value === true ? 1 : 0,
+                            isLDAPEnabled: currentUser.isLDAPEnabled.value === true ? 1 : 0
                         }
                     };
 

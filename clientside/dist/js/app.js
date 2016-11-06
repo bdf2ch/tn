@@ -108,6 +108,820 @@ $classesInjector
     });
 angular
     .module("violations")
+    .controller("DivisionsController", ["$log", "$scope", "$divisions", "$violations", "$tree", "$modals", function ($log, $scope, $divisions, $violations, $tree, $modals) {
+        $scope.divisions = $divisions;
+        $scope.violations = $violations;
+        $scope.modals = $modals;
+        $scope.errors = {
+            fullTitle: undefined,
+            shortTitle: undefined
+        };
+
+
+        $scope.openNewDivisionModal = function () {
+            $modals.open("new-division-modal");
+        };
+
+
+        $scope.cancelAddDivision = function () {
+            $divisions.getNew()._backup_.restore();
+            for (var index in $scope.errors) {
+                $scope.errors[index] = undefined;
+            }
+        };
+
+
+        $scope.add = function () {
+            for (var index in $scope.errors) {
+                $scope.errors[index] = undefined;
+            }
+
+            if ($divisions.getNew().shortTitle.value === "")
+                $scope.errors.shortTitle = "Вы не указали краткое наименование";
+
+            if ($divisions.getNew().fullTitle.value === "")
+                $scope.errors.fullTitle = "Вы не указали полное наименование";
+
+            if ($scope.errors.fullTitle == undefined && $scope.errors.shortTitle === undefined) {
+                $divisions.add(function (division) {
+                    $modals.close();
+                    $tree.addItem({
+                        treeId: "divisions-tree",
+                        key: division.id.value,
+                        parentKey: division.parentId.value,
+                        display: division.shortTitle.value
+                    });
+                });
+            }
+        };
+
+
+        $scope.openEditDivisionModal = function () {
+            $modals.open("edit-division-modal");
+        };
+
+
+        $scope.cancelEditDivision = function () {
+            for (var index in $scope.errors) {
+                $scope.errors[index] = undefined;
+            }
+            $divisions.getCurrent()._backup_.restore();
+            $divisions.getCurrent()._states_.changed(false);
+        };
+
+
+        $scope.save = function () {
+            for (var index in $scope.errors) {
+                $scope.errors[index] = undefined;
+            }
+
+            if ($divisions.getCurrent().shortTitle.value === "")
+                $scope.errors.shortTitle = "Вы не указали краткое наименование";
+
+            if ($divisions.getCurrent().fullTitle.value === "")
+                $scope.errors.fullTitle = "Вы не указали полное наименование";
+
+            if ($scope.errors.fullTitle == undefined && $scope.errors.shortTitle === undefined) {
+                $divisions.edit(function (division) {
+                    $modals.close();
+                    $tree.getItemByKey("divisions-tree", division.id.value).display = division.shortTitle.value;
+                });
+            }
+        };
+
+
+        if (!$tree.getById("divisions-tree")) {
+            //$log.log("NO TREE");
+            var divisionsTree = $tree.register({
+                id: "divisions-tree",
+                rootKey: 0,
+                expandOnSelect: true,
+                collapseOnDeselect: true,
+                onSelect: function (division) {
+                    if (division.isSelected === true) {
+                        $divisions.select(division.key);
+                        $log.log("current divivison  = ", $divisions.getCurrent());
+                        $divisions.getNew().parentId.value = division.key;
+                    } else
+                        $divisions.getNew().parentId.value = 0;
+                }
+            });
+
+
+            var length = $divisions.getAll().length;
+            for (var i = 0; i < length; i++) {
+                var division = $divisions.getAll()[i];
+                var item = $tree.addItem({
+                    treeId: "divisions-tree",
+                    key: division.id.value,
+                    parentKey: division.parentId.value,
+                    display: division.shortTitle.value,
+                    order: division.sortId.value
+                });
+                if (division.id.value === 1) {
+                    item.isExpanded = true;
+                }
+            }
+        }
+    }]);
+
+angular
+    .module("violations")
+    .controller("HeaderController", ["$log", "$scope", "$session", "$navigation", "$window", function ($log, $scope, $session, $navigation, $window) {
+        $scope.session = $session;
+        $scope.navigation = $navigation;
+
+
+        $scope.logout = function () {
+            $session.logout(function () {
+                $window.location.reload(true);
+            });
+        };
+    }]);
+angular
+    .module("violations")
+    .controller("HelpController", ["$scope", "$session", function ($scope, $session) {
+        $scope.session = $session;
+    }]);
+
+angular
+    .module("violations")
+    .controller("NewUserController", ["$log", "$scope", "$http", "$location", "$users", "$violations", "$divisions", "$modals", "$tree", function ($log, $scope, $http, $location, $users, $violations, $divisions, $modals, $tree) {
+        $scope.users = $users;
+        $scope.violations = $violations;
+        $scope.divisions = $divisions;
+        $scope.modals = $modals;
+        $scope.errors = {
+            surname: undefined,
+            name: undefined,
+            fname: undefined,
+            divisionId: undefined,
+            email: undefined,
+            login: undefined,
+            password: undefined
+        };
+
+
+
+        if (!$tree.getById("new-user-tree")) {
+            var newUserTree = $tree.register({
+                id: "new-user-tree",
+                rootKey: 0,
+                expandOnSelect: true,
+                collapseOnDeselect: true
+            });
+
+            newUserTree.onSelect = function (item) {
+                //$log.log("selected division = ", item);
+                $scope.selectDivision(item);
+            };
+
+
+            var length = $divisions.getAll().length;
+            for (var i = 0; i < length; i++) {
+                var division = $divisions.getAll()[i];
+                var item = $tree.addItem({
+                    treeId: "new-user-tree",
+                    key: division.id.value,
+                    parentKey: division.parentId.value,
+                    display: division.shortTitle.value,
+                    order: division.sortId.value
+                });
+                if (division.id.value === 1) {
+                    item.isExpanded = true;
+                }
+            }
+        }
+
+
+
+        $scope.selectDivision = function (division) {
+            $users.users.getNew().divisionId.value = division.key;
+        };
+
+
+
+        $scope.openSelectDivisionModal = function () {
+            $modals.open("new-user-division-modal");
+        };
+
+
+        $scope.cancel = function () {
+            $location.url("/users");
+            $users.users.getNew().divisionId.value = 0;
+            $users.users.getNew().surname.value = "";
+            $users.users.getNew().name.value = "";
+            $users.users.getNew().fname.value = "";
+            $users.users.getNew().email.value = "";
+            $users.users.getNew().login.value = "";
+            $users.users.getNew().password.value = "";
+            $users.users.getNew().isAdministrator.value = false;
+            $users.users.getNew().allowEdit.value = false;
+            $users.users.getNew().allowConfirm.value = false;
+        };
+
+
+        $scope.add = function () {
+            for (var index in $scope.errors) {
+                $scope.errors[index] = undefined;
+            }
+
+            if ($users.users.getNew().divisionId.value === 0)
+                $scope.errors.divisionId = "Вы не выбрали структурное подразделение";
+            if ($users.users.getNew().surname.value === "")
+                $scope.errors.surname = "Вы не указали фамилию";
+            if ($users.users.getNew().name.value === "")
+                $scope.errors.name = "Вы не указали имя";
+            if ($users.users.getNew().fname.value === "")
+                $scope.errors.fname = "Вы не указали отчество";
+            if ($users.users.getNew().email.value === "")
+                $scope.errors.email = "Вы не указали e-mail";
+            if ($users.users.getNew().login.value === "")
+                $scope.errors.login = "Вы не указали учетную запись в AD";
+            if ($users.users.getNew().password.value === "")
+                $scope.errors.password = "Вы не указали пароль";
+
+            if ($scope.errors.divisionId === undefined && $scope.errors.surname === undefined &&
+                $scope.errors.name === undefined && $scope.errors.fname === undefined &&
+                $scope.errors.email === undefined && $scope.errors.login === undefined && $scope.errors.password === undefined) {
+                $users.users.add(function () {
+                    $location.url("/users");
+                    $users.users.getNew()._backup_.restore();
+                });
+            }
+        };
+
+    }]);
+"use strict";
+
+
+(function () {
+    angular
+        .module("violations")
+        .controller("NewViolationController", ["$log", "$scope", "$violations", "$divisions", "$misc", "$factory", "$tree", "$location", "$modals", "$session", function ($log, $scope, $violations, $divisions, $misc, $factory, $tree, $location, $modals, $session) {
+            $scope.violations = $violations;
+            $scope.divisions = $divisions;
+            $scope.misc = $misc;
+            $scope.modals = $modals;
+            $scope.submitted = false;
+            $scope.isUploadInProgress = false;
+            $scope.errors = {
+                date: undefined,
+                divisionId: undefined,
+                eskGroupId: undefined,
+                eskObject: undefined,
+                description: undefined
+            };
+            $scope.uploaderData = {
+                serviceId: "violations",
+                violationId: $violations.violations.getNew().id.value,
+                divisionId: $violations.violations.getNew().divisionId.value
+            };
+            $scope.today = new moment().hours(23).minutes(59).seconds(59).unix();
+            $scope.hours = 0;
+            $scope.minutes = 0;
+            $scope.uploaderLink = "test";
+
+
+
+            $scope.openSelectDivisionModal = function () {
+                $modals.open("new-violation-division-modal");
+            };
+
+
+
+            $scope.gotoMain = function () {
+                $location.url("/");
+
+                var url = "";
+                var division = $divisions.getDepartmentByDivisionId($session.getCurrentUser().divisionId.value);
+                //var departmentId = $divisions.getDepartmentByDivisionId($session.getCurrentUser().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($session.getCurrentUser().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
+                var departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
+
+
+                if (division.storage.value === "") {
+                    url = "/serverside/cancel.php";
+                } else
+                    url = division.storage.value + "/cancel.php";
+
+                if ($violations.violations.getNew().id.value !== 0) {
+                    $violations.violations.cancel($violations.violations.getNew().id.value, url, departmentId, function () {
+                        $violations.attachments.getNew().splice(0, $violations.attachments.getNew().length);
+                    });
+                }
+
+                if ($divisions.getCurrent() !== undefined && $divisions.getCurrent().id.value === 1) {
+                    $violations.violations.getNew().divisionId.value = 0;
+                }
+            };
+
+
+
+            $scope.onHoursChange = function () {
+                var exp = new RegExp("^(0|[0-9]|[0-2][0-9])$");
+                if (exp.test($scope.hours)) {
+                    $violations.violations.getNew().happened.value = moment.unix($violations.violations.getNew().happened.value).hours($scope.hours).unix();
+                } else {
+                    $scope.hours = 0;
+                    $violations.violations.getNew().happened.value = moment.unix($violations.violations.getNew().happened.value).hours($scope.hours).unix();
+                }
+            };
+
+
+
+            $scope.onMinutesChange = function () {
+                var exp = new RegExp("^(0|[0-9]|[0-5][0-9])$");
+                if (exp.test($scope.minutes)) {
+                    $violations.violations.getNew().happened.value = moment.unix($violations.violations.getNew().happened.value).minutes($scope.minutes).unix();
+                } else {
+                    $scope.minutes = 0;
+                    $violations.violations.getNew().happened.value = moment.unix($violations.violations.getNew().happened.value).minutes($scope.minutes).unix();
+                }
+            };
+
+
+
+            $scope.add = function () {
+                for (var error in $scope.errors) {
+                    $scope.errors[error] = undefined;
+                }
+
+                if ($violations.violations.getNew().divisionId.value === 0)
+                    $scope.errors.divisionId = "Вы не выбрали структурное подразделение";
+                if ($violations.violations.getNew().eskGroupId.value === 0)
+                    $scope.errors.eskGroupId = "Вы не выбрали группу ЭСК";
+                if ($violations.violations.getNew().eskObject.value === "")
+                    $scope.errors.eskObject = "Вы не указали объект ЭСК";
+                if ($violations.violations.getNew().description.value === "")
+                    $scope.errors.description = "Вы не указали описание";
+
+                if ($scope.errors.date === undefined & $scope.errors.divisionId === undefined &&
+                    $scope.errors.eskGroupId === undefined && $scope.errors.eskObject === undefined &&
+                    $scope.errors.description === undefined) {
+                    $violations.violations.add(function (violation) {
+                        $violations.violations.getByDivisionId(violation.divisionId.value, function () {
+                            $location.url("/");
+                        });
+
+                        $violations.violations.getNew().id.value = 0;
+                        $violations.violations.getNew().happened.value = new moment().unix();
+                        $violations.violations.getNew().eskGroupId.value = 0;
+                        $violations.violations.getNew().eskObject.value = "";
+                        $violations.violations.getNew().description.value = "";
+                        $violations.attachments.getNew().splice(0, $violations.attachments.getNew().length);
+
+                        var item = $tree.getItemByKey("session-divisions-tree", violation.divisionId.value);
+                        item.data.violationsAdded++;
+                        item.data.violationsTotal++;
+                        item.notifications.getById("violations").value += 1;
+                        item.notifications.getById("violations").isVisible = item.notifications.getById("violations").value > 0 ? true : false;
+                        var att = violation.attachments.length;
+                        item.notifications.getById("attachments").value += att;
+                        item.notifications.getById("attachments").isVisible = item.notifications.getById("attachments").value > 0 ? true : false;
+                        item.data.attachmentsTotal += att;
+                        item.data.attachmentsAdded += att;
+
+                        var parent = $tree.getItemByKey("global-divisions-tree", item.parentKey);
+                        while (parent) {
+                            //$log.log("parent found = ", parent);
+                            parent.data.violationsTotal++;
+                            parent.notifications.getById("violations").value += 1;
+                            parent.notifications.getById("violations").isVisible = parent.notifications.getById("violations").value > 0 ? true : false;
+                            parent.data.attachmentsTotal += att;
+                            parent.notifications.getById("attachments").value += att;
+                            parent.notifications.getById("attachments").isVisible = parent.notifications.getById("attachments").value > 0 ? true : false;
+                            parent = $tree.getItemByKey("global-divisions-tree", parent.parentKey);
+                        }
+                        $tree.getById("global-divisions-tree").calcRoot();
+                    });
+                }
+            };
+
+
+
+            $scope.onBeforeUploadAttachment = function () {
+                //$log.info("uploader onBeforeUpload");
+
+                $scope.isUploadInProgress = true;
+                $scope.uploaderData.violationId = $violations.violations.getNew().id.value;
+
+                //var division = $divisions.getById($session.getCurrentUser().divisionId.value);
+                var division = $divisions.getById($violations.violations.getNew().divisionId.value);
+                $log.log("current division = ", division);
+                if (division.storage.value === "") {
+                    $scope.uploaderLink = "/serverside/uploader.php";
+                    $log.log("departments = ", $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value));
+                    $scope.uploaderData.departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
+                } else
+                    $scope.uploaderLink = division.storage.value + "/uploader/share";
+                //$log.log("uploaderlink = ", $scope.uploaderLink);
+                //$log.log("currentUserDivision = ", division);
+                //$log.log("currentUserDepartment = ", $scope.uploaderData.departmentId);
+            };
+
+
+
+            $scope.onCompleteUploadAttachment = function (data) {
+                //$log.log("upload complete", data);
+                var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
+                attachment._model_.fromJSON(data);
+                $violations.violations.addAttachmentToNew(attachment);
+                $violations.attachments.add(attachment);
+                $scope.isUploadInProgress = false;
+                delete $scope.uploaderData.storage;
+
+                //$log.log("attachment = ", attachment);
+
+                if (attachment.violationId.value !== 0)
+                    $violations.violations.getNew().id.value = attachment.violationId.value;
+            };
+        }]);
+})();
+angular
+    .module("violations")
+    .controller("UserController", ["$log", "$scope", "$location", "$users", "$violations", "$divisions", "$tree", "$modals", function ($log, $scope, $location, $users, $violations, $divisions, $tree, $modals) {
+        $scope.users = $users;
+        $scope.violations = $violations;
+        $scope.divisions = $divisions;
+        $scope.modals = $modals;
+        $scope.errors = {
+            divisionId: undefined,
+            surname: undefined,
+            name: undefined,
+            fname: undefined,
+            email: undefined,
+            login: undefined,
+            password: undefined
+        };
+
+
+
+        $scope.openSelectDivisionModal = function () {
+            $modals.open("current-user-division-modal");
+        };
+
+
+
+        $scope.selectDivision = function (division) {
+            $users.users.getCurrent().divisionId.value = division.key;
+            $users.users.getCurrent()._states_.changed(true);
+        };
+
+
+
+        if (!$tree.getById("current-user-tree")) {
+            var currentUserTree = $tree.register({
+                id: "current-user-tree",
+                rootKey: 0,
+                expandOnSelect: true,
+                collapseOnDeselect: true
+            });
+
+            currentUserTree.onSelect = function (item) {
+                //$log.log("selected division = ", item);
+                $scope.selectDivision(item);
+            };
+
+
+            var length = $divisions.getAll().length;
+            for (var i = 0; i < length; i++) {
+                var division = $divisions.getAll()[i];
+                var item = $tree.addItem({
+                    treeId: "current-user-tree",
+                    key: division.id.value,
+                    parentKey: division.parentId.value,
+                    display: division.shortTitle.value,
+                    order: division.sortId.value
+                });
+                if (division.id.value === 1) {
+                    item.isExpanded = true;
+                }
+            }
+        }
+
+
+
+        $scope.gotoUsers = function () {
+            $location.url("/users");
+            $users.users.getCurrent()._backup_.restore();
+            $users.users.getCurrent()._states_.changed(false);
+        };
+
+
+
+        $scope.save = function () {
+            for (var index in $scope.errors) {
+                $scope.errors[index] = undefined;
+            }
+
+            if ($users.users.getCurrent().divisionId.value === 0)
+                $scope.errors = "Вы не выбрали струтурное подразделение";
+            if ($users.users.getCurrent().surname.value === "")
+                $scope.errors.surname = "Вы не указали фамилию";
+            if ($users.users.getCurrent().name.value === "")
+                $scope.errors.name = "Вы не указали имя";
+            if ($users.users.getCurrent().fname.value === "")
+                $scope.errors.fname = "Вы не указали отчество";
+            if ($users.users.getCurrent().email.value === "")
+                $scope.errors.email = "Вы не указали e-mail";
+            if ($users.users.getCurrent().isLDAPEnabled.value === true) {
+                if ($users.users.getCurrent().login.value === "")
+                    $scope.errors.login = "Вы не указали учетную запись Active Directory";
+            } else {
+                if ($users.users.getCurrent().password.value === "")
+                    $scope.errors.password = "Вы не указали пароль";
+            }
+
+            if ($scope.errors.divisionId === undefined && $scope.errors.surname === undefined &&
+                $scope.errors.name === undefined && $scope.errors.fname === undefined &&
+                $scope.errors.email === undefined && $scope.errors.login === undefined && $scope.errors.password === undefined) {
+
+                if ($users.users.getCurrent().isLDAPEnabled.value === true) {
+                    if ($scope.errors.login === undefined)
+                        $users.users.edit(function() {});
+                } else {
+                    if ($scope.errors.password === undefined)
+                        $users.users.edit(function() {});
+                }
+
+            }
+        };
+    }]);
+angular
+    .module("violations")
+    .controller("UsersController", ["$log", "$scope", "$location", "$users", "$violations", "$divisions", function ($log, $scope, $location, $users, $violations, $divisions) {
+        $scope.users = $users;
+        $scope.violations = $violations;
+        $scope.divisions = $divisions;
+
+
+        $scope.gotoNewUser = function () {
+            $location.url("/new-user");
+        };
+
+
+        $scope.selectUser = function (user) {
+            $users.users.select(user.id.value, function () {
+                $location.url("/user/" + user.id.value);
+            });
+        };
+    }]);
+angular
+    .module("violations")
+    .controller("ViolationController", ["$log", "$scope", "$routeParams", "$location", "$violations", "$divisions", "$misc", "$factory", "$tree", "$session", function ($log, $scope, $routeParams, $location, $violations, $divisions, $misc, $factory, $tree, $session) {
+        $scope.violations = $violations;
+        $scope.divisions = $divisions;
+        $scope.misc = $misc;
+        $scope.session = $session;
+        $scope.violation = undefined;
+        $scope.uploaderData = {
+            serviceId: "violations",
+            violationId: 0,
+            divisionId: 0
+        };
+        $scope.errors = {
+
+            eskGroupId: undefined,
+            eskObject: undefined,
+            description: undefined
+        };
+        $scope.isUploadInProgress = false;
+        $scope.uploaderLink = "test";
+
+
+
+        $scope.gotoMain = function () {
+            $location.url("/");
+            if ($violations.violations.getCurrent()._states_.changed() === true) {
+                $violations.violations.getCurrent()._backup_.restore();
+                $violations.violations.getCurrent()._states_.changed(false);
+            }
+            $violations.violations.select(parseInt($routeParams.violationId));
+        };
+
+
+
+        $scope.onBeforeUploadAttachment = function () {
+            //$log.info("data = ", $scope.uploaderData);
+            //$scope.uploaderData.violationId = $violations.violations.getCurrent().id.value;
+            $scope.uploaderData.divisionId = $violations.violations.getCurrent().divisionId.value;
+            //$scope.isUploadInProgress = true;
+
+            $scope.isUploadInProgress = true;
+            $scope.uploaderData.violationId = $violations.violations.getCurrent().id.value;
+
+            //var division = $divisions.getById($session.getCurrentUser().divisionId.value);
+            var division = $divisions.getById($violations.violations.getCurrent().divisionId.value);
+            $log.log("current division = ", division);
+            if (division.storage.value === "") {
+                $scope.uploaderLink = "/serverside/uploader.php";
+                $scope.uploaderData.departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getCurrent().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getCurrent().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
+            } else
+                $scope.uploaderLink = division.storage.value + "/upload/share";
+        };
+
+
+
+        $scope.onCompleteUploadAttachment = function (data) {
+            //$log.log(data);
+            var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
+            attachment._model_.fromJSON(data);
+            $violations.violations.getCurrent().attachments.push(attachment);
+            $violations.violations.getCurrent().newAttachments++;
+            $violations.violations.addAttachment();
+            $scope.isUploadInProgress = false;
+
+            var tree = $tree.getById("global-divisions-tree");
+            if (tree) {
+                var item = $tree.getItemByKey("global-divisions-tree", $violations.violations.getCurrent().divisionId.value);
+                item.data.attachmentsAdded++;
+                item.data.attachmentsTotal++;
+                item.notifications.getById("attachments").value += 1;
+                item.notifications.getById("attachments").isVisible = item.notifications.getById("attachments").value > 0 ? true : false;
+
+                var prev = item;
+                var parent = $tree.getItemByKey("global-divisions-tree", item.parentKey);
+                while (parent) {
+                    //$log.log("parent found = ", parent);
+                    parent.data.attachmentsTotal += 1;
+                    parent.notifications.getById("attachments").value += 1;
+                    parent.notifications.getById("attachments").isVisible = parent.notifications.getById("attachments").value > 0 ? true : false;
+                    prev = parent;
+                    parent = $tree.getItemByKey("global-divisions-tree", parent.parentKey);
+                }
+
+                tree.calcRoot();
+            }
+        };
+
+
+        
+        $scope.save = function () {
+            var temp = $violations.violations.getCurrent();
+
+            $scope.errors.eskGroupId = undefined;
+            $scope.errors.eskObject = undefined;
+            $scope.errors.description = undefined;
+
+            if (temp.eskGroupId.value === 0)
+                $scope.errors.eskGroupId = "Вы не выбрали группу ЭСК";
+            if (temp.eskObject.value === "")
+                $scope.errors.eskObject = "Вы не указали объект ЭСК";
+            if (temp.description.value === "")
+                $scope.errors.description = "Вы не указали описание";
+
+            if ($scope.errors.eskGroupId === undefined && $scope.errors.eskObject === undefined && $scope.errors.description === undefined) {
+                $scope.inProgress = true;
+                $violations.violations.edit(function () {
+                    $scope.inProgress = false;
+                    $violations.violations.getCurrent()._states_.changed(false);
+                    $violations.violations.getCurrent()._backup_.setup();
+                });
+            }
+
+        };
+    }]);
+angular
+    .module("violations")
+    .controller("ViolationsController", ["$log", "$scope", "$violations", "$location", "$tree", "$session", "$dateTimePicker", function ($log, $scope, $violations, $location, $tree, $session, $dateTimePicker) {
+        $scope.violations = $violations;
+        $scope.today = new moment().hours(23).minutes(59).seconds(59).unix();
+
+        $scope.selectStartDate = function () {
+            //$log.log("onSelect called");
+            $violations.violations.setStart(0);
+            $dateTimePicker.getById("violations-end-date").scope.settings.minDate = $violations.violations.startDate;
+            var division = $tree.getById("session-divisions-tree").selectedItem;
+            if (division !== undefined)
+                $violations.violations.getByDivisionId(division.key);
+        };
+
+
+        $scope.clearStartDate = function () {
+            $violations.violations.startDate = 0;
+            $violations.violations.setStart(0);
+            $dateTimePicker.getById("violations-end-date").scope.settings.minDate = 0;
+            var division = $tree.getById("session-divisions-tree").selectedItem;
+            if (division !== undefined)
+                $violations.violations.getByDivisionId(division.key);
+        };
+
+
+        $scope.selectEndDate = function () {
+            $violations.violations.setStart(0);
+            $violations.violations.endDate = moment.unix($violations.violations.endDate).hours(23).minutes(59).seconds(59).unix();
+            $dateTimePicker.getById("violations-start-date").scope.settings.maxDate = $violations.violations.endDate;
+            var division = $tree.getById("session-divisions-tree").selectedItem;
+            if (division !== undefined)
+                $violations.violations.getByDivisionId(division.key);
+        };
+
+
+        $scope.clearEndDate = function () {
+            $violations.violations.endDate = 0;
+            $violations.violations.setStart(0);
+            //$dateTimePicker.getAll()[0].scope.settings.maxDate = $scope.today;
+            $dateTimePicker.getById("violations-start-date").scope.settings.maxDate = $scope.today;
+            var division = $tree.getById("session-divisions-tree").selectedItem;
+            if (division !== undefined)
+                $violations.violations.getByDivisionId(division.key);
+        };
+
+
+        $scope.gotoNewViolation = function () {
+            $location.url("/new");
+        };
+
+
+        $scope.selectDivision = function (division) {
+            $violations.violations.setStart(0);
+            if (division.isSelected === true) {
+                $violations.violations.getNew().divisionId.value = division.key;
+                $violations.violations.getByDivisionId(division.key, $violations.violations.startDate, $violations.violations.endDate);
+                //$log.log("new = ", $violations.violations.getNew());
+
+            }
+        };
+
+
+        $scope.selectViolation = function (violationId) {
+            if (violationId !== undefined) {
+                $violations.violations.select(violationId, function () {
+                    $location.url("/violations/" + violationId);
+                });
+            }
+        };
+
+    }]);
+
+angular
+    .module("violations")
+    .filter("byViolationId", ["$log", function ($log) {
+        return function (input, violationId) {
+            if (violationId !== undefined && violationId !== 0) {
+                var length = input.length;
+                var result = [];
+                
+                for (var i = 0; i < length; i++) {
+                    if (input[i].violationId.value === violationId)
+                        result.push(input[i]);
+                }
+                return result;
+            } else
+                return input;
+
+        }
+    }]);
+angular.module("violations")
+    .filter("dateFilter", ["$log", function ($log) {
+        return function (input) {
+            return moment.unix(input).format("DD MMMM YYYY, HH:mm");
+        }
+    }]);
+angular.module("violations")
+    .filter("dateShort", ["$log", function ($log) {
+        return function (input) {
+            return moment.unix(input).format("DD.MM.YYYY");
+        }
+    }]);
+angular.module("violations")
+    .filter("day", ["$log", function ($log) {
+        return function (input) {
+            return moment.unix(input).format("DD MMMM YYYY");
+        }
+    }]);
+
+angular
+    .module("violations")
+    .filter("filesize", [function () {
+        return function (input, precision) {
+            if (typeof precision === 'undefined') precision = 1;
+            var units = ['байт', 'кб', 'мб', 'гб', 'тв', 'пб'];
+            var number = Math.floor(Math.log(input) / Math.log(1024));
+            return (input / Math.pow(1024, Math.floor(number))).toFixed(precision) +  ' ' + units[number];
+        }
+    }]);
+
+angular.module("violations")
+    .filter("time", ["$log", function ($log) {
+        return function (input) {
+            return moment.unix(input).format("HH:mm");
+        }
+    }]);
+angular
+    .module("violations")
+    .filter('toArray', [function () {
+        return function (input) {
+            var result = [];
+            for (var index in input) {
+                result.push(input[index]);
+            }
+            return result;
+        }
+    }]);
+
+angular
+    .module("violations")
     .directive("structure", ["$log", "$templateCache", "$errors", "$structure", function ($log, $templateCache, $errors, $structure) {
 
         var template =
@@ -276,72 +1090,6 @@ angular
             }
         }
     }]);
-angular
-    .module("violations")
-    .filter("byViolationId", ["$log", function ($log) {
-        return function (input, violationId) {
-            if (violationId !== undefined && violationId !== 0) {
-                var length = input.length;
-                var result = [];
-                
-                for (var i = 0; i < length; i++) {
-                    if (input[i].violationId.value === violationId)
-                        result.push(input[i]);
-                }
-                return result;
-            } else
-                return input;
-
-        }
-    }]);
-angular.module("violations")
-    .filter("dateFilter", ["$log", function ($log) {
-        return function (input) {
-            return moment.unix(input).format("DD MMMM YYYY, HH:mm");
-        }
-    }]);
-angular.module("violations")
-    .filter("dateShort", ["$log", function ($log) {
-        return function (input) {
-            return moment.unix(input).format("DD.MM.YYYY");
-        }
-    }]);
-angular.module("violations")
-    .filter("day", ["$log", function ($log) {
-        return function (input) {
-            return moment.unix(input).format("DD MMMM YYYY");
-        }
-    }]);
-
-angular
-    .module("violations")
-    .filter("filesize", [function () {
-        return function (input, precision) {
-            if (typeof precision === 'undefined') precision = 1;
-            var units = ['байт', 'кб', 'мб', 'гб', 'тв', 'пб'];
-            var number = Math.floor(Math.log(input) / Math.log(1024));
-            return (input / Math.pow(1024, Math.floor(number))).toFixed(precision) +  ' ' + units[number];
-        }
-    }]);
-
-angular.module("violations")
-    .filter("time", ["$log", function ($log) {
-        return function (input) {
-            return moment.unix(input).format("HH:mm");
-        }
-    }]);
-angular
-    .module("violations")
-    .filter('toArray', [function () {
-        return function (input) {
-            var result = [];
-            for (var index in input) {
-                result.push(input[index]);
-            }
-            return result;
-        }
-    }]);
-
 angular
     .module("violations")
     .factory("$divisions", ["$log", "$http", "$factory", "$errors", "$session", "$violations", "$tree", function ($log, $http, $factory, $errors, $session, $violations, $tree) {
@@ -1412,745 +2160,6 @@ angular.module("violations")
                 }
             }
         }]);
-angular
-    .module("violations")
-    .controller("DivisionsController", ["$log", "$scope", "$divisions", "$violations", "$tree", "$modals", function ($log, $scope, $divisions, $violations, $tree, $modals) {
-        $scope.divisions = $divisions;
-        $scope.violations = $violations;
-        $scope.modals = $modals;
-        $scope.errors = {
-            fullTitle: undefined,
-            shortTitle: undefined
-        };
-
-
-        $scope.openNewDivisionModal = function () {
-            $modals.open("new-division-modal");
-        };
-
-
-        $scope.cancelAddDivision = function () {
-            $divisions.getNew()._backup_.restore();
-            for (var index in $scope.errors) {
-                $scope.errors[index] = undefined;
-            }
-        };
-
-
-        $scope.add = function () {
-            for (var index in $scope.errors) {
-                $scope.errors[index] = undefined;
-            }
-
-            if ($divisions.getNew().shortTitle.value === "")
-                $scope.errors.shortTitle = "Вы не указали краткое наименование";
-
-            if ($divisions.getNew().fullTitle.value === "")
-                $scope.errors.fullTitle = "Вы не указали полное наименование";
-
-            if ($scope.errors.fullTitle == undefined && $scope.errors.shortTitle === undefined) {
-                $divisions.add(function (division) {
-                    $modals.close();
-                    $tree.addItem({
-                        treeId: "divisions-tree",
-                        key: division.id.value,
-                        parentKey: division.parentId.value,
-                        display: division.shortTitle.value
-                    });
-                });
-            }
-        };
-
-
-        $scope.openEditDivisionModal = function () {
-            $modals.open("edit-division-modal");
-        };
-
-
-        $scope.cancelEditDivision = function () {
-            for (var index in $scope.errors) {
-                $scope.errors[index] = undefined;
-            }
-            $divisions.getCurrent()._backup_.restore();
-            $divisions.getCurrent()._states_.changed(false);
-        };
-
-
-        $scope.save = function () {
-            for (var index in $scope.errors) {
-                $scope.errors[index] = undefined;
-            }
-
-            if ($divisions.getCurrent().shortTitle.value === "")
-                $scope.errors.shortTitle = "Вы не указали краткое наименование";
-
-            if ($divisions.getCurrent().fullTitle.value === "")
-                $scope.errors.fullTitle = "Вы не указали полное наименование";
-
-            if ($scope.errors.fullTitle == undefined && $scope.errors.shortTitle === undefined) {
-                $divisions.edit(function (division) {
-                    $modals.close();
-                    $tree.getItemByKey("divisions-tree", division.id.value).display = division.shortTitle.value;
-                });
-            }
-        };
-
-
-        if (!$tree.getById("divisions-tree")) {
-            //$log.log("NO TREE");
-            var divisionsTree = $tree.register({
-                id: "divisions-tree",
-                rootKey: 0,
-                expandOnSelect: true,
-                collapseOnDeselect: true,
-                onSelect: function (division) {
-                    if (division.isSelected === true) {
-                        $divisions.select(division.key);
-                        $log.log("current divivison  = ", $divisions.getCurrent());
-                        $divisions.getNew().parentId.value = division.key;
-                    } else
-                        $divisions.getNew().parentId.value = 0;
-                }
-            });
-
-
-            var length = $divisions.getAll().length;
-            for (var i = 0; i < length; i++) {
-                var division = $divisions.getAll()[i];
-                var item = $tree.addItem({
-                    treeId: "divisions-tree",
-                    key: division.id.value,
-                    parentKey: division.parentId.value,
-                    display: division.shortTitle.value,
-                    order: division.sortId.value
-                });
-                if (division.id.value === 1) {
-                    item.isExpanded = true;
-                }
-            }
-        }
-    }]);
-
-angular
-    .module("violations")
-    .controller("HeaderController", ["$log", "$scope", "$session", "$navigation", "$window", function ($log, $scope, $session, $navigation, $window) {
-        $scope.session = $session;
-        $scope.navigation = $navigation;
-
-
-        $scope.logout = function () {
-            $session.logout(function () {
-                $window.location.reload(true);
-            });
-        };
-    }]);
-angular
-    .module("violations")
-    .controller("HelpController", ["$scope", "$session", function ($scope, $session) {
-        $scope.session = $session;
-    }]);
-
-angular
-    .module("violations")
-    .controller("NewUserController", ["$log", "$scope", "$http", "$location", "$users", "$violations", "$divisions", "$modals", "$tree", function ($log, $scope, $http, $location, $users, $violations, $divisions, $modals, $tree) {
-        $scope.users = $users;
-        $scope.violations = $violations;
-        $scope.divisions = $divisions;
-        $scope.modals = $modals;
-        $scope.errors = {
-            surname: undefined,
-            name: undefined,
-            fname: undefined,
-            divisionId: undefined,
-            email: undefined,
-            login: undefined,
-            password: undefined
-        };
-
-
-
-        if (!$tree.getById("new-user-tree")) {
-            var newUserTree = $tree.register({
-                id: "new-user-tree",
-                rootKey: 0,
-                expandOnSelect: true,
-                collapseOnDeselect: true
-            });
-
-            newUserTree.onSelect = function (item) {
-                //$log.log("selected division = ", item);
-                $scope.selectDivision(item);
-            };
-
-
-            var length = $divisions.getAll().length;
-            for (var i = 0; i < length; i++) {
-                var division = $divisions.getAll()[i];
-                var item = $tree.addItem({
-                    treeId: "new-user-tree",
-                    key: division.id.value,
-                    parentKey: division.parentId.value,
-                    display: division.shortTitle.value,
-                    order: division.sortId.value
-                });
-                if (division.id.value === 1) {
-                    item.isExpanded = true;
-                }
-            }
-        }
-
-
-
-        $scope.selectDivision = function (division) {
-            $users.users.getNew().divisionId.value = division.key;
-        };
-
-
-
-        $scope.openSelectDivisionModal = function () {
-            $modals.open("new-user-division-modal");
-        };
-
-
-        $scope.cancel = function () {
-            $location.url("/users");
-            $users.users.getNew().divisionId.value = 0;
-            $users.users.getNew().surname.value = "";
-            $users.users.getNew().name.value = "";
-            $users.users.getNew().fname.value = "";
-            $users.users.getNew().email.value = "";
-            $users.users.getNew().login.value = "";
-            $users.users.getNew().password.value = "";
-            $users.users.getNew().isAdministrator.value = false;
-            $users.users.getNew().allowEdit.value = false;
-            $users.users.getNew().allowConfirm.value = false;
-        };
-
-
-        $scope.add = function () {
-            for (var index in $scope.errors) {
-                $scope.errors[index] = undefined;
-            }
-
-            if ($users.users.getNew().divisionId.value === 0)
-                $scope.errors.divisionId = "Вы не выбрали структурное подразделение";
-            if ($users.users.getNew().surname.value === "")
-                $scope.errors.surname = "Вы не указали фамилию";
-            if ($users.users.getNew().name.value === "")
-                $scope.errors.name = "Вы не указали имя";
-            if ($users.users.getNew().fname.value === "")
-                $scope.errors.fname = "Вы не указали отчество";
-            if ($users.users.getNew().email.value === "")
-                $scope.errors.email = "Вы не указали e-mail";
-            if ($users.users.getNew().login.value === "")
-                $scope.errors.login = "Вы не указали учетную запись в AD";
-            if ($users.users.getNew().password.value === "")
-                $scope.errors.password = "Вы не указали пароль";
-
-            if ($scope.errors.divisionId === undefined && $scope.errors.surname === undefined &&
-                $scope.errors.name === undefined && $scope.errors.fname === undefined &&
-                $scope.errors.email === undefined && $scope.errors.login === undefined && $scope.errors.password === undefined) {
-                $users.users.add(function () {
-                    $location.url("/users");
-                    $users.users.getNew()._backup_.restore();
-                });
-            }
-        };
-
-    }]);
-"use strict";
-
-
-(function () {
-    angular
-        .module("violations")
-        .controller("NewViolationController", ["$log", "$scope", "$violations", "$divisions", "$misc", "$factory", "$tree", "$location", "$modals", "$session", function ($log, $scope, $violations, $divisions, $misc, $factory, $tree, $location, $modals, $session) {
-            $scope.violations = $violations;
-            $scope.divisions = $divisions;
-            $scope.misc = $misc;
-            $scope.modals = $modals;
-            $scope.submitted = false;
-            $scope.isUploadInProgress = false;
-            $scope.errors = {
-                date: undefined,
-                divisionId: undefined,
-                eskGroupId: undefined,
-                eskObject: undefined,
-                description: undefined
-            };
-            $scope.uploaderData = {
-                serviceId: "violations",
-                violationId: $violations.violations.getNew().id.value,
-                divisionId: $violations.violations.getNew().divisionId.value
-            };
-            $scope.today = new moment().hours(23).minutes(59).seconds(59).unix();
-            $scope.hours = 0;
-            $scope.minutes = 0;
-            $scope.uploaderLink = "test";
-
-
-
-            $scope.openSelectDivisionModal = function () {
-                $modals.open("new-violation-division-modal");
-            };
-
-
-
-            $scope.gotoMain = function () {
-                $location.url("/");
-
-                var url = "";
-                var division = $divisions.getDepartmentByDivisionId($session.getCurrentUser().divisionId.value);
-                //var departmentId = $divisions.getDepartmentByDivisionId($session.getCurrentUser().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($session.getCurrentUser().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
-                var departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
-
-
-                if (division.storage.value === "") {
-                    url = "/serverside/cancel.php";
-                } else
-                    url = division.storage.value + "/cancel.php";
-
-                if ($violations.violations.getNew().id.value !== 0) {
-                    $violations.violations.cancel($violations.violations.getNew().id.value, url, departmentId, function () {
-                        $violations.attachments.getNew().splice(0, $violations.attachments.getNew().length);
-                    });
-                }
-
-                if ($divisions.getCurrent() !== undefined && $divisions.getCurrent().id.value === 1) {
-                    $violations.violations.getNew().divisionId.value = 0;
-                }
-            };
-
-
-
-            $scope.onHoursChange = function () {
-                var exp = new RegExp("^(0|[0-9]|[0-2][0-9])$");
-                if (exp.test($scope.hours)) {
-                    $violations.violations.getNew().happened.value = moment.unix($violations.violations.getNew().happened.value).hours($scope.hours).unix();
-                } else {
-                    $scope.hours = 0;
-                    $violations.violations.getNew().happened.value = moment.unix($violations.violations.getNew().happened.value).hours($scope.hours).unix();
-                }
-            };
-
-
-
-            $scope.onMinutesChange = function () {
-                var exp = new RegExp("^(0|[0-9]|[0-5][0-9])$");
-                if (exp.test($scope.minutes)) {
-                    $violations.violations.getNew().happened.value = moment.unix($violations.violations.getNew().happened.value).minutes($scope.minutes).unix();
-                } else {
-                    $scope.minutes = 0;
-                    $violations.violations.getNew().happened.value = moment.unix($violations.violations.getNew().happened.value).minutes($scope.minutes).unix();
-                }
-            };
-
-
-
-            $scope.add = function () {
-                for (var error in $scope.errors) {
-                    $scope.errors[error] = undefined;
-                }
-
-                if ($violations.violations.getNew().divisionId.value === 0)
-                    $scope.errors.divisionId = "Вы не выбрали структурное подразделение";
-                if ($violations.violations.getNew().eskGroupId.value === 0)
-                    $scope.errors.eskGroupId = "Вы не выбрали группу ЭСК";
-                if ($violations.violations.getNew().eskObject.value === "")
-                    $scope.errors.eskObject = "Вы не указали объект ЭСК";
-                if ($violations.violations.getNew().description.value === "")
-                    $scope.errors.description = "Вы не указали описание";
-
-                if ($scope.errors.date === undefined & $scope.errors.divisionId === undefined &&
-                    $scope.errors.eskGroupId === undefined && $scope.errors.eskObject === undefined &&
-                    $scope.errors.description === undefined) {
-                    $violations.violations.add(function (violation) {
-                        $violations.violations.getByDivisionId(violation.divisionId.value, function () {
-                            $location.url("/");
-                        });
-
-                        $violations.violations.getNew().id.value = 0;
-                        $violations.violations.getNew().happened.value = new moment().unix();
-                        $violations.violations.getNew().eskGroupId.value = 0;
-                        $violations.violations.getNew().eskObject.value = "";
-                        $violations.violations.getNew().description.value = "";
-                        $violations.attachments.getNew().splice(0, $violations.attachments.getNew().length);
-
-                        var item = $tree.getItemByKey("session-divisions-tree", violation.divisionId.value);
-                        item.data.violationsAdded++;
-                        item.data.violationsTotal++;
-                        item.notifications.getById("violations").value += 1;
-                        item.notifications.getById("violations").isVisible = item.notifications.getById("violations").value > 0 ? true : false;
-                        var att = violation.attachments.length;
-                        item.notifications.getById("attachments").value += att;
-                        item.notifications.getById("attachments").isVisible = item.notifications.getById("attachments").value > 0 ? true : false;
-                        item.data.attachmentsTotal += att;
-                        item.data.attachmentsAdded += att;
-
-                        var parent = $tree.getItemByKey("global-divisions-tree", item.parentKey);
-                        while (parent) {
-                            //$log.log("parent found = ", parent);
-                            parent.data.violationsTotal++;
-                            parent.notifications.getById("violations").value += 1;
-                            parent.notifications.getById("violations").isVisible = parent.notifications.getById("violations").value > 0 ? true : false;
-                            parent.data.attachmentsTotal += att;
-                            parent.notifications.getById("attachments").value += att;
-                            parent.notifications.getById("attachments").isVisible = parent.notifications.getById("attachments").value > 0 ? true : false;
-                            parent = $tree.getItemByKey("global-divisions-tree", parent.parentKey);
-                        }
-                        $tree.getById("global-divisions-tree").calcRoot();
-                    });
-                }
-            };
-
-
-
-            $scope.onBeforeUploadAttachment = function () {
-                //$log.info("uploader onBeforeUpload");
-
-                $scope.isUploadInProgress = true;
-                $scope.uploaderData.violationId = $violations.violations.getNew().id.value;
-
-                //var division = $divisions.getById($session.getCurrentUser().divisionId.value);
-                var division = $divisions.getById($violations.violations.getNew().divisionId.value);
-                $log.log("current division = ", division);
-                if (division.storage.value === "") {
-                    $scope.uploaderLink = "/serverside/uploader.php";
-                    $log.log("departments = ", $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value));
-                    $scope.uploaderData.departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
-                } else
-                    $scope.uploaderLink = division.storage.value + "/uploader/share";
-                //$log.log("uploaderlink = ", $scope.uploaderLink);
-                //$log.log("currentUserDivision = ", division);
-                //$log.log("currentUserDepartment = ", $scope.uploaderData.departmentId);
-            };
-
-
-
-            $scope.onCompleteUploadAttachment = function (data) {
-                //$log.log("upload complete", data);
-                var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
-                attachment._model_.fromJSON(data);
-                $violations.violations.addAttachmentToNew(attachment);
-                $violations.attachments.add(attachment);
-                $scope.isUploadInProgress = false;
-                delete $scope.uploaderData.storage;
-
-                //$log.log("attachment = ", attachment);
-
-                if (attachment.violationId.value !== 0)
-                    $violations.violations.getNew().id.value = attachment.violationId.value;
-            };
-        }]);
-})();
-angular
-    .module("violations")
-    .controller("UserController", ["$log", "$scope", "$location", "$users", "$violations", "$divisions", "$tree", "$modals", function ($log, $scope, $location, $users, $violations, $divisions, $tree, $modals) {
-        $scope.users = $users;
-        $scope.violations = $violations;
-        $scope.divisions = $divisions;
-        $scope.modals = $modals;
-        $scope.errors = {
-            divisionId: undefined,
-            surname: undefined,
-            name: undefined,
-            fname: undefined,
-            email: undefined,
-            login: undefined,
-            password: undefined
-        };
-
-
-
-        $scope.openSelectDivisionModal = function () {
-            $modals.open("current-user-division-modal");
-        };
-
-
-
-        $scope.selectDivision = function (division) {
-            $users.users.getCurrent().divisionId.value = division.key;
-            $users.users.getCurrent()._states_.changed(true);
-        };
-
-
-
-        if (!$tree.getById("current-user-tree")) {
-            var currentUserTree = $tree.register({
-                id: "current-user-tree",
-                rootKey: 0,
-                expandOnSelect: true,
-                collapseOnDeselect: true
-            });
-
-            currentUserTree.onSelect = function (item) {
-                //$log.log("selected division = ", item);
-                $scope.selectDivision(item);
-            };
-
-
-            var length = $divisions.getAll().length;
-            for (var i = 0; i < length; i++) {
-                var division = $divisions.getAll()[i];
-                var item = $tree.addItem({
-                    treeId: "current-user-tree",
-                    key: division.id.value,
-                    parentKey: division.parentId.value,
-                    display: division.shortTitle.value,
-                    order: division.sortId.value
-                });
-                if (division.id.value === 1) {
-                    item.isExpanded = true;
-                }
-            }
-        }
-
-
-
-        $scope.gotoUsers = function () {
-            $location.url("/users");
-            $users.users.getCurrent()._backup_.restore();
-            $users.users.getCurrent()._states_.changed(false);
-        };
-
-
-
-        $scope.save = function () {
-            for (var index in $scope.errors) {
-                $scope.errors[index] = undefined;
-            }
-
-            if ($users.users.getCurrent().divisionId.value === 0)
-                $scope.errors = "Вы не выбрали струтурное подразделение";
-            if ($users.users.getCurrent().surname.value === "")
-                $scope.errors.surname = "Вы не указали фамилию";
-            if ($users.users.getCurrent().name.value === "")
-                $scope.errors.name = "Вы не указали имя";
-            if ($users.users.getCurrent().fname.value === "")
-                $scope.errors.fname = "Вы не указали отчество";
-            if ($users.users.getCurrent().email.value === "")
-                $scope.errors.email = "Вы не указали e-mail";
-            if ($users.users.getCurrent().login.value === "")
-                $scope.errors.login = "Вы не указали учетную запись в AD";
-            if ($users.users.getCurrent().password.value === "")
-                $scope.errors.password = "Вы не указали пароль";
-
-            if ($scope.errors.divisionId === undefined && $scope.errors.surname === undefined &&
-                $scope.errors.name === undefined && $scope.errors.fname === undefined &&
-                $scope.errors.email === undefined && $scope.errors.login === undefined && $scope.errors.password === undefined) {
-                $users.users.edit(function () {
-
-                });
-            }
-        };
-    }]);
-angular
-    .module("violations")
-    .controller("UsersController", ["$log", "$scope", "$location", "$users", "$violations", "$divisions", function ($log, $scope, $location, $users, $violations, $divisions) {
-        $scope.users = $users;
-        $scope.violations = $violations;
-        $scope.divisions = $divisions;
-
-
-        $scope.gotoNewUser = function () {
-            $location.url("/new-user");
-        };
-
-
-        $scope.selectUser = function (user) {
-            $users.users.select(user.id.value, function () {
-                $location.url("/user/" + user.id.value);
-            });
-        };
-    }]);
-angular
-    .module("violations")
-    .controller("ViolationController", ["$log", "$scope", "$routeParams", "$location", "$violations", "$divisions", "$misc", "$factory", "$tree", "$session", function ($log, $scope, $routeParams, $location, $violations, $divisions, $misc, $factory, $tree, $session) {
-        $scope.violations = $violations;
-        $scope.divisions = $divisions;
-        $scope.misc = $misc;
-        $scope.session = $session;
-        $scope.violation = undefined;
-        $scope.uploaderData = {
-            serviceId: "violations",
-            violationId: 0,
-            divisionId: 0
-        };
-        $scope.errors = {
-
-            eskGroupId: undefined,
-            eskObject: undefined,
-            description: undefined
-        };
-        $scope.isUploadInProgress = false;
-        $scope.uploaderLink = "test";
-
-
-
-        $scope.gotoMain = function () {
-            $location.url("/");
-            if ($violations.violations.getCurrent()._states_.changed() === true) {
-                $violations.violations.getCurrent()._backup_.restore();
-                $violations.violations.getCurrent()._states_.changed(false);
-            }
-            $violations.violations.select(parseInt($routeParams.violationId));
-        };
-
-
-
-        $scope.onBeforeUploadAttachment = function () {
-            //$log.info("data = ", $scope.uploaderData);
-            //$scope.uploaderData.violationId = $violations.violations.getCurrent().id.value;
-            $scope.uploaderData.divisionId = $violations.violations.getCurrent().divisionId.value;
-            //$scope.isUploadInProgress = true;
-
-            $scope.isUploadInProgress = true;
-            $scope.uploaderData.violationId = $violations.violations.getCurrent().id.value;
-
-            //var division = $divisions.getById($session.getCurrentUser().divisionId.value);
-            var division = $divisions.getById($violations.violations.getCurrent().divisionId.value);
-            $log.log("current division = ", division);
-            if (division.storage.value === "") {
-                $scope.uploaderLink = "/serverside/uploader.php";
-                $scope.uploaderData.departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getCurrent().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getCurrent().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
-            } else
-                $scope.uploaderLink = division.storage.value + "/uploader/share";
-        };
-
-
-
-        $scope.onCompleteUploadAttachment = function (data) {
-            //$log.log(data);
-            var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
-            attachment._model_.fromJSON(data);
-            $violations.violations.getCurrent().attachments.push(attachment);
-            $violations.violations.getCurrent().newAttachments++;
-            $violations.violations.addAttachment();
-            $scope.isUploadInProgress = false;
-
-            var tree = $tree.getById("global-divisions-tree");
-            if (tree) {
-                var item = $tree.getItemByKey("global-divisions-tree", $violations.violations.getCurrent().divisionId.value);
-                item.data.attachmentsAdded++;
-                item.data.attachmentsTotal++;
-                item.notifications.getById("attachments").value += 1;
-                item.notifications.getById("attachments").isVisible = item.notifications.getById("attachments").value > 0 ? true : false;
-
-                var prev = item;
-                var parent = $tree.getItemByKey("global-divisions-tree", item.parentKey);
-                while (parent) {
-                    //$log.log("parent found = ", parent);
-                    parent.data.attachmentsTotal += 1;
-                    parent.notifications.getById("attachments").value += 1;
-                    parent.notifications.getById("attachments").isVisible = parent.notifications.getById("attachments").value > 0 ? true : false;
-                    prev = parent;
-                    parent = $tree.getItemByKey("global-divisions-tree", parent.parentKey);
-                }
-
-                tree.calcRoot();
-            }
-        };
-
-
-        
-        $scope.save = function () {
-            var temp = $violations.violations.getCurrent();
-
-            $scope.errors.eskGroupId = undefined;
-            $scope.errors.eskObject = undefined;
-            $scope.errors.description = undefined;
-
-            if (temp.eskGroupId.value === 0)
-                $scope.errors.eskGroupId = "Вы не выбрали группу ЭСК";
-            if (temp.eskObject.value === "")
-                $scope.errors.eskObject = "Вы не указали объект ЭСК";
-            if (temp.description.value === "")
-                $scope.errors.description = "Вы не указали описание";
-
-            if ($scope.errors.eskGroupId === undefined && $scope.errors.eskObject === undefined && $scope.errors.description === undefined) {
-                $scope.inProgress = true;
-                $violations.violations.edit(function () {
-                    $scope.inProgress = false;
-                    $violations.violations.getCurrent()._states_.changed(false);
-                    $violations.violations.getCurrent()._backup_.setup();
-                });
-            }
-
-        };
-    }]);
-angular
-    .module("violations")
-    .controller("ViolationsController", ["$log", "$scope", "$violations", "$location", "$tree", "$session", "$dateTimePicker", function ($log, $scope, $violations, $location, $tree, $session, $dateTimePicker) {
-        $scope.violations = $violations;
-        $scope.today = new moment().hours(23).minutes(59).seconds(59).unix();
-
-        $scope.selectStartDate = function () {
-            //$log.log("onSelect called");
-            $violations.violations.setStart(0);
-            $dateTimePicker.getById("violations-end-date").scope.settings.minDate = $violations.violations.startDate;
-            var division = $tree.getById("session-divisions-tree").selectedItem;
-            if (division !== undefined)
-                $violations.violations.getByDivisionId(division.key);
-        };
-
-
-        $scope.clearStartDate = function () {
-            $violations.violations.startDate = 0;
-            $violations.violations.setStart(0);
-            $dateTimePicker.getById("violations-end-date").scope.settings.minDate = 0;
-            var division = $tree.getById("session-divisions-tree").selectedItem;
-            if (division !== undefined)
-                $violations.violations.getByDivisionId(division.key);
-        };
-
-
-        $scope.selectEndDate = function () {
-            $violations.violations.setStart(0);
-            $violations.violations.endDate = moment.unix($violations.violations.endDate).hours(23).minutes(59).seconds(59).unix();
-            $dateTimePicker.getById("violations-start-date").scope.settings.maxDate = $violations.violations.endDate;
-            var division = $tree.getById("session-divisions-tree").selectedItem;
-            if (division !== undefined)
-                $violations.violations.getByDivisionId(division.key);
-        };
-
-
-        $scope.clearEndDate = function () {
-            $violations.violations.endDate = 0;
-            $violations.violations.setStart(0);
-            //$dateTimePicker.getAll()[0].scope.settings.maxDate = $scope.today;
-            $dateTimePicker.getById("violations-start-date").scope.settings.maxDate = $scope.today;
-            var division = $tree.getById("session-divisions-tree").selectedItem;
-            if (division !== undefined)
-                $violations.violations.getByDivisionId(division.key);
-        };
-
-
-        $scope.gotoNewViolation = function () {
-            $location.url("/new");
-        };
-
-
-        $scope.selectDivision = function (division) {
-            $violations.violations.setStart(0);
-            if (division.isSelected === true) {
-                $violations.violations.getNew().divisionId.value = division.key;
-                $violations.violations.getByDivisionId(division.key, $violations.violations.startDate, $violations.violations.endDate);
-                //$log.log("new = ", $violations.violations.getNew());
-
-            }
-        };
-
-
-        $scope.selectViolation = function (violationId) {
-            if (violationId !== undefined) {
-                $violations.violations.select(violationId, function () {
-                    $location.url("/violations/" + violationId);
-                });
-            }
-        };
-
-    }]);
-
 angular
     .module("application", ["ngRoute", "ngCookies", "ngAnimate", "violations", "homunculus", "homunculus.ui"])
     .config(["$routeProvider", "$locationProvider", "$httpProvider", function ($routeProvider, $locationProvider, $httpProvider) {

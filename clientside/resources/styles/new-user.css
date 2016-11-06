@@ -58,3 +58,7 @@
 #edit-user #user-permissions #current-violation-files .attachment.ng-enter.ng-enter-active {
   background: #C8E6C9;
 }
+#new-user input[type="radio"],
+#edit-user input[type="radio"] {
+  display: inline-block;
+}

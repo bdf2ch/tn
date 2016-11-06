@@ -85,17 +85,26 @@ angular
                 $scope.errors.fname = "Вы не указали отчество";
             if ($users.users.getCurrent().email.value === "")
                 $scope.errors.email = "Вы не указали e-mail";
-            if ($users.users.getCurrent().login.value === "")
-                $scope.errors.login = "Вы не указали учетную запись в AD";
-            if ($users.users.getCurrent().password.value === "")
-                $scope.errors.password = "Вы не указали пароль";
+            if ($users.users.getCurrent().isLDAPEnabled.value === true) {
+                if ($users.users.getCurrent().login.value === "")
+                    $scope.errors.login = "Вы не указали учетную запись Active Directory";
+            } else {
+                if ($users.users.getCurrent().password.value === "")
+                    $scope.errors.password = "Вы не указали пароль";
+            }
 
             if ($scope.errors.divisionId === undefined && $scope.errors.surname === undefined &&
                 $scope.errors.name === undefined && $scope.errors.fname === undefined &&
                 $scope.errors.email === undefined && $scope.errors.login === undefined && $scope.errors.password === undefined) {
-                $users.users.edit(function () {
 
-                });
+                if ($users.users.getCurrent().isLDAPEnabled.value === true) {
+                    if ($scope.errors.login === undefined)
+                        $users.users.edit(function() {});
+                } else {
+                    if ($scope.errors.password === undefined)
+                        $users.users.edit(function() {});
+                }
+
             }
         };
     }]);
