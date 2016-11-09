@@ -8,6 +8,7 @@ angular.module("violations", [])
         $violations.init();
         $misc.init(window.initialData);
         $violations.violations.getNew().userId.value = $session.getCurrentUser().id.value;
+        $violations.violations.getNew().divisionId.value = $session.getCurrentUser().divisionId.value;
         //$violations.violations.startDate = new moment().unix();
 
 
@@ -19,8 +20,6 @@ angular.module("violations", [])
             order: 1
         });
 
-
-
         $navigation.add({
             id: "users",
             url: "/users/",
@@ -29,7 +28,6 @@ angular.module("violations", [])
             order: 3,
             isVisible: $session.getCurrentUser().isAdministrator.value === true ? true : false
         });
-
 
         $navigation.add({
             id: "user",

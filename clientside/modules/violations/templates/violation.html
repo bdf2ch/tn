@@ -20,7 +20,7 @@
 
             <div class="row padding-10">
                 <div class="width-100  is-violation-confirmed" ng-class="{ 'yes': violations.violations.getCurrent().isConfirmed.value === true }">
-                    <span class="left">Технологическое нарушение проверено и подтверждено &nbsp; &nbsp; &nbsp;</span>
+                    <span class="left">Технологическое нарушение проверено и подтверждено</span>
                     <input type="checkbox"
                            name="confirmed"
                            id="current-violation-is-conformed"
@@ -157,6 +157,9 @@
                 <tbody>
                 <tr class="attachment" ng-repeat="attachment in violations.violations.getCurrent().attachments track by $index">
                     <td class="width-60 attachment-loaded">
+                        <button class="red small" title="Удалить файл" ng-show="attachment.isInAddMode === true" ng-click="deleteAttachment(attachment.id.value)">
+                            <span class="fa fa-times"></span>
+                        </button>&nbsp;
                         <a ng-href="{{ attachment.url.value }}" target="_blank">{{ attachment.title.value }}</a>
                     </td>
                     <td class="width-25 attachment-loaded text-center">

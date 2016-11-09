@@ -26,6 +26,8 @@
             $scope.today = new moment().hours(23).minutes(59).seconds(59).unix();
             $scope.hours = 0;
             $scope.minutes = 0;
+            $scope.endHours = 0;
+            $scope.endMinutes = 0;
             $scope.uploaderLink = "test";
 
 
@@ -127,6 +129,12 @@
                         item.data.attachmentsTotal += att;
                         item.data.attachmentsAdded += att;
 
+                        var length = violation.attachments.length;
+                        for (var i = 0; i < length; i++) {
+                            if (violation.attachments[i].isInAddMode === true)
+                                violation.attachments[i].isInAddMode = false;
+                        }
+
                         var parent = $tree.getItemByKey("global-divisions-tree", item.parentKey);
                         while (parent) {
                             //$log.log("parent found = ", parent);
@@ -171,6 +179,7 @@
                 //$log.log("upload complete", data);
                 var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
                 attachment._model_.fromJSON(data);
+                attachment.isInAddMode = true;
                 $violations.violations.addAttachmentToNew(attachment);
                 $violations.attachments.add(attachment);
                 $scope.isUploadInProgress = false;
@@ -181,5 +190,29 @@
                 if (attachment.violationId.value !== 0)
                     $violations.violations.getNew().id.value = attachment.violationId.value;
             };
+
+
+
+            $scope.deleteAttachment = function (attachmentId) {
+                if (attachmentId !== undefined) {
+                    var division = $divisions.getById($violations.violations.getNew().divisionId.value);
+                    var departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value).id.value : $violations.violations.getNew().divisionId.value;
+                    var url = division.storage.value !== "" ? division.storage.value + "/serverside/deleteAttachment.php" : "/serverside/deleteAttachment.php";
+
+                    $violations.attachments.delete(attachmentId, departmentId, url, function () {
+                        var length = $violations.attachments.getNew().length;
+                        for (var i = 0; i < length; i++) {
+                            if ($violations.attachments.getNew()[i].id.value === attachmentId) {
+                                $violations.attachments.getNew().splice(i, 1);
+                                break;
+                            }
+                        }
+                    });
+                }
+            };
+
+
+
+
         }]);
 })();

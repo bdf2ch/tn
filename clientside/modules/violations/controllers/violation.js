@@ -22,8 +22,20 @@ angular
 
 
 
+        /**
+         * Возврат в на главный экран к списку ТН
+         */
         $scope.gotoMain = function () {
             $location.url("/");
+
+            /*** Отменяем возможность удаления добавленных файлов в выбранном ТН ***/
+            var length = $violations.violations.getCurrent().attachments.length;
+            for (var i = 0; i < length; i++) {
+                if ($violations.violations.getCurrent().attachments[i].isInAddMode === true)
+                    $violations.violations.getCurrent().attachments[i].isInAddMode = false;
+            }
+
+            /*** Если ТН было изменено - отменяем изменения ***/
             if ($violations.violations.getCurrent()._states_.changed() === true) {
                 $violations.violations.getCurrent()._backup_.restore();
                 $violations.violations.getCurrent()._states_.changed(false);
@@ -38,6 +50,9 @@ angular
             //$scope.uploaderData.violationId = $violations.violations.getCurrent().id.value;
             $scope.uploaderData.divisionId = $violations.violations.getCurrent().divisionId.value;
             //$scope.isUploadInProgress = true;
+            $log.info("isInAddAttachmentMode = ", $violations.violations.getCurrent().isInAddAttachmentMode);
+            $violations.violations.getCurrent().isInAddAttachmentMode = true;
+            $log.info("isInAddAttachmentMode = ", $violations.violations.getCurrent().isInAddAttachmentMode);
 
             $scope.isUploadInProgress = true;
             $scope.uploaderData.violationId = $violations.violations.getCurrent().id.value;
@@ -58,10 +73,15 @@ angular
             //$log.log(data);
             var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
             attachment._model_.fromJSON(data);
+            attachment.isInAddMode = true;
             $violations.violations.getCurrent().attachments.push(attachment);
             $violations.violations.getCurrent().newAttachments++;
             $violations.violations.addAttachment();
             $scope.isUploadInProgress = false;
+
+            $log.info("attachment = ", attachment);
+
+
 
             var tree = $tree.getById("global-divisions-tree");
             if (tree) {
@@ -83,6 +103,26 @@ angular
                 }
 
                 tree.calcRoot();
+            }
+        };
+
+
+
+        $scope.deleteAttachment = function (attachmentId) {
+            if (attachmentId !== undefined) {
+                var division = $divisions.getById($violations.violations.getCurrent().divisionId.value);
+                var departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getCurrent().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getCurrent().divisionId.value).id.value : $violations.violations.getCurrent().divisionId.value;
+                var url = division.storage.value !== "" ? division.storage.value + "/serverside/deleteAttachment.php" : "/serverside/deleteAttachment.php";
+
+                $violations.attachments.delete(attachmentId, departmentId, url, function () {
+                    var length = $violations.violations.getCurrent().attachments.length;
+                    for (var i = 0; i < length; i++) {
+                        if ($violations.violations.getCurrent().attachments[i].id.value === attachmentId) {
+                            $violations.violations.getCurrent().attachments.splice(i, 1);
+                            break;
+                        }
+                    }
+                });
             }
         };
 

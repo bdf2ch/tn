@@ -1,5 +1,5 @@
 <?php
-    setcookie("tn_user_id", 1, -1, "/");
+    //setcookie("tn_user_id", 1, -1, "/");
 
     $ds = DIRECTORY_SEPARATOR;
     require_once $_SERVER["DOCUMENT_ROOT"].$ds."serverside".$ds."libs".$ds."xtemplate".$ds."xtemplate.class.php";

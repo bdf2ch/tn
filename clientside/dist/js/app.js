@@ -8,6 +8,7 @@ angular.module("violations", [])
         $violations.init();
         $misc.init(window.initialData);
         $violations.violations.getNew().userId.value = $session.getCurrentUser().id.value;
+        $violations.violations.getNew().divisionId.value = $session.getCurrentUser().divisionId.value;
         //$violations.violations.startDate = new moment().unix();
 
 
@@ -19,8 +20,6 @@ angular.module("violations", [])
             order: 1
         });
 
-
-
         $navigation.add({
             id: "users",
             url: "/users/",
@@ -29,7 +28,6 @@ angular.module("violations", [])
             order: 3,
             isVisible: $session.getCurrentUser().isAdministrator.value === true ? true : false
         });
-
 
         $navigation.add({
             id: "user",
@@ -62,12 +60,14 @@ angular.module("violations", [])
 $classesInjector
     .add("Attachment", {
         _dependencies__: [],
+        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
         violationId: new Field({ source: "VIOLATION_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
         title: new Field({ source: "TITLE", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
         type: new Field({ source: "MIME_TYPE", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
         size: new Field({ source: "SIZE", type: DATA_TYPE_INTEGER, default_value: 0, value: 0, backupable: true, displayable: true }),
         url: new Field({ source: "URL", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
-        added: new Field({ source: "DATE_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 })
+        added: new Field({ source: "DATE_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        isInAddMode: false
     });
 
 $classesInjector
@@ -98,6 +98,7 @@ $classesInjector
         eskGroupId: new Field({ source: "ESK_GROUP_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
         eskObject: new Field({ source: "ESK_OBJECT", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
         happened: new Field({ source: "DATE_HAPPENED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        ended: new Field({ source: "DATE_ENDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
         added: new Field({ source: "DATE_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
         description: new Field({ source: "DESCRIPTION", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
         isConfirmed: new Field({ source: "IS_CONFIRMED", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
@@ -336,18 +337,39 @@ angular
                 $scope.errors.fname = "Вы не указали отчество";
             if ($users.users.getNew().email.value === "")
                 $scope.errors.email = "Вы не указали e-mail";
-            if ($users.users.getNew().login.value === "")
-                $scope.errors.login = "Вы не указали учетную запись в AD";
-            if ($users.users.getNew().password.value === "")
-                $scope.errors.password = "Вы не указали пароль";
+
+            if ($users.users.getNew().isLDAPEnabled.value === true) {
+                if ($users.users.getNew().login.value === "")
+                    $scope.errors.login = "Вы не указали учетную запись Active Directory";
+            } else {
+                if ($users.users.getNew().password.value === "")
+                    $scope.errors.password = "Вы не указали пароль";
+            }
 
             if ($scope.errors.divisionId === undefined && $scope.errors.surname === undefined &&
                 $scope.errors.name === undefined && $scope.errors.fname === undefined &&
                 $scope.errors.email === undefined && $scope.errors.login === undefined && $scope.errors.password === undefined) {
+                if ($users.users.getNew().isLDAPEnabled.value === true) {
+                    if ($scope.errors.login === undefined)
+                        $users.users.add(function () {
+                            $location.url("/users");
+                            $users.users.getNew()._backup_.restore();
+                        });
+                } else {
+                    if ($scope.errors.password === undefined)
+                        $users.users.add(function () {
+                            $location.url("/users");
+                            $users.users.getNew()._backup_.restore();
+                        });
+                }
+
+
+                /*
                 $users.users.add(function () {
                     $location.url("/users");
                     $users.users.getNew()._backup_.restore();
                 });
+                */
             }
         };
 
@@ -380,6 +402,8 @@ angular
             $scope.today = new moment().hours(23).minutes(59).seconds(59).unix();
             $scope.hours = 0;
             $scope.minutes = 0;
+            $scope.endHours = 0;
+            $scope.endMinutes = 0;
             $scope.uploaderLink = "test";
 
 
@@ -481,6 +505,12 @@ angular
                         item.data.attachmentsTotal += att;
                         item.data.attachmentsAdded += att;
 
+                        var length = violation.attachments.length;
+                        for (var i = 0; i < length; i++) {
+                            if (violation.attachments[i].isInAddMode === true)
+                                violation.attachments[i].isInAddMode = false;
+                        }
+
                         var parent = $tree.getItemByKey("global-divisions-tree", item.parentKey);
                         while (parent) {
                             //$log.log("parent found = ", parent);
@@ -525,6 +555,7 @@ angular
                 //$log.log("upload complete", data);
                 var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
                 attachment._model_.fromJSON(data);
+                attachment.isInAddMode = true;
                 $violations.violations.addAttachmentToNew(attachment);
                 $violations.attachments.add(attachment);
                 $scope.isUploadInProgress = false;
@@ -535,6 +566,30 @@ angular
                 if (attachment.violationId.value !== 0)
                     $violations.violations.getNew().id.value = attachment.violationId.value;
             };
+
+
+
+            $scope.deleteAttachment = function (attachmentId) {
+                if (attachmentId !== undefined) {
+                    var division = $divisions.getById($violations.violations.getNew().divisionId.value);
+                    var departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value).id.value : $violations.violations.getNew().divisionId.value;
+                    var url = division.storage.value !== "" ? division.storage.value + "/serverside/deleteAttachment.php" : "/serverside/deleteAttachment.php";
+
+                    $violations.attachments.delete(attachmentId, departmentId, url, function () {
+                        var length = $violations.attachments.getNew().length;
+                        for (var i = 0; i < length; i++) {
+                            if ($violations.attachments.getNew()[i].id.value === attachmentId) {
+                                $violations.attachments.getNew().splice(i, 1);
+                                break;
+                            }
+                        }
+                    });
+                }
+            };
+
+
+
+
         }]);
 })();
 angular
@@ -690,8 +745,20 @@ angular
 
 
 
+        /**
+         * Возврат в на главный экран к списку ТН
+         */
         $scope.gotoMain = function () {
             $location.url("/");
+
+            /*** Отменяем возможность удаления добавленных файлов в выбранном ТН ***/
+            var length = $violations.violations.getCurrent().attachments.length;
+            for (var i = 0; i < length; i++) {
+                if ($violations.violations.getCurrent().attachments[i].isInAddMode === true)
+                    $violations.violations.getCurrent().attachments[i].isInAddMode = false;
+            }
+
+            /*** Если ТН было изменено - отменяем изменения ***/
             if ($violations.violations.getCurrent()._states_.changed() === true) {
                 $violations.violations.getCurrent()._backup_.restore();
                 $violations.violations.getCurrent()._states_.changed(false);
@@ -706,6 +773,9 @@ angular
             //$scope.uploaderData.violationId = $violations.violations.getCurrent().id.value;
             $scope.uploaderData.divisionId = $violations.violations.getCurrent().divisionId.value;
             //$scope.isUploadInProgress = true;
+            $log.info("isInAddAttachmentMode = ", $violations.violations.getCurrent().isInAddAttachmentMode);
+            $violations.violations.getCurrent().isInAddAttachmentMode = true;
+            $log.info("isInAddAttachmentMode = ", $violations.violations.getCurrent().isInAddAttachmentMode);
 
             $scope.isUploadInProgress = true;
             $scope.uploaderData.violationId = $violations.violations.getCurrent().id.value;
@@ -726,10 +796,15 @@ angular
             //$log.log(data);
             var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
             attachment._model_.fromJSON(data);
+            attachment.isInAddMode = true;
             $violations.violations.getCurrent().attachments.push(attachment);
             $violations.violations.getCurrent().newAttachments++;
             $violations.violations.addAttachment();
             $scope.isUploadInProgress = false;
+
+            $log.info("attachment = ", attachment);
+
+
 
             var tree = $tree.getById("global-divisions-tree");
             if (tree) {
@@ -751,6 +826,26 @@ angular
                 }
 
                 tree.calcRoot();
+            }
+        };
+
+
+
+        $scope.deleteAttachment = function (attachmentId) {
+            if (attachmentId !== undefined) {
+                var division = $divisions.getById($violations.violations.getCurrent().divisionId.value);
+                var departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getCurrent().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getCurrent().divisionId.value).id.value : $violations.violations.getCurrent().divisionId.value;
+                var url = division.storage.value !== "" ? division.storage.value + "/serverside/deleteAttachment.php" : "/serverside/deleteAttachment.php";
+
+                $violations.attachments.delete(attachmentId, departmentId, url, function () {
+                    var length = $violations.violations.getCurrent().attachments.length;
+                    for (var i = 0; i < length; i++) {
+                        if ($violations.violations.getCurrent().attachments[i].id.value === attachmentId) {
+                            $violations.violations.getCurrent().attachments.splice(i, 1);
+                            break;
+                        }
+                    }
+                });
             }
         };
 
@@ -852,72 +947,6 @@ angular
             }
         };
 
-    }]);
-
-angular
-    .module("violations")
-    .filter("byViolationId", ["$log", function ($log) {
-        return function (input, violationId) {
-            if (violationId !== undefined && violationId !== 0) {
-                var length = input.length;
-                var result = [];
-                
-                for (var i = 0; i < length; i++) {
-                    if (input[i].violationId.value === violationId)
-                        result.push(input[i]);
-                }
-                return result;
-            } else
-                return input;
-
-        }
-    }]);
-angular.module("violations")
-    .filter("dateFilter", ["$log", function ($log) {
-        return function (input) {
-            return moment.unix(input).format("DD MMMM YYYY, HH:mm");
-        }
-    }]);
-angular.module("violations")
-    .filter("dateShort", ["$log", function ($log) {
-        return function (input) {
-            return moment.unix(input).format("DD.MM.YYYY");
-        }
-    }]);
-angular.module("violations")
-    .filter("day", ["$log", function ($log) {
-        return function (input) {
-            return moment.unix(input).format("DD MMMM YYYY");
-        }
-    }]);
-
-angular
-    .module("violations")
-    .filter("filesize", [function () {
-        return function (input, precision) {
-            if (typeof precision === 'undefined') precision = 1;
-            var units = ['байт', 'кб', 'мб', 'гб', 'тв', 'пб'];
-            var number = Math.floor(Math.log(input) / Math.log(1024));
-            return (input / Math.pow(1024, Math.floor(number))).toFixed(precision) +  ' ' + units[number];
-        }
-    }]);
-
-angular.module("violations")
-    .filter("time", ["$log", function ($log) {
-        return function (input) {
-            return moment.unix(input).format("HH:mm");
-        }
-    }]);
-angular
-    .module("violations")
-    .filter('toArray', [function () {
-        return function (input) {
-            var result = [];
-            for (var index in input) {
-                result.push(input[index]);
-            }
-            return result;
-        }
     }]);
 
 angular
@@ -1090,6 +1119,72 @@ angular
             }
         }
     }]);
+angular
+    .module("violations")
+    .filter("byViolationId", ["$log", function ($log) {
+        return function (input, violationId) {
+            if (violationId !== undefined && violationId !== 0) {
+                var length = input.length;
+                var result = [];
+                
+                for (var i = 0; i < length; i++) {
+                    if (input[i].violationId.value === violationId)
+                        result.push(input[i]);
+                }
+                return result;
+            } else
+                return input;
+
+        }
+    }]);
+angular.module("violations")
+    .filter("dateFilter", ["$log", function ($log) {
+        return function (input) {
+            return moment.unix(input).format("DD MMMM YYYY, HH:mm");
+        }
+    }]);
+angular.module("violations")
+    .filter("dateShort", ["$log", function ($log) {
+        return function (input) {
+            return moment.unix(input).format("DD.MM.YYYY");
+        }
+    }]);
+angular.module("violations")
+    .filter("day", ["$log", function ($log) {
+        return function (input) {
+            return moment.unix(input).format("DD MMMM YYYY");
+        }
+    }]);
+
+angular
+    .module("violations")
+    .filter("filesize", [function () {
+        return function (input, precision) {
+            if (typeof precision === 'undefined') precision = 1;
+            var units = ['байт', 'кб', 'мб', 'гб', 'тв', 'пб'];
+            var number = Math.floor(Math.log(input) / Math.log(1024));
+            return (input / Math.pow(1024, Math.floor(number))).toFixed(precision) +  ' ' + units[number];
+        }
+    }]);
+
+angular.module("violations")
+    .filter("time", ["$log", function ($log) {
+        return function (input) {
+            return moment.unix(input).format("HH:mm");
+        }
+    }]);
+angular
+    .module("violations")
+    .filter('toArray', [function () {
+        return function (input) {
+            var result = [];
+            for (var index in input) {
+                result.push(input[index]);
+            }
+            return result;
+        }
+    }]);
+
 angular
     .module("violations")
     .factory("$divisions", ["$log", "$http", "$factory", "$errors", "$session", "$violations", "$tree", function ($log, $http, $factory, $errors, $session, $violations, $tree) {
@@ -1615,19 +1710,6 @@ angular.module("violations")
                             thursday = window.initialData.thursday;
                         }
 
-                        /*
-                        if (window.initialData.eskGroups !== undefined) {
-                            var length = window.initialData.eskGroups.length;
-                            for (var i = 0; i < length; i++) {
-                                var group = $factory({ classes: ["ESKGroup", "Model", "Backup", "States"], base_class: "ESKGroup" });
-                                group._model_.fromJSON(window.initialData.eskGroups[i]);
-                                group._backup_.setup();
-                                eskGroups.push(group);
-                            }
-                            //$log.log("esk groups = ", eskGroups);
-                        }
-                        */
-
                         if (window.initialData.violations !== undefined) {
 
                             if (window.initialData.total !== undefined) {
@@ -1664,33 +1746,6 @@ angular.module("violations")
                             start = totalViolations;
                             //$log.log("violations = ", violations);
                         }
-
-
-                        /*
-                        if (window.initialData.divisions !== undefined) {
-                            var userDivision = "/" + $session.getCurrentUser().divisionId.value + "/";
-                            //$log.info("userDiv = ", userDivision);
-                            var length = window.initialData.divisions.length;
-                            for (var i = 0; i < length; i++) {
-                                var division = $factory({ classes: ["Division", "Model", "Backup", "States"], base_class: "Division" });
-                                division._model_.fromJSON(window.initialData.divisions[i]);
-                                division._backup_.setup();
-                                //var added = this.violations.getNewByDivisionId(division.id.value);
-                                //$log.log("key = ", division.id.value, ", v = ", added.violations, ", a = ", added.attachments);
-                                //division.violationsAdded = added.violations;
-                                //division.attachmentsAdded = added.attachments;
-                                //if (division.id.value === 1 || division.path.value.indexOf(userDivision) !== -1) {
-                                //    $log.log("matched", division);
-                                    divisions.push(division);
-                                //}
-                            }
-                            //$log.log("divisions = ", divisions);
-                            currentDivision = divisions[0];
-
-                        }
-                        //divisions[0]._states_.selected(true);
-                        */
-
 
 
                         if (window.initialData.attachments !== undefined) {
@@ -2133,7 +2188,7 @@ angular.module("violations")
 
                     getByViolationId: function (violationId, callback) {
                         if (violationId === undefined) {
-                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> attachments -> getByViolationId: Не задан парметр - идентификатор технологического нарушения");
+                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> attachments -> getByViolationId: Не задан параметр - идентификатор технологического нарушения");
                             return false;
                         }
 
@@ -2148,7 +2203,7 @@ angular.module("violations")
 
                     add: function (attachment, callback) {
                         if (attachment === undefined) {
-                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> attachments: не задан параметр - добавляемое вложение");
+                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> attachments: Не задан параметр - добавляемое вложение");
                             return false;
                         }
 
@@ -2156,6 +2211,51 @@ angular.module("violations")
                         if (callback !== undefined && typeof callback === "function")
                             callback(attachment);
                         return true;
+                    },
+
+
+                    /**
+                     * Удаляет вложение, загруженное в режиме добавления или редактирования ТН
+                     * @param attachmentId {number} - Идеентификатор вложения
+                     * @param departmentId {number} - Идентификатор филиали организации
+                     * @param url {string} - Url скрипта
+                     * @param callback {function} - callback-функция
+                     * @returns {boolean} - true в случае успеха, false в противном случае
+                     */
+                    delete: function (attachmentId, departmentId, url, callback) {
+                        if (attachmentId === undefined) {
+                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> attachments -> delete: Не задан параметр - идентификатор вложения");
+                            return false;
+                        }
+
+                        if (departmentId === undefined) {
+                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> attachments -> delete: Не задан параметр - идентификатор филиала организации");
+                            return false;
+                        }
+
+                        if (url === undefined || url === "") {
+                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> attachments -> delete: Не задан параметр - url скрипта удаления документа");
+                            return false;
+                        }
+
+                        var params = {
+                            attachmentId: attachmentId,
+                            departmentId: departmentId
+                        };
+                        $http.post(url, params)
+                            .success(function (data) {
+                                if (data !== undefined) {
+                                    if (data === "true") {
+                                        if (callback !== undefined && typeof callback === "function")
+                                            callback();
+                                        return true;
+                                    } else
+                                        return false;
+                                }
+                            })
+                            .error(function () {
+                                return false;
+                            });
                     }
                 }
             }

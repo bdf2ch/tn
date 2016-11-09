@@ -24,34 +24,10 @@
             }
         }
 
-        /*
-        $link = mysql_connect($db_host, $db_user, $db_password);
-        if (!$link) {
-            echo("Error connecting DB: ".mysql_error());
-            return false;
-        }
-        */
-
         $mysqli = new mysqli($db_host, $db_user, $db_password, $db_name);
         if ($mysqli -> connect_errno) {
             echo "Не удалось подключиться к MySQL: " . $mysqli -> connect_error;
         }
-
-        /*
-        $db = mysql_select_db($db_name, $link);
-        if (!$db) {
-            echo("Error selecting DB: ".mysql_error());
-            return false;
-        }
-        */
-
-        /*
-        $encoding = mysql_query("SET NAMES utf8");
-        if (!$encoding) {
-            echo("Error setting encoding: ".mysql_error());
-            return false;
-        }
-        */
 
         $encoding = mysqli_query($mysqli, "SET NAMES utf8");
         if (!$encoding) {
@@ -61,18 +37,9 @@
         $divisionId = $_POST["divisionId"];
         $violationId = 0;
         if ($_POST["violationId"] == 0) {
-            /*
-            $query = mysql_query("INSERT INTO violations (DIVISION_ID, USER_ID, ESK_GROUP_ID, ESK_OBJECT, DESCRIPTION, DATE_HAPPENED, DATE_ADDED) VALUES (0, 0, 0, '', '', 0, 0)", $link);
+            $query = mysqli_query($mysqli, "INSERT INTO violations (DIVISION_ID, USER_ID, ESK_GROUP_ID, ESK_OBJECT, DESCRIPTION, DATE_HAPPENED, DATE_ENDED, DURATION, DATE_ADDED) VALUES (0, 0, 0, '', '', 0, 0, 0, 0)");
             if (!$query) {
-                echo("Error adding new violation");
-                return false;
-            }
-            $violationId = mysql_insert_id();
-            */
-
-            $query = mysqli_query($mysqli, "INSERT INTO violations (DIVISION_ID, USER_ID, ESK_GROUP_ID, ESK_OBJECT, DESCRIPTION, DATE_HAPPENED, DATE_ADDED) VALUES (0, 0, 0, '', '', 0, 0)");
-            if (!$query) {
-                echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
+                echo "Не удалось выполнить запрос: (".$mysqli -> errno.") ".$mysqli -> error;
             }
             $violationId = mysqli_insert_id($mysqli);
         } else

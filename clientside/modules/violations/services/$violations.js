@@ -33,19 +33,6 @@ angular.module("violations")
                             thursday = window.initialData.thursday;
                         }
 
-                        /*
-                        if (window.initialData.eskGroups !== undefined) {
-                            var length = window.initialData.eskGroups.length;
-                            for (var i = 0; i < length; i++) {
-                                var group = $factory({ classes: ["ESKGroup", "Model", "Backup", "States"], base_class: "ESKGroup" });
-                                group._model_.fromJSON(window.initialData.eskGroups[i]);
-                                group._backup_.setup();
-                                eskGroups.push(group);
-                            }
-                            //$log.log("esk groups = ", eskGroups);
-                        }
-                        */
-
                         if (window.initialData.violations !== undefined) {
 
                             if (window.initialData.total !== undefined) {
@@ -82,33 +69,6 @@ angular.module("violations")
                             start = totalViolations;
                             //$log.log("violations = ", violations);
                         }
-
-
-                        /*
-                        if (window.initialData.divisions !== undefined) {
-                            var userDivision = "/" + $session.getCurrentUser().divisionId.value + "/";
-                            //$log.info("userDiv = ", userDivision);
-                            var length = window.initialData.divisions.length;
-                            for (var i = 0; i < length; i++) {
-                                var division = $factory({ classes: ["Division", "Model", "Backup", "States"], base_class: "Division" });
-                                division._model_.fromJSON(window.initialData.divisions[i]);
-                                division._backup_.setup();
-                                //var added = this.violations.getNewByDivisionId(division.id.value);
-                                //$log.log("key = ", division.id.value, ", v = ", added.violations, ", a = ", added.attachments);
-                                //division.violationsAdded = added.violations;
-                                //division.attachmentsAdded = added.attachments;
-                                //if (division.id.value === 1 || division.path.value.indexOf(userDivision) !== -1) {
-                                //    $log.log("matched", division);
-                                    divisions.push(division);
-                                //}
-                            }
-                            //$log.log("divisions = ", divisions);
-                            currentDivision = divisions[0];
-
-                        }
-                        //divisions[0]._states_.selected(true);
-                        */
-
 
 
                         if (window.initialData.attachments !== undefined) {
@@ -551,7 +511,7 @@ angular.module("violations")
 
                     getByViolationId: function (violationId, callback) {
                         if (violationId === undefined) {
-                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> attachments -> getByViolationId: Не задан парметр - идентификатор технологического нарушения");
+                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> attachments -> getByViolationId: Не задан параметр - идентификатор технологического нарушения");
                             return false;
                         }
 
@@ -566,7 +526,7 @@ angular.module("violations")
 
                     add: function (attachment, callback) {
                         if (attachment === undefined) {
-                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> attachments: не задан параметр - добавляемое вложение");
+                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> attachments: Не задан параметр - добавляемое вложение");
                             return false;
                         }
 
@@ -574,6 +534,51 @@ angular.module("violations")
                         if (callback !== undefined && typeof callback === "function")
                             callback(attachment);
                         return true;
+                    },
+
+
+                    /**
+                     * Удаляет вложение, загруженное в режиме добавления или редактирования ТН
+                     * @param attachmentId {number} - Идеентификатор вложения
+                     * @param departmentId {number} - Идентификатор филиали организации
+                     * @param url {string} - Url скрипта
+                     * @param callback {function} - callback-функция
+                     * @returns {boolean} - true в случае успеха, false в противном случае
+                     */
+                    delete: function (attachmentId, departmentId, url, callback) {
+                        if (attachmentId === undefined) {
+                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> attachments -> delete: Не задан параметр - идентификатор вложения");
+                            return false;
+                        }
+
+                        if (departmentId === undefined) {
+                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> attachments -> delete: Не задан параметр - идентификатор филиала организации");
+                            return false;
+                        }
+
+                        if (url === undefined || url === "") {
+                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> attachments -> delete: Не задан параметр - url скрипта удаления документа");
+                            return false;
+                        }
+
+                        var params = {
+                            attachmentId: attachmentId,
+                            departmentId: departmentId
+                        };
+                        $http.post(url, params)
+                            .success(function (data) {
+                                if (data !== undefined) {
+                                    if (data === "true") {
+                                        if (callback !== undefined && typeof callback === "function")
+                                            callback();
+                                        return true;
+                                    } else
+                                        return false;
+                                }
+                            })
+                            .error(function () {
+                                return false;
+                            });
                     }
                 }
             }

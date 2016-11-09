@@ -12,10 +12,10 @@
             </button>
         </div>
         <div class="content">
-            <div class="row width-100 padding-10">
-                <div class="width-80">
+            <div class="row width-45 padding-10">
+                <div class="width-55">
                     <label class="width-100" for="new-violation-date">
-                        Дата и время нарушения
+                        Дата ТН
                     </label>
                     <input type="text"
                            name="date"
@@ -28,8 +28,8 @@
                            date-time-picker-format="DD MMMM YYYY"
                            ng-model="violations.violations.getNew().happened.value">
                 </div>
-                <div class="width-20">
-                    <label for="new-violation-time" class="width-90 right">Время нарушения</label>
+                <div class="width-45">
+                    <label for="new-violation-time" class="width-90 right">Время ТН</label>
                     <!--
                     <input type="text"
                            name="time"
@@ -47,6 +47,46 @@
                 </div>
 
             </div>
+
+            <div class="width-10 text-center mdash">&mdash;</div>
+
+            <div class="row width-45 padding-10">
+                <div class="width-55">
+                    <label class="width-100" for="new-violation-date">
+                        Дата устран. ТН
+                    </label>
+                    <input type="text"
+                           name="date"
+                           id="new-violation-date"
+                           class="width-100 text-center"
+                           ui-date-time-picker
+                           date-time-picker-id="new-violation-date"
+                           date-time-picker-max-date="today"
+                           date-time-picker-modal="1"
+                           date-time-picker-format="DD MMMM YYYY"
+                           ng-model="violations.violations.getNew().ended.value">
+                </div>
+                <div class="width-45">
+                    <label for="new-violation-time" class="width-90 right">Время устран. ТН</label>
+                    <!--
+                    <input type="text"
+                           name="time"
+                           id="new-violation-time"
+                           class="width-80 right text-center"
+                           ng-model="violations.violations.getNew().happened.value"
+                           ui-time-input>
+                    -->
+                    <!--<ui-time-picker class="width-80 right" ng-model="violations.violations.getNew().happened.value"></ui-time-picker>-->
+                    <div class="width-90 right" id="new-violation-time">
+                        <input type="number" name="time_hours" id="new-violation-hours" min="0" max="23" class="width-45 text-center" ng-model="endHours" ng-change="onHoursChange()">
+                        <span class="width-10 text-center time-separator">:</span>
+                        <input type="number" name="time_minutes" id="new-violation-minutes" min="0" max="59" class=" width-45 text-center" ng-model="endMinutes" ng-change="onMinutesChange()">
+                    </div>
+                </div>
+
+            </div>
+
+
 
             <div class="row padding-10">
                 <label class="width-100" for="violations-tree">
@@ -146,6 +186,9 @@
                 <tbody>
                 <tr class="attachment" ng-repeat="attachment in violations.attachments.getNew() track by $index">
                     <td class="width-80 attachment-loaded">
+                        <button class="red small" title="Удалить файл" ng-show="attachment.isInAddMode === true" ng-click="deleteAttachment(attachment.id.value)">
+                            <span class="fa fa-times"></span>
+                        </button>&nbsp;
                         <a ng-href="{{attachment.url.value}}" target="_blank">{{ attachment.title.value }}</a>
                     </td>
                     <td class="width-20 attachment-loaded">{{ attachment.size.value | filesize }}</td>

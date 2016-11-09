@@ -401,7 +401,7 @@
                 return false;
             }
             */
-            $query = mysqli_query($mysqli, "UPDATE violations SET USER_ID = $userId, DIVISION_ID = $divisionId, ESK_GROUP_ID = $eskGroupId, ESK_OBJECT = '$eskObject', DESCRIPTION = '$description', DATE_HAPPENED = $happened, DATE_ADDED = $added WHERE ID = $id");
+            $query = mysqli_query($mysqli, "UPDATE violations SET USER_ID = $userId, DIVISION_ID = $divisionId, ESK_GROUP_ID = $eskGroupId, ESK_OBJECT = '$eskObject', DESCRIPTION = '$description', DATE_HAPPENED = $happened, DATE_ENDED = 0, DURATION = 0, DATE_ADDED = $added WHERE ID = $id");
             if (!$query) {
                 echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
                 return false;
@@ -471,7 +471,7 @@
                 return false;
             }
             */
-            $query = mysqli_query($mysqli, "INSERT INTO violations (USER_ID, DIVISION_ID, ESK_GROUP_ID, ESK_OBJECT, DESCRIPTION, DATE_HAPPENED, DATE_ADDED) VALUES ($userId, $divisionId, $eskGroupId, '$eskObject', '$description', $happened, $added)");
+            $query = mysqli_query($mysqli, "INSERT INTO violations (USER_ID, DIVISION_ID, ESK_GROUP_ID, ESK_OBJECT, DESCRIPTION, DATE_HAPPENED, DATE_ENDED, DURATION, DATE_ADDED) VALUES ($userId, $divisionId, $eskGroupId, '$eskObject', '$description', $happened, 0, 0, $added)");
             if (!$query) {
                 echo(json_encode(false));
                 return false;
@@ -854,11 +854,15 @@
             return false;
         }
         */
-        $query = mysqli_query($mysqli, "SELECT * FROM users WHERE LOGIN = '$login' LIMIT 1");
+        $query = mysqli_query($mysqli, "SELECT * FROM users WHERE LOGIN = '$login'");
+        var_dump($query);
         if (!$query) {
+            //echo("no local user found");
             echo(json_encode(false));
             return false;
         }
+
+        //echo("num rows = ".mysqli_num_rows($query));
 
         if (mysqli_num_rows($query) > 0) {
             $result = mysqli_fetch_assoc($query);

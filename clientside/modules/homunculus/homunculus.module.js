@@ -1,14 +1,14 @@
 /* Константы кодов ошибок */
-const ERROR_TYPE_DEFAULT = 1;
-const ERROR_TYPE_ENGINE = 2;
-const ERROR_TYPE_DATABASE = 3;
-const ERROR_TYPE_LDAP = 4;
+var ERROR_TYPE_DEFAULT = 1;
+var ERROR_TYPE_ENGINE = 2;
+var ERROR_TYPE_DATABASE = 3;
+var ERROR_TYPE_LDAP = 4;
 
 /* Константы типов данных */
-const DATA_TYPE_INTEGER = 1;
-const DATA_TYPE_STRING = 2;
-const DATA_TYPE_FLOAT = 3;
-const DATA_TYPE_BOOLEAN = 4;
+var DATA_TYPE_INTEGER = 1;
+var DATA_TYPE_STRING = 2;
+var DATA_TYPE_FLOAT = 3;
+var DATA_TYPE_BOOLEAN = 4;
 
 
 

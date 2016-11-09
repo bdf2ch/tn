@@ -8,11 +8,6 @@
   width: 420px;
   box-sizing: border-box;
 }
-#filter .mdash {
-  height: 65px;
-  line-height: 80px;
-  color: lightgray;
-}
 #filter .no-date {
   color: gray;
 }
@@ -133,4 +128,9 @@ table tfoot td.buttoned:hover {
   text-align: center;
   background: #009688;
   color: white;
+}
+.mdash {
+  height: 65px;
+  line-height: 80px;
+  color: lightgray;
 }

@@ -1884,7 +1884,7 @@
     
     
     
-    function centeredDirective ($window, $log) {
+    function centeredDirective ($window, $document, $log) {
         return {
             restrict: "A",
             link: function (scope, element, attrs) {
@@ -1898,6 +1898,10 @@
 
 
                 angular.element($window).bind("resize", function () {
+                    redraw();
+                });
+
+                angular.element($window).bind("load", function () {
                     redraw();
                 });
 
