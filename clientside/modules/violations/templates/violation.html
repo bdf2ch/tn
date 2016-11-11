@@ -44,6 +44,36 @@
                        disabled>
             </div>
 
+            <div class="row width-100 padding-10">
+                <div class="width-80">
+                    <label class="width-100" for="new-violation-end-date">
+                        Дата и время устранения
+                        <span class="right form-error" ng-show="errors.ended !== undefined">{{ errors.ended }}</span>
+                    </label>
+                    <input type="text"
+                           name="date"
+                           id="new-violation-end-date"
+                           class="width-100 text-center"
+                           ui-date-time-picker
+                           date-time-picker-id="new-violation-end-date"
+                           date-time-picker-max-date="today"
+                           date-time-picker-modal="1"
+                           date-time-picker-format="DD MMMM YYYY"
+                           date-time-picker-on-select="selectEndDate"
+                           ng-disabled="violations.violations.getCurrent().isConfirmed.value === true || user.allowEdit.value === false"
+                           ng-model="violations.violations.getCurrent().ended.value">
+                </div>
+                <div class="width-20">
+                    <label for="new-violation-end-time" class="width-90 right">&nbsp;</label>
+                    <div class="width-90 right" id="new-violation-end-time">
+                        <input type="number" name="time_hours" id="new-violation-end-hours" min="0" max="23" class="width-45 text-center" ng-model="endHours" ng-change="onEndHoursChange()" ng-disabled="violations.violations.getCurrent().isConfirmed.value === true || user.allowEdit.value === false">
+                        <span class="width-10 text-center time-separator">:</span>
+                        <input type="number" name="time_minutes" id="new-violation-end-minutes" min="0" max="59" class=" width-45 text-center" ng-model="endMinutes" ng-change="onEndMinutesChange()" ng-disabled="violations.violations.getCurrent().isConfirmed.value === true || user.allowEdit.value === false">
+                    </div>
+                </div>
+
+            </div>
+
             <div class="row padding-10">
                 <label class="width-100" for="current-violation-user">
                     Автор

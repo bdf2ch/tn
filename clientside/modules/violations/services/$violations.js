@@ -377,6 +377,7 @@ angular.module("violations")
                                 eskGroupId: newViolation.eskGroupId.value,
                                 eskObject: newViolation.eskObject.value,
                                 happened: newViolation.happened.value,
+                                ended: newViolation.ended.value,
                                 description: newViolation.description.value
                             }
                         };
@@ -425,6 +426,8 @@ angular.module("violations")
                                 eskGroupId: currentViolation.eskGroupId.value,
                                 eskObject: currentViolation.eskObject.value,
                                 description: currentViolation.description.value,
+                                happened: currentViolation.happened.value,
+                                ended: currentViolation.ended.value,
                                 isConfirmed: currentViolation.isConfirmed.value === true ? 1: 0
                             }
                         };
@@ -462,7 +465,7 @@ angular.module("violations")
                             action: "cancelViolation",
                             data: {
                                 serviceId: "violations",
-                                id: newViolation.id.value,
+                                violationId: newViolation.id.value,
                                 departmentId: departmentId
                             }
                         };
@@ -562,6 +565,7 @@ angular.module("violations")
                         }
 
                         var params = {
+                            serviceId: "violations",
                             attachmentId: attachmentId,
                             departmentId: departmentId
                         };

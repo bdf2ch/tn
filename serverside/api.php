@@ -368,6 +368,8 @@
         $eskGroupId = $data -> eskGroupId;
         $eskObject = $data -> eskObject;
         $happened = $data -> happened;
+        $ended = $data -> ended;
+        $duration = $ended - $happened;
         $description = $data -> description;
         $added = time();
         $result = new stdClass();
@@ -401,7 +403,7 @@
                 return false;
             }
             */
-            $query = mysqli_query($mysqli, "UPDATE violations SET USER_ID = $userId, DIVISION_ID = $divisionId, ESK_GROUP_ID = $eskGroupId, ESK_OBJECT = '$eskObject', DESCRIPTION = '$description', DATE_HAPPENED = $happened, DATE_ENDED = 0, DURATION = 0, DATE_ADDED = $added WHERE ID = $id");
+            $query = mysqli_query($mysqli, "UPDATE violations SET USER_ID = $userId, DIVISION_ID = $divisionId, ESK_GROUP_ID = $eskGroupId, ESK_OBJECT = '$eskObject', DESCRIPTION = '$description', DATE_HAPPENED = $happened, DATE_ENDED = $ended, DURATION = $duration, DATE_ADDED = $added WHERE ID = $id");
             if (!$query) {
                 echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
                 return false;
@@ -471,7 +473,7 @@
                 return false;
             }
             */
-            $query = mysqli_query($mysqli, "INSERT INTO violations (USER_ID, DIVISION_ID, ESK_GROUP_ID, ESK_OBJECT, DESCRIPTION, DATE_HAPPENED, DATE_ENDED, DURATION, DATE_ADDED) VALUES ($userId, $divisionId, $eskGroupId, '$eskObject', '$description', $happened, 0, 0, $added)");
+            $query = mysqli_query($mysqli, "INSERT INTO violations (USER_ID, DIVISION_ID, ESK_GROUP_ID, ESK_OBJECT, DESCRIPTION, DATE_HAPPENED, DATE_ENDED, DURATION, DATE_ADDED) VALUES ($userId, $divisionId, $eskGroupId, '$eskObject', '$description', $happened, $ended, $duration, $added)");
             if (!$query) {
                 echo(json_encode(false));
                 return false;
@@ -527,48 +529,17 @@
         $eskGroupId = $data -> eskGroupId;
         $eskObject = $data -> eskObject;
         $happened = $data -> happened;
+        $ended = $data -> ended;
         $description = $data -> description;
         $isConfirmed = $data -> isConfirmed;
+        $duration = $ended - $happened;
 
-        /*
-        $link = mysql_connect($db_host, $db_user, $db_password);
-        if (!$link) {
-            echo("Error connecting DB: ".mysql_error());
-            return false;
-        }
-
-        $db = mysql_select_db($db_name, $link);
-        if (!$db) {
-            echo("Error selecting DB: ".mysql_error());
-            return false;
-        }
-
-        $encoding = mysql_query("SET NAMES utf8");
-        if (!$encoding) {
-            echo("Error setting encoding: ".mysql_error());
-            return false;
-        }
-        */
-
-        /*
-        $query = mysql_query("UPDATE violations SET USER_ID = $userId, DIVISION_ID = $divisionId, ESK_GROUP_ID = $eskGroupId, ESK_OBJECT = '$eskObject', DESCRIPTION = '$description', IS_CONFIRMED = $isConfirmed WHERE ID = $id", $link);
-        if (!$query) {
-            echo("Errors executing query");
-            return false;
-        }
-        */
-        $query = mysqli_query($mysqli, "UPDATE violations SET USER_ID = $userId, DIVISION_ID = $divisionId, ESK_GROUP_ID = $eskGroupId, ESK_OBJECT = '$eskObject', DESCRIPTION = '$description', IS_CONFIRMED = $isConfirmed WHERE ID = $id");
+        $query = mysqli_query($mysqli, "UPDATE violations SET USER_ID = $userId, DIVISION_ID = $divisionId, ESK_GROUP_ID = $eskGroupId, ESK_OBJECT = '$eskObject', DESCRIPTION = '$description', DATE_ENDED = $ended, DURATION = $duration, IS_CONFIRMED = $isConfirmed WHERE ID = $id");
         if (!$query) {
             echo(json_encode(false));
             return false;
         }
-        /*
-        $violation = mysql_query("SELECT * FROM violations WHERE ID = $id", $link);
-        if (!$query) {
-            echo("Error executing query");
-            return false;
-        }
-        */
+
         $violation = mysqli_query($mysqli, "SELECT * FROM violations WHERE ID = $id");
         if (!$violation) {
             echo(json_encode(false));

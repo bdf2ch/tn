@@ -4,7 +4,7 @@
     require_once $_SERVER["DOCUMENT_ROOT"].$DS."serverside".$DS."config.php";
 
     $postdata = json_decode(file_get_contents("php://input"));
-    $serviceId = constant("SERVICE_ID");
+    $serviceId = $postdata -> serviceId;
     $attachmentId = $postdata -> attachmentId;
 
     $link = new mysqli($db_host, $db_user, $db_password, $db_name);

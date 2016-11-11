@@ -1136,7 +1136,7 @@ angular
                                 //scope.$apply();
                             }
                             if (scope.settings.onSelect !== undefined)
-                                scope.settings.onSelect();
+                                scope.settings.onSelect(scope.value.unix());
                         }
 
                     } else

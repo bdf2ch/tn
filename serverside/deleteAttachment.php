@@ -4,7 +4,7 @@
     require_once $_SERVER["DOCUMENT_ROOT"].$DS."serverside".$DS."config.php";
 
     $postdata = json_decode(file_get_contents("php://input"));
-    $serviceId = constant("SERVICE_ID");
+    $serviceId = $postdata -> serviceId;
     $departmentId = $postdata -> departmentId;
     $attachmentId = $postdata -> attachmentId;
 

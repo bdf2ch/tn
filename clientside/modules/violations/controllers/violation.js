@@ -19,6 +19,8 @@ angular
         };
         $scope.isUploadInProgress = false;
         $scope.uploaderLink = "test";
+        $scope.endHours = moment.unix($violations.violations.getCurrent().ended.value).hours();
+        $scope.endMinutes = moment.unix($violations.violations.getCurrent().ended.value).minutes();
 
 
 
@@ -94,7 +96,6 @@ angular
                 var prev = item;
                 var parent = $tree.getItemByKey("global-divisions-tree", item.parentKey);
                 while (parent) {
-                    //$log.log("parent found = ", parent);
                     parent.data.attachmentsTotal += 1;
                     parent.notifications.getById("attachments").value += 1;
                     parent.notifications.getById("attachments").isVisible = parent.notifications.getById("attachments").value > 0 ? true : false;
@@ -127,22 +128,22 @@ angular
         };
 
 
-        
+
         $scope.save = function () {
-            var temp = $violations.violations.getCurrent();
+            for (var error in $scope.errors) {
+                $scope.errors[error] = undefined;
+            }
 
-            $scope.errors.eskGroupId = undefined;
-            $scope.errors.eskObject = undefined;
-            $scope.errors.description = undefined;
-
-            if (temp.eskGroupId.value === 0)
+            if ($violations.violations.getCurrent().ended.value < $violations.violations.getCurrent().happened.value)
+                $scope.errors.ended = "Дата устренения не может быть раньше времени ТН";
+            if ($violations.violations.getCurrent().eskGroupId.value === 0)
                 $scope.errors.eskGroupId = "Вы не выбрали группу ЭСК";
-            if (temp.eskObject.value === "")
+            if ($violations.violations.getCurrent().eskObject.value === "")
                 $scope.errors.eskObject = "Вы не указали объект ЭСК";
-            if (temp.description.value === "")
+            if ($violations.violations.getCurrent().description.value === "")
                 $scope.errors.description = "Вы не указали описание";
 
-            if ($scope.errors.eskGroupId === undefined && $scope.errors.eskObject === undefined && $scope.errors.description === undefined) {
+            if ($scope.errors.eskGroupId === undefined && $scope.errors.eskObject === undefined && $scope.errors.description === undefined && $scope.errors.ended === undefined) {
                 $scope.inProgress = true;
                 $violations.violations.edit(function () {
                     $scope.inProgress = false;
@@ -151,5 +152,35 @@ angular
                 });
             }
 
+        };
+
+
+        $scope.selectEndDate = function () {
+            $violations.violations.getCurrent()._states_.changed(true);
+        };
+
+
+        $scope.onEndHoursChange = function () {
+            $violations.violations.getCurrent()._states_.changed(true);
+            var exp = new RegExp("^(0|[0-9]|[0-2][0-9])$");
+            if (exp.test($scope.endHours)) {
+                $violations.violations.getCurrent().ended.value = moment.unix($violations.violations.getCurrent().ended.value).hours($scope.endHours).unix();
+            } else {
+                $scope.endHours = 0;
+                $violations.violations.getCurrent().ended.value = moment.unix($violations.violations.getCurrent().ended.value).hours($scope.endHours).unix();
+            }
+        };
+
+
+
+        $scope.onEndMinutesChange = function () {
+            $violations.violations.getCurrent()._states_.changed(true);
+            var exp = new RegExp("^(0|[0-9]|[0-5][0-9])$");
+            if (exp.test($scope.endMinutes)) {
+                $violations.violations.getCurrent().ended.value = moment.unix($violations.violations.getCurrent().ended.value).minutes($scope.endMinutes).unix();
+            } else {
+                $scope.endMinutes = 0;
+                $violations.violations.getCurrent().ended.value = moment.unix($violations.violations.getCurrent().ended.value).minutes($scope.endMinutes).unix();
+            }
         };
     }]);
