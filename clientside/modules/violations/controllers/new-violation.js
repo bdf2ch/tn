@@ -46,13 +46,6 @@
                 $location.url("/");
                 var division = $divisions.getById($violations.violations.getNew().divisionId.value);
                 var departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
-
-                /*
-                if (division.storage.value === "") {
-                    url = "/serverside/cancel.php";
-                } else
-                    url = division.storage.value + "/serverside/cancel.php";
-                    */
                 var url = division.storage.value !== "" ? division.storage.value + "/serverside/cancel.php" : "/serverside/cancel.php";
 
                 if ($violations.violations.getNew().id.value !== 0) {
@@ -70,10 +63,10 @@
 
             $scope.selectStartDate = function (date) {
                 //$dateTimePicker.getById("new-violation-end-date").scope.settings.value = moment.unix(date).hours($scope.hours).minutes($scope.minutes).seconds(0).unix();
+                $violations.violations.getNew()._states_.changed(true);
                 $violations.violations.getNew().ended.value = $violations.violations.getNew().happened.value;
                 $dateTimePicker.getById("new-violation-end-date").scope.settings.minDate = $violations.violations.getNew().happened.value;
             };
-
 
 
             $scope.onHoursChange = function () {
@@ -84,6 +77,7 @@
                     $scope.hours = 0;
                     $violations.violations.getNew().happened.value = moment.unix($violations.violations.getNew().happened.value).hours($scope.hours).unix();
                 }
+                $violations.violations.getNew()._states_.changed(true);
             };
 
 
@@ -96,6 +90,7 @@
                     $scope.minutes = 0;
                     $violations.violations.getNew().happened.value = moment.unix($violations.violations.getNew().happened.value).minutes($scope.minutes).unix();
                 }
+                $violations.violations.getNew()._states_.changed(true);
             };
 
 
@@ -107,6 +102,7 @@
                     $scope.hours = 0;
                     $violations.violations.getNew().ended.value = moment.unix($violations.violations.getNew().ended.value).hours($scope.endHours).unix();
                 }
+                $violations.violations.getNew()._states_.changed(true);
             };
 
 
@@ -119,6 +115,7 @@
                     $scope.endMinutes = 0;
                     $violations.violations.getNew().ended.value = moment.unix($violations.violations.getNew().ended.value).minutes($scope.endMinutes).unix();
                 }
+                $violations.violations.getNew()._states_.changed(true);
             };
 
 
@@ -198,10 +195,10 @@
 
                 //var division = $divisions.getById($session.getCurrentUser().divisionId.value);
                 var division = $divisions.getById($violations.violations.getNew().divisionId.value);
-                $log.log("current division = ", division);
+                //$log.log("current division = ", division);
                 if (division.storage.value === "") {
                     $scope.uploaderLink = "/serverside/uploader.php";
-                    $log.log("departments = ", $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value));
+                    //$log.log("departments = ", $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value));
                     $scope.uploaderData.departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
                 } else
                     $scope.uploaderLink = division.storage.value + "/upload/share";

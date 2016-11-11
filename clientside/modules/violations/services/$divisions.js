@@ -25,18 +25,6 @@ angular
                     rootKey: 0,
                     expandOnSelect: true,
                     collapseOnDeselect: true
-                    /*
-                    onSelect: function (item) {
-                        $log.log("selected item = ", item);
-                        $violations.violations.setStart(0);
-                        if (item.isSelected === true) {
-                            $violations.violations.getNew().divisionId.value = item.key;
-                            $violations.violations.getByDivisionId(item.key);
-                            $log.log("new = ", $violations.violations.getNew());
-
-                        }
-                    }
-                    */
                 });
 
 
@@ -123,33 +111,6 @@ angular
                     item.notifications.getById("violations").isVisible = item.notifications.getById("violations").value > 0 ? true : false;
                     item.notifications.getById("attachments").value = item.data.attachmentsTotal;
                     item.notifications.getById("attachments").isVisible = item.notifications.getById("attachments").value > 0 ? true : false;
-
-                    /*
-                    var prev = item;
-                    var parent = $tree.getItemByKey("global-divisions-tree", item.parentKey);
-                    while (parent) {
-                        if (item.data.violationsAdded > 0) {
-                            parent.data.violationsTotal += item.data.violationsAdded;
-                            parent.notifications.getById("violations").value += item.data.violationsAdded;
-                            parent.notifications.getById("violations").isVisible = parent.notifications.getById("violations").value > 0 ? true : false;
-                        }
-                        if (item.data.attachmentsAdded > 0) {
-                            parent.data.attachmentsTotal += item.data.attachmentsAdded;
-                            parent.notifications.getById("attachments").value += item.data.attachmentsAdded;
-                            parent.notifications.getById("attachments").isVisible = parent.notifications.getById("attachments").value > 0 ? true : false;
-                        }
-                        prev = parent;
-                        parent = $tree.getItemByKey("global-divisions-tree", parent.parentKey);
-
-                    }
-                    */
-
-                    //if (division.id.value === 1) {
-                    //    item.isSelected = true;
-                    //    item.isExpanded = true;
-                    //}
-
-                    //this.select(1);
                 }
                 tree.calcRoot();
 
@@ -159,9 +120,7 @@ angular
                     class: "stacked",
                     expandOnSelect: true,
                     collapseOnDeselect: true,
-                    onSelect: function (item) {
-                        //$log.log("session divisions selected = ", sessionDivisionsTree.selectedItem);
-                    }
+                    onSelect: function (item) {}
                 });
                 sessionDivisionsTree.calcRoot = tree.calcRoot();
 

@@ -48,20 +48,14 @@ angular
 
 
         $scope.onBeforeUploadAttachment = function () {
-            //$log.info("data = ", $scope.uploaderData);
-            //$scope.uploaderData.violationId = $violations.violations.getCurrent().id.value;
             $scope.uploaderData.divisionId = $violations.violations.getCurrent().divisionId.value;
-            //$scope.isUploadInProgress = true;
-            $log.info("isInAddAttachmentMode = ", $violations.violations.getCurrent().isInAddAttachmentMode);
             $violations.violations.getCurrent().isInAddAttachmentMode = true;
-            $log.info("isInAddAttachmentMode = ", $violations.violations.getCurrent().isInAddAttachmentMode);
-
             $scope.isUploadInProgress = true;
             $scope.uploaderData.violationId = $violations.violations.getCurrent().id.value;
 
             //var division = $divisions.getById($session.getCurrentUser().divisionId.value);
             var division = $divisions.getById($violations.violations.getCurrent().divisionId.value);
-            $log.log("current division = ", division);
+            //$log.log("current division = ", division);
             if (division.storage.value === "") {
                 $scope.uploaderLink = "/serverside/uploader.php";
                 $scope.uploaderData.departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getCurrent().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getCurrent().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
@@ -72,7 +66,6 @@ angular
 
 
         $scope.onCompleteUploadAttachment = function (data) {
-            //$log.log(data);
             var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
             attachment._model_.fromJSON(data);
             attachment.isInAddMode = true;
@@ -80,10 +73,6 @@ angular
             $violations.violations.getCurrent().newAttachments++;
             $violations.violations.addAttachment();
             $scope.isUploadInProgress = false;
-
-            $log.info("attachment = ", attachment);
-
-
 
             var tree = $tree.getById("global-divisions-tree");
             if (tree) {

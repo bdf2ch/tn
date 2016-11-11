@@ -1,10 +1,7 @@
 
 angular.module("violations")
         .factory("$violations", ["$log", "$classes", "$factory", "$http", "$errors", "$session", "$tree", function ($log, $classes, $factory, $http, $errors, $session, $tree) {
-
-            //var divisions = [];
             var violations = [];
-
             var attachments = [];
             var currentDivision = undefined;
             var newDivision = $factory({ classes: ["Division", "Model", "Backup", "States"], base_class: "Division" });
