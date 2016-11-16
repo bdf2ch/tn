@@ -370,6 +370,40 @@ angular
 
 angular
     .module("homunculus.ui")
+    .factory("$tabs", ["$log", "$errors", function ($log, $errors) {
+        var tabs = [];
+
+        return {
+
+            register: function (tab) {
+                if (tab === undefined) {
+                    $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$tabs -> register: Не задан параметр - параметры регистрируемого компонента");
+                    return false;
+                }
+
+                tabs.push(tab);
+                $log.log("tabs", tabs);
+                return true;
+            },
+
+            getById: function (id) {
+                if (id === undefined) {
+                    $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$tabs -> getById: Не задан параметр - идентификатор компонента");
+                    return false;
+                }
+
+                var length = tabs.length;
+                for (var i = 0; i < length; i++) {
+                    if (tabs[i].id === id)
+                        return tabs[i];
+                }
+                return false;
+            }
+
+        }
+    }]);
+angular
+    .module("homunculus.ui")
     .factory("$tree", ["$log", "$classes", "$factory", "$errors", function ($log, $classes, $factory, $errors) {
         var trees = [];
         
@@ -1323,6 +1357,86 @@ angular
                     document.body.appendChild(fogElement);
                 }
             }
+        }
+    }]);
+angular
+    .module("homunculus.ui")
+    .directive("uiTab", ["$log", "$errors", function ($log, $errors) {
+        return {
+            restrict: "E",
+            require: "^uiTabs",
+            transclude: true,
+            replace: true,
+            template: "<div class='ui-tab' ng-transclude></div>",
+            link: function (scope, element, attrs, controller) {
+                $log.log("tab directive");
+
+                if (attrs.id === undefined || attrs.id === "") {
+                    $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "ui-tab -> Не задан аттрибут - идентификатор вкладки");
+                    return false;
+                }
+
+                var settings = scope.settings = {
+                    id: attrs.id,
+                    caption: attrs.caption !== undefined && attrs.caption !== "" ? attrs.caption : "",
+                    icon: attrs.icon !== undefined && attrs.icon !== "" ? attrs.icon : undefined
+                };
+
+                controller.registerTab(settings);
+            }
+        }
+    }]);
+angular
+    .module("homunculus.ui")
+    .directive("uiTabs", ["$log", "$errors", "$tabs", function ($log, $errors, $tabs) {
+        return {
+            restrict: "E",
+            transclude: true,
+            scope: {
+                onTabSelect: "="
+            },
+            replace: true,
+            template: "<div class='ui-tabs' ng-transclude></div>",
+            controller: function ($scope, $element, $attrs) {
+                if ($attrs.id === undefined || $attrs.id === "") {
+                    $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "ui-tabs -> Не задан аттрибут - идентификатор компонента");
+                    return false;
+                }
+
+                var settings = $scope.settings = {
+                    id: $attrs.id,
+                    tabs: [],
+                    onTabSelect: $scope.onTabSelect !== undefined && typeof $scope.onTabSelect === "function" ? $scope.onTabSelect : undefined
+                };
+
+                var instance = $tabs.getById(settings.id);
+                if (!instance) {
+                    $tabs.register(settings);
+                }
+
+                this.registerTab = function (tab) {
+                    if (tab === undefined) {
+                        $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "ui-tabs -> registerTab: Не задан параметр - объект с настройками вкладки");
+                        return false;
+                    }
+
+                    settings.tabs.push(tab);
+                    $log.log("local tabs", settings.tabs);
+                    return true;
+                };
+            },
+            link: function (scope, element, attrs, transclude) {
+                $log.log("tabs directive");
+
+                //if (attrs.id === undefined || attrs.id === "") {
+                //    $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "tabs directive -> Не задан аттрибут - идентификатор компонента");
+                //    return false;
+                //}
+
+
+
+            }
+
         }
     }]);
 angular

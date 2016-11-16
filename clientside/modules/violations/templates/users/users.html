@@ -1,6 +1,6 @@
 <div id="users" class="block">
     <div class="header">
-        Пользователи
+        Пользователи ({{ users.users.getAll().length }})
         <button class="blue right" ng-click="gotoNewUser()">
             <span class="fa fa-user-plus"></span> Добавить пользователя
         </button>
@@ -17,7 +17,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="user in users.users.getAll() track by $id(user)" ng-click="selectUser(user)">
+            <tr ng-repeat="user in users.users.getAll() | orderBy:'surname.value' track by $id(user)" ng-click="selectUser(user)">
                 <td class="width-15 text-center">{{ user.surname.value }}</td>
                 <td class="width-15 text-center">{{ user.name.value }}</td>
                 <td class="width-15 text-center">{{ user.fname.value }}</td>

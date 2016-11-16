@@ -3,6 +3,12 @@ angular
     .factory("$errors", ["$log", "$classes", "$factory", function ($log, $classes, $factory) {
         
         var items = [];
+        var errors = [];
+        var types = {
+            ERROR_TYPE_DEFAULT: 1,
+            ERROR_TYPE_ENGINE: 2,
+            ERROR_TYPE_DATABASE: 3
+        };
 
         return {
             /**
@@ -95,6 +101,114 @@ angular
                         error.timestamp.value = data.errors[i].timestamp;
                         items.push(error);
                     }
+                }
+            },
+
+
+
+
+
+
+
+
+            /**
+             * Объект с типами ошибок
+             */
+            type: types,
+
+
+
+            /**
+             * Производит инициализацию из источника данных
+             * @param source {array/object} - источник данных
+             * @returns {boolean} - возвращает true в случае успешного завершения, false - в противном случае
+             */
+            init: function (source) {
+                if (source === undefined) {
+                    this.throw(types.ERROR_TYPE_DEFAULT, "$errors -> init: Не задан параметр - источник данных");
+                    return false;
+                }
+
+                switch (typeof source) {
+                    case "array":
+                        var length = source.length;
+                        for (var i = 0; i < length; i++) {
+                            var error = $factory({ classes: ["Error", "Model"], base_class: "Error" });
+                            error._model_.fromJSON(source[i]);
+                            errors.push(error);
+                        }
+                        break;
+                    case "object":
+                        var error = $factory({ classes: ["Error", "Model"], base_class: "Error" });
+                        error._model_.fromJSON(source);
+                        errors.push(error);
+                        break;
+                }
+                return true;
+            },
+
+
+
+            /**
+             * Генерирует ошибку
+             * @param type {number} - тип ошибки
+             * @param message {string} - содержание ошибки
+             * @returns {boolean} - возвращает true в случае успешного завершения, false - в противном случае
+             */
+            throw: function (type, message) {
+                if (type === undefined) {
+                    $log.error("$errors -> throw: Не задан параметр - тип ошибки");
+                    return false;
+                }
+
+                var errorTypeFound = false;
+                for (var i in types) {
+                    if (types[i] === type)
+                        errorTypeFound = true;
+                }
+                if (errorTypeFound === false) {
+                    $log.error("$errors -> throw: Неверно задан тип ошибки");
+                    return false;
+                }
+
+                if (message === undefined || message === "") {
+                    $log.error("$errors -> throw: Не задан параметр - содержание ошибки");
+                    return false;
+                }
+
+                var now = new moment();
+                var error = $factory({ classes: ["Error", "Model"], base_class: "Error" });
+                error.timestamp = now.unix();
+                error.type = type;
+                error.message = message;
+                errors.push(error);
+                $log.error(now.format("DD.MM.YYYY HH:mm") + " " + message);
+                return true;
+            },
+
+
+
+            /**
+             * Производит проверку данных на наличие ошибок
+             * @param data {object} - объект с данными, которые требуется проверить на наличие ошибок
+             * @returns {boolean} - возвращает true в случае успешного завершения, false - в противном случае
+             */
+            check: function (data) {
+                if (data === undefined) {
+                    this.throw(ERROR_TYPE_DEFAULT, "$errors -> check: Не задан параметр - данные для проверки");
+                    return false;
+                }
+
+                if (data.errors !== undefined && typeof data.errors === "array") {
+                    if (data.errors.length > 0) {
+                        for (var i = 0; i < data.errors; i++) {
+                            var error = $factory({ classes: ["Error", "Model"], base_class: "Error" });
+                            error._model_.fromJSON(data.errors[i]);
+                            errors.push(error);
+                            this.throw(error.type, error.message);
+                        }
+                    }
+                    return true;
                 }
             }
         }

@@ -66,6 +66,18 @@
     </div>
 
 
+    <div class="block">
+        <div class="header">
+            Тест
+        </div>
+        <div class="content padding-10">
+            <ui-tabs id="test">
+                <ui-tab id="test1"></ui-tab>
+            </ui-tabs>
+        </div>
+    </div>
+
+
 </div>
 
 
@@ -107,7 +119,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="violation in violations.violations.getAll() | orderBy:'-happened.value' track by $index" ng-click="selectViolation(violation.id.value)">
+            <tr ng-repeat="violation in violations.violations.getAll() | orderBy:'-happened.value' track by $index" ng-click="selectViolation(violation.id.value)" title="{{ violation.description.value }}">
                 <td class="width-20 text-center">
                     {{ violation.id.value }}<br>
                     <span class="new-violation-mark" ng-show="violation.isNew === true">новое</span>
