@@ -28,6 +28,18 @@ angular
                         return tabs[i];
                 }
                 return false;
+            },
+
+            select: function (tabsId, tabId) {
+                if (tabsId === undefined) {
+                    $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$tabs -> select: Не задан параметр - идентификатор компонента");
+                    return false;
+                }
+
+                if (tabId === undefined) {
+                    $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$tabs -> select: Не задан параметр - идентификатор вкладки");
+                    return false;
+                }
             }
 
         }

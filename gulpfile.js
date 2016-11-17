@@ -3,6 +3,8 @@ var gutil = require('gulp-util');
 var uglify = require("gulp-uglify");
 var concat = require("gulp-concat");
 var plumber = require("gulp-plumber");
+var cleanCSS = require("gulp-clean-css");
+var liveReload = require("gulp-livereload");
 
 gulp.task("default", function() {
     return gutil.log("Gulp is running!");
@@ -80,4 +82,34 @@ watcher.on('change', function(event) {
 var auth = gulp.watch(["clientside/modules/authorization/**/*.js"], ["auth"]);
 watcher.on('change', function(event) {
     console.log('File ' + event.path + ' was ' + event.type);
+});
+
+
+
+gulp.task('homunculus-ui-css', function() {
+    return gulp.src('clientside/modules/homunculus.ui/resources/*.css')
+        .pipe(plumber())
+        .pipe(concat("ui.css"))
+        //.pipe(cleanCSS())
+        .pipe(gulp.dest('clientside/dist/css'));
+});
+var homunculusUiWatcher = gulp.watch("clientside/modules/homunculus.ui/resources/*.css", ["css"]);
+
+
+gulp.task('application-css', function() {
+    return gulp.src('clientside/resources/styles/*.css')
+        .pipe(plumber())
+        .pipe(concat("app.css"))
+        //.pipe(cleanCSS())
+        .pipe(gulp.dest('clientside/dist/css'));
+});
+var homunculusUiWatcher = gulp.watch("clientside/resources/styles/*.css", ["css"]);
+
+gulp.task('css', ["homunculus-ui-css", "application-css"], function() {
+    return gulp.src(['clientside/dist/css/app.css', "clientside/dist/css/ui.css"])
+        .pipe(plumber())
+        .pipe(concat("styles.min.css"))
+        .pipe(cleanCSS())
+        .pipe(gulp.dest('clientside/dist/css'))
+        .pipe(liveReload({ start: true }));
 });
