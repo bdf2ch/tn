@@ -34,6 +34,8 @@
             echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
         }
 
+        copy($_SERVER["DOCUMENT_ROOT"].$DS."serverside".$DS."attachments".$DS);
+
         $divisionId = $_POST["divisionId"];
         $violationId = 0;
         if ($_POST["violationId"] == 0) {

@@ -1,6 +1,6 @@
 angular
     .module("homunculus.ui")
-    .directive("uiTabs", ["$log", "$compile", "$sce", "$errors", "$tabs", function ($log, $compile, $sce, $errors, $tabs) {
+    .directive("uiTabs", ["$log", "$templateCache", "$errors", "$tabs", function ($log, $templateCache, $errors, $tabs) {
         return {
             restrict: "E",
             transclude: true,
@@ -15,7 +15,9 @@ angular
                                 "<span class='fa {{ tab.icon }}' ng-show='tab.icon !== undefined'></span>" +
                                 "<span class='tab-caption'>{{ tab.caption }}</div>" +
                         "</div>" +
-                        "<div class='tabs-content' id='tabs-content-{{settings.id}}'></div>" +
+                        "<div class='tabs-content' id='tabs-content-{{settings.id}}' >" +
+                            "<div ng-include='templateId' onload='onLoad()'></div>" +
+                        "</div>" +
                       "</div>",
             controller: function ($scope, $element, $attrs) {
                 if ($attrs.id === undefined || $attrs.id === "") {
@@ -26,16 +28,24 @@ angular
                 var settings = $scope.settings = {
                     id: $attrs.id,
                     tabs: [],
-                    container: document.getElementById("tabs-content-" + this.id),
                     content: "",
                     onTabSelect: $scope.onTabSelect !== undefined && typeof $scope.onTabSelect === "function" ? $scope.onTabSelect : undefined
                 };
-                var test = document.getElementById("tabs-content-" + this.id);
-                $log.info(test);
+                var templateId = $scope.templateId = "ui-tabs-" + settings.id;
+
+                $scope.onLoad = function () {
+                    $log.info("template loaded");
+                };
+
                 var instance = $tabs.getById(settings.id);
                 if (!instance) {
                     $tabs.register(settings);
                 }
+
+
+                this.getId = function () {
+                    return settings.id;
+                };
 
                 this.registerTab = function (tab) {
                     if (tab === undefined) {
@@ -53,18 +63,12 @@ angular
                     }
 
                     settings.tabs.push(tab);
-                    tab.isActive = true;
-                    $log.info("container = ", settings.container);
-                    //settings.contentContainer.innerHTML = settings.tabs[0].content;
-                    //settings.tabs[0].content(function (clone) {
-                    //    $log.info(clone);
-                        angular.element(settings.container).innerHTML = tab.content;
-                    //});
-
-                    $compile(settings.container)(tab.scope);
-                    $log.log("local tabs", settings.tabs);
+                    settings.tabs[0].isActive = true;
+                    $scope.templateId = "ui-tabs-" + settings.id + "-" + settings.tabs[0].id;
                     return true;
                 };
+
+
 
                 this.selectTab = $scope.selectTab = function (id) {
                     if (id === undefined) {
@@ -76,12 +80,7 @@ angular
                     for (var i = 0; i < length; i++) {
                         if (settings.tabs[i].id === id) {
                             settings.tabs[i].isActive = true;
-                            //settings.content = settings.tabs[i].content;
-                            angular.element(settings.container).innerHTML = settings.tabs[i].content;
-                            //settings.contentContainer.innerHTML = settings.tabs[i].content;
-                            $compile(settings.container)($scope);
-                            if (settings.onTabSelect !== undefined)
-                                settings.onTabSelect(settings.tabs[i]);
+                            $scope.templateId = "ui-tabs-" + settings.id + "-" + settings.tabs[i].id;
                         } else
                             settings.tabs[i].isActive = false;
                     }
@@ -90,17 +89,6 @@ angular
             },
             link: function (scope, element, attrs, transclude) {
                 $log.log("tabs directive");
-
-                //scope.settings.container = document.getElementById("tabs-content-" + this.id);
-
-                //if (attrs.id === undefined || attrs.id === "") {
-                //    $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "tabs directive -> Не задан аттрибут - идентификатор компонента");
-                //    return false;
-                //}
-                var test = document.getElementById("tabs-content-test-tabs");
-                $log.info("test", test);
-
-
             }
 
         }

@@ -19,7 +19,7 @@
 </div>
 
 <div class="block padding-30">
-    <ui-tabs id="test-tabs">
+    <ui-tabs id="test">
         <ui-tab id="test1" caption="tab1" icon="fa-bolt" title="Тестовая вкладка">
             контент вкладки 1
             <b>test</b><br>
@@ -29,7 +29,7 @@
             контент вкладки 2
         </ui-tab>
         <ui-tab id="test3" caption="tab3">
-            контент вкладки 3
+            {{ divisions.getCurrent().shortTitle.value }}
         </ui-tab>
     </ui-tabs>
 </div>

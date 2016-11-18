@@ -11,6 +11,8 @@
 .idea/jsLibraryMappings.xml
 node_modules/
 uploads/
+serverside/attachments/
+serverside/files/
 
 # Sensitive or high-churn files:
 .idea/dataSources.ids

@@ -1,11 +1,10 @@
 angular
     .module("homunculus.ui")
-    .directive("uiTab", ["$log", "$sce", "$errors", function ($log, $sce, $errors) {
+    .directive("uiTab", ["$log", "$templateCache", "$errors", function ($log, $templateCache, $errors) {
         return {
             restrict: "E",
             require: "^uiTabs",
-            //transclude: true,
-            link: function (scope, element, attrs, controller, transclude) {
+            link: function (scope, element, attrs, controller) {
                 $log.log("tab directive");
 
                 if (attrs.id === undefined || attrs.id === "") {
@@ -13,28 +12,19 @@ angular
                     return false;
                 }
 
-
-
                 var settings = scope.settings = {
                     id: attrs.id,
                     caption: attrs.caption !== undefined && attrs.caption !== "" ? attrs.caption : "",
                     icon: attrs.icon !== undefined && attrs.icon !== "" ? attrs.icon : undefined,
                     title: attrs.title !== undefined && attrs.title !== "" ? attrs.title : "",
                     content: element[0].innerHTML,
-                    scope: scope,
-                    //content: undefined,
                     isActive: false
                 };
 
-                $log.log("content = ", settings.content);
-                //transclude(function(clone) {
-                //    $log.info(clone);
-                //    settings.content = clone;
-                    //settings.content = clone;
-                //});
+                $templateCache.put("ui-tabs-" + controller.getId() + "-" + settings.id, settings.content);
 
                 controller.registerTab(settings);
-                //element[0].innerHTML = "";
+                element[0].innerHTML = "";
             }
         }
     }]);
