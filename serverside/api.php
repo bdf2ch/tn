@@ -278,33 +278,6 @@
         $result = new stdClass();
         $result -> attachments = array();
 
-        /*
-        $link = mysql_connect($db_host, $db_user, $db_password);
-        if (!$link) {
-            echo("Error connecting DB: ".mysql_error());
-            return false;
-        }
-
-        $db = mysql_select_db($db_name, $link);
-        if (!$db) {
-            echo("Error selecting DB: ".mysql_error());
-            return false;
-        }
-
-        $encoding = mysql_query("SET NAMES utf8");
-        if (!$encoding) {
-            echo("Error setting encoding: ".mysql_error());
-            return false;
-        }
-        */
-
-        /*
-        $query = mysql_query("SELECT * FROM violations WHERE ID = $id LIMIT 1", $link);
-        if (!$query) {
-            echo("Error executing query: ".mysql_error());
-            return false;
-        }
-        */
         $query = mysqli_query($mysqli, "SELECT * FROM violations WHERE ID = $id LIMIT 1");
         if (!$query) {
             echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
@@ -316,13 +289,6 @@
             $result -> violation = $violation;
 
             $userId = $violation["USER_ID"];
-            /*
-            $user = mysql_query("SELECT * FROM users WHERE ID = $userId LIMIT 1", $link);
-            if (!$user) {
-                echo("Error executing query: ".mysql_error());
-                return false;
-            }
-            */
             $user = mysqli_query($mysqli, "SELECT * FROM users WHERE ID = $userId LIMIT 1");
             if (!$user) {
                 echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
@@ -330,13 +296,6 @@
             }
             $result -> user = mysqli_fetch_assoc($user);
 
-            /*
-            $attachments = mysql_query("SELECT * FROM attachments WHERE VIOLATION_ID = $id", $link);
-            if (!$attachments) {
-                echo("Error executing query: ".mysql_error());
-                return false;
-            }
-            */
             $attachments = mysqli_query($mysqli, "SELECT * FROM attachments WHERE VIOLATION_ID = $id");
             if (!$attachments) {
                 echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;

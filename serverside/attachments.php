@@ -92,7 +92,11 @@
         } else {
             copy($_SERVER["DOCUMENT_ROOT"].$DS."serverside".$DS."files".$DS.$onDisk.$DS.$title1251, $_SERVER["DOCUMENT_ROOT"].$DS."serverside".$DS."attachments".$DS.$parent["ID"].$DS.$violationId.$DS.$title1251);
             $urlEncoded = mysqli_real_escape_string($mysqli, $url);
-            $file = mysqli_query($mysqli, "UPDATE attachments SET URL = '$urlEncoded' WHERE ID = $attachmentId");
+            $size = filesize($_SERVER["DOCUMENT_ROOT"].$DS."serverside".$DS."attachments".$DS.$parent["ID"].$DS.$violationId.$DS.$title1251);
+            //$data = file_get_contents($_SERVER["DOCUMENT_ROOT"].$DS."serverside".$DS."files".$DS.$onDisk.$DS.$title1251);
+            //$size = strlen($data);
+            //echo("size = ".$size."<br>");
+            $file = mysqli_query($mysqli, "UPDATE attachments SET URL = '$urlEncoded', SIZE = $size WHERE ID = $attachmentId");
             if (!$file) {
                 echo "Не удалось выполнить запрос: (".$mysqli -> errno.") ".$mysqli -> error;
                 return false;
