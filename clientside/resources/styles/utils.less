@@ -34,17 +34,17 @@
 
 @font-face {
   font-family: "Roboto Regular";
-  src: url("../fonts/Roboto-Regular.ttf");
+  src: url("/clientside/resources/fonts/Roboto-Regular.ttf");
 }
 
 @font-face {
   font-family: "Roboto Bold";
-  src: url("../fonts/Roboto-Bold.ttf");
+  src: url("/clientside/resources/fonts/Roboto-Bold.ttf");
 }
 
 @font-face {
   font-family: "Roboto Italic";
-  src: url("../fonts/Roboto-Italic.ttf");
+  src: url("/clientside/resources/fonts/Roboto-Italic.ttf");
 }
 
 
@@ -116,6 +116,12 @@
 .width-100 {
   float: left;
   width: 100% !important;
+  box-sizing: border-box;
+}
+
+.width-95 {
+  float: left;
+  width: 95%;
   box-sizing: border-box;
 }
 
@@ -489,6 +495,9 @@ input[type='button'], input[type='submit'], button {
     &[disabled] {
       background: @color-light-blue;
     }
+    &.pressed {
+      background: @color-blue-pressed;
+    }
   }
 
   &.green {
@@ -620,6 +629,7 @@ table {
 @color-light-green: #C8E6C9;
 @color-blue: #2196F3;
 @color-blue-hover: #1976D2;
+@color-blue-pressed: #0D47A1;
 @color-light-blue: #BBDEFB;
 
 

@@ -90,7 +90,6 @@ gulp.task('homunculus-ui-css', function() {
     return gulp.src('clientside/modules/homunculus.ui/resources/*.css')
         .pipe(plumber())
         .pipe(concat("ui.css"))
-        //.pipe(cleanCSS())
         .pipe(gulp.dest('clientside/dist/css'));
 });
 var homunculusUiWatcher = gulp.watch("clientside/modules/homunculus.ui/resources/*.css", ["css"]);
@@ -100,7 +99,6 @@ gulp.task('application-css', function() {
     return gulp.src('clientside/resources/styles/*.css')
         .pipe(plumber())
         .pipe(concat("app.css"))
-        //.pipe(cleanCSS())
         .pipe(gulp.dest('clientside/dist/css'));
 });
 var homunculusUiWatcher = gulp.watch("clientside/resources/styles/*.css", ["css"]);

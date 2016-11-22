@@ -4,8 +4,8 @@
   width: 420px;
 }
 #filter {
-  float: left;
-  width: 420px;
+  float: right;
+  width: 770px;
   box-sizing: border-box;
 }
 #filter .no-date {
@@ -130,9 +130,81 @@ table tfoot td.buttoned:hover {
   color: white;
 }
 .mdash {
-  height: 65px;
-  line-height: 80px;
+  height: 30px;
+  line-height: 30px;
   color: lightgray;
+}
+/*** Filters ***/
+.filter-label {
+  display: inline-block;
+  height: 17px;
+  margin-bottom: 2px;
+  padding-right: 5px;
+  padding-left: 5px;
+  line-height: 17px;
+  font-size: 11px;
+  background: #FFE0B2;
+}
+#filters {
+  position: relative;
+  overflow: hidden;
+  height: 85px;
+  border: none;
+}
+.filter-tabs {
+  position: absolute;
+  overflow: visible;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  z-index: 2;
+  clear: both;
+  height: 30px;
+  margin-bottom: -1px;
+  padding-left: 10px;
+}
+.filter-tabs .filter-tab {
+  position: relative;
+  display: inline-block;
+  z-index: 3;
+  float: left;
+  height: 25px;
+  margin-top: 6px;
+  margin-right: 5px;
+  padding-right: 10px;
+  padding-left: 10px;
+  box-sizing: border-box;
+  font-size: 13px;
+  line-height: 24px;
+  color: darkgrey;
+  border-top: 1px solid lightgrey;
+  border-left: 1px solid lightgrey;
+  border-right: 1px solid lightgrey;
+  cursor: pointer;
+}
+.filter-tabs .filter-tab:hover {
+  color: black;
+}
+.filter-tabs .filter-tab.active {
+  font-weight: bold;
+  color: black;
+  border-bottom: 1px solid white;
+}
+.filter-content {
+  position: relative;
+  top: 30px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  overflow: hidden;
+  z-index: 1;
+  clear: both;
+  height: 55px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-top: 1px solid lightgrey;
 }
 #new-violation_ {
   width: 1200px;
@@ -330,15 +402,15 @@ table tfoot td.buttoned:hover {
 *********/
 @font-face {
   font-family: "Roboto Regular";
-  src: url("../fonts/Roboto-Regular.ttf");
+  src: url("/clientside/resources/fonts/Roboto-Regular.ttf");
 }
 @font-face {
   font-family: "Roboto Bold";
-  src: url("../fonts/Roboto-Bold.ttf");
+  src: url("/clientside/resources/fonts/Roboto-Bold.ttf");
 }
 @font-face {
   font-family: "Roboto Italic";
-  src: url("../fonts/Roboto-Italic.ttf");
+  src: url("/clientside/resources/fonts/Roboto-Italic.ttf");
 }
 /**********
 ** TEXT ALIGN
@@ -385,6 +457,11 @@ table tfoot td.buttoned:hover {
 .width-100 {
   float: left;
   width: 100% !important;
+  box-sizing: border-box;
+}
+.width-95 {
+  float: left;
+  width: 95%;
   box-sizing: border-box;
 }
 .width-90 {
@@ -715,6 +792,11 @@ input[type='submit'].blue[disabled],
 button.blue[disabled] {
   background: #BBDEFB;
 }
+input[type='button'].blue.pressed,
+input[type='submit'].blue.pressed,
+button.blue.pressed {
+  background: #0D47A1;
+}
 input[type='button'].green,
 input[type='submit'].green,
 button.green {
@@ -1040,15 +1122,15 @@ a.blue:hover {
 *********/
 @font-face {
   font-family: "PT Sans";
-  src: url("../fonts/PT_Sans-Web-Regular.ttf");
+  src: url("/clientside/resources/fonts/PT_Sans-Web-Regular.ttf");
 }
 @font-face {
   font-family: "PT Sans Bold";
-  src: url("../fonts/PT_Sans-Web-Bold.ttf");
+  src: url("/clientside/resources/fonts/PT_Sans-Web-Bold.ttf");
 }
 @font-face {
   font-family: "PT Sans Italic";
-  src: url("../fonts/PT_Sans-Web-Italic.ttf");
+  src: url("/clientside/resources/fonts/PT_Sans-Web-Italic.ttf");
 }
 html,
 body {

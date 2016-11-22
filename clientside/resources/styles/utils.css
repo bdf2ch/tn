@@ -6,15 +6,15 @@
 *********/
 @font-face {
   font-family: "Roboto Regular";
-  src: url("../fonts/Roboto-Regular.ttf");
+  src: url("/clientside/resources/fonts/Roboto-Regular.ttf");
 }
 @font-face {
   font-family: "Roboto Bold";
-  src: url("../fonts/Roboto-Bold.ttf");
+  src: url("/clientside/resources/fonts/Roboto-Bold.ttf");
 }
 @font-face {
   font-family: "Roboto Italic";
-  src: url("../fonts/Roboto-Italic.ttf");
+  src: url("/clientside/resources/fonts/Roboto-Italic.ttf");
 }
 /**********
 ** TEXT ALIGN
@@ -61,6 +61,11 @@
 .width-100 {
   float: left;
   width: 100% !important;
+  box-sizing: border-box;
+}
+.width-95 {
+  float: left;
+  width: 95%;
   box-sizing: border-box;
 }
 .width-90 {
@@ -390,6 +395,11 @@ input[type='button'].blue[disabled],
 input[type='submit'].blue[disabled],
 button.blue[disabled] {
   background: #BBDEFB;
+}
+input[type='button'].blue.pressed,
+input[type='submit'].blue.pressed,
+button.blue.pressed {
+  background: #0D47A1;
 }
 input[type='button'].green,
 input[type='submit'].green,

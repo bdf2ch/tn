@@ -1,7 +1,9 @@
 angular
     .module("violations")
-    .controller("ViolationsController", ["$log", "$scope", "$violations", "$location", "$tree", "$session", "$dateTimePicker", function ($log, $scope, $violations, $location, $tree, $session, $dateTimePicker) {
+    .controller("ViolationsController", ["$log", "$scope", "$violations", "$misc", "$vFilters", "$location", "$tree", "$session", "$dateTimePicker", function ($log, $scope, $violations, $misc, $vFilters, $location, $tree, $session, $dateTimePicker) {
         $scope.violations = $violations;
+        $scope.misc = $misc;
+        $scope.filters = $vFilters;
         $scope.today = new moment().hours(23).minutes(59).seconds(59).unix();
 
         $scope.selectStartDate = function () {

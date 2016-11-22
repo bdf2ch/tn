@@ -12,8 +12,8 @@
 
 
 #filter {
-  float: left;
-  width: @filter-width;
+  float: right;
+  width: @violations-width;
   box-sizing: border-box;
 
 
@@ -194,7 +194,100 @@ table {
 
 
 .mdash {
-  height: 65px;
-  line-height: 80px;
+  height: 30px;
+  line-height: 30px;
   color: lightgray;
+}
+
+
+
+
+/*** Filters ***/
+
+
+
+.filter-label {
+  //float: left;
+  display: inline-block;
+  //clear: left;
+  height: 17px;
+  margin-bottom: 2px;
+  padding-right: 5px;
+  padding-left: 5px;
+  line-height: 17px;
+  font-size: 11px;
+  background: #FFE0B2;
+}
+
+
+#filters {
+  position: relative;
+  overflow: hidden;
+  height: 85px;
+  border: none;
+}
+
+.filter-tabs {
+  position: absolute;
+  overflow: visible;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  z-index: 2;
+  clear: both;
+  height: 30px;
+  margin-bottom: -1px;
+  padding-left: 10px;
+  //box-sizing: border-box;
+  //border: 1px solid blue;
+
+  .filter-tab {
+    position: relative;
+    display: inline-block;
+    z-index: 3;
+    float: left;
+    height: 25px;
+    margin-top: 6px;
+    margin-right: 5px;
+    padding-right: 10px;
+    padding-left: 10px;
+    box-sizing: border-box;
+    font-size: 13px;
+    line-height: 24px;
+    color: darkgrey;
+    border-top: 1px solid lightgrey;
+    border-left: 1px solid lightgrey;
+    border-right: 1px solid lightgrey;
+    cursor: pointer;
+
+    &:hover {
+      color: black;
+    }
+
+    &.active {
+      font-weight: bold;
+      color: black;
+      border-bottom: 1px solid white;
+    }
+  }
+
+}
+
+
+.filter-content {
+  position: relative;
+  top: 30px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  overflow: hidden;
+  z-index: 1;
+  clear: both;
+  height: 55px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-top: 1px solid lightgrey;
+  //border-bottom: 1px solid red;
 }
