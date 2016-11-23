@@ -145,6 +145,7 @@
 .width-15 {
   float: left;
   width: 15%;
+  box-sizing: border-box;
 }
 .width-10 {
   float: left;

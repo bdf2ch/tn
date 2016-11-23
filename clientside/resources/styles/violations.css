@@ -143,7 +143,15 @@ table tfoot td.buttoned:hover {
   padding-left: 5px;
   line-height: 17px;
   font-size: 11px;
+  vertical-align: top;
   background: #FFE0B2;
+}
+.filter-label .fa {
+  cursor: pointer;
+  color: #F57C00;
+}
+.filter-label .fa:hover {
+  color: #E65100;
 }
 #filters {
   position: relative;

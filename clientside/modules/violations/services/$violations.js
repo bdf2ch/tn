@@ -13,16 +13,18 @@ angular.module("violations")
             var totalViolations = 0;
             var totalAttachments = 0;
             var thursday = 0;
+            var isLoading = false;
 
-            var startDate = 0;
-            var endDate = 0;
+
+            var isFilterEnabled = true;
+            var isViolationIdSent = false;
 
             var pages = 0;
             var pagesLoaded = 1;
             var total = 0;
             var start = 0;
 
-            return {
+            return api = {
                 init: function () {
                     if (window.initialData !== undefined) {
 
@@ -139,6 +141,12 @@ angular.module("violations")
                     endDate: 0,
                     loadMore: true,
 
+                    loading: function (flag) {
+                        if (flag !== undefined)
+                            isLoading = flag;
+                        return isLoading;
+                    },
+
                     filterStartDate: function (date) {
                         if (date !== undefined)
                             startDate = date;
@@ -223,8 +231,10 @@ angular.module("violations")
                                 id: id
                             }
                         };
+                        isLoading = true;
                         return $http.post("/serverside/api.php", params).then(
                             function success(response) {
+                                isLoading = false;
                                 //$log.info("promise success");
                                 var violation = $factory({classes: ["Violation", "Model", "Backup", "States"], base_class: "Violation"});
                                 violation._model_.fromJSON(response.data.violation);
@@ -245,9 +255,51 @@ angular.module("violations")
                                 return currentViolation;
                             },
                             function error() {
+                                isLoading = false;
                                 return undefined;
                             }
                         );
+                    },
+
+
+                    searchById: function (id, callback) {
+                        if (id === undefined) {
+                            $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$violations -> violations -> searchById: Не задан параметр - идентификатор технологического нарушения");
+                            return false;
+                        }
+
+                        var params = {
+                            action: "searchById",
+                            data: {
+                                id: id
+                            }
+                        };
+                        isLoading = true;
+                        $http.post("/serverside/api.php", params).then(
+                            function success (response) {
+                                if (data !== undefined) {
+                                    var violation = $factory({ classes: ["Violation", "Model", "Backup", "States"], base_class: "Violation" });
+                                    violation._model_.fromJSON(response.data.violation);
+                                    violation._backup_.setup();
+
+                                    var user = $factory({ classes: ["AppUser", "Model", "Backup", "States"], base_class: "AppUser" });
+                                    user._model_.fromJSON(response.data.user);
+                                    violation.user = user;
+
+                                    var length = response.data.attachments.length;
+                                    for (var i = 0; i < length; i++) {
+                                        var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
+                                        attachment._model_.fromJSON(response.data.attachments[i]);
+                                        violation.attachments.push(attachment);
+                                    }
+                                }
+                            },
+                            function error () {
+                                $errors.throw($errors.type.ERROR_TYPE_ENGINE, "$violations -> violations -> searchById: В процессе поиска возникла ошибка");
+                                return false;
+                            }
+                        );
+
                     },
 
                     select: function (id, callback) {
@@ -300,8 +352,8 @@ angular.module("violations")
                             action: "getViolationsByDivisionId",
                             data: {
                                 divisionId: divisionId,
-                                startDate: this.startDate,
-                                endDate: this.endDate,
+                                startDate: api.violations.filter.startDate,
+                                endDate: api.violations.filter.endDate,
                                 start: start
                             }
                         };
@@ -314,8 +366,10 @@ angular.module("violations")
                             totalViolations = 0;
                         }
 
+                        isLoading = true;
                         $http.post("serverside/api.php", params)
                             .success(function (data) {
+                                isLoading = false;
                                 if (start === 0)
                                     violations = [];
                                 if (data !== undefined && data.length > 0) {
@@ -492,6 +546,47 @@ angular.module("violations")
                             callback(attachment);
 
                         return true;
+                    },
+
+
+                    filter: {
+                        violationId: "",
+                        startDate: 0,
+                        endDate: 0,
+                        eskGroupId: 0,
+
+                        enabled: function (flag) {
+                            if (flag !== undefined)
+                                isFilterEnabled = flag;
+                            return isFilterEnabled;
+                        },
+
+                        isIdSent: function (flag) {
+                            if (flag !== undefined)
+                                isViolationIdSent = flag;
+                            return isViolationIdSent;
+                        },
+
+                        cancelStartDate: function (callback) {
+                            this.startDate = 0;
+                            if (callback !== undefined && typeof callback === "function")
+                                callback();
+                            return true;
+                        },
+
+                        cancelEndDate: function (callback) {
+                            this.endDate = 0;
+                            if (callback !== undefined && typeof callback === "function")
+                                callback();
+                            return true;
+                        },
+
+                        cancelEskGroup: function (callback) {
+                            this.eskGroupId = 0;
+                            if (callback !== undefined && typeof callback === "function")
+                                callback();
+                            return true;
+                        }
                     }
                 },
 
@@ -582,5 +677,5 @@ angular.module("violations")
                             });
                     }
                 }
-            }
+            };
         }]);

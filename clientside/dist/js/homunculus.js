@@ -984,3 +984,15 @@ angular
             }
         }
     }]);
+angular
+    .module("homunculus")
+    .filter("integer", ["$errors", function ($errors) {
+        return function (input) {
+            if (input !== undefined) {
+                if (typeof input !== "number")
+                    return "";
+                else
+                    return Math.floor(input);
+            }
+        };
+    }]);

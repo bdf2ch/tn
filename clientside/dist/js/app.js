@@ -938,41 +938,78 @@ angular
         $scope.filters = $vFilters;
         $scope.today = new moment().hours(23).minutes(59).seconds(59).unix();
 
-        $scope.selectStartDate = function () {
-            //$log.log("onSelect called");
+        $scope.selectStartDate = function (value) {
+            $log.log("onSelect called", value);
+            //$violations.violations.filter.setStartDate(value);
             $violations.violations.setStart(0);
-            $dateTimePicker.getById("violations-end-date").scope.settings.minDate = $violations.violations.startDate;
+            $dateTimePicker.getById("violations-end-date").scope.settings.minDate = $violations.violations.filter.startDate;
             var division = $tree.getById("session-divisions-tree").selectedItem;
             if (division !== undefined)
                 $violations.violations.getByDivisionId(division.key);
         };
 
 
+        /*
         $scope.clearStartDate = function () {
-            $violations.violations.startDate = 0;
+            $violations.violations.filter.startDate = 0;
             $violations.violations.setStart(0);
             $dateTimePicker.getById("violations-end-date").scope.settings.minDate = 0;
             var division = $tree.getById("session-divisions-tree").selectedItem;
             if (division !== undefined)
                 $violations.violations.getByDivisionId(division.key);
         };
+        */
+
+
+        $scope.cancelStartDate = function () {
+            $violations.violations.filter.cancelStartDate(function () {
+                $violations.violations.setStart(0);
+                $dateTimePicker.getById("violations-end-date").scope.settings.minDate = 0;
+                var division = $tree.getById("session-divisions-tree").selectedItem;
+                if (division !== undefined)
+                    $violations.violations.getByDivisionId(division.key);
+            });
+        };
 
 
         $scope.selectEndDate = function () {
             $violations.violations.setStart(0);
-            $violations.violations.endDate = moment.unix($violations.violations.endDate).hours(23).minutes(59).seconds(59).unix();
-            $dateTimePicker.getById("violations-start-date").scope.settings.maxDate = $violations.violations.endDate;
+            $violations.violations.endDate = moment.unix($violations.violations.filter.endDate).hours(23).minutes(59).seconds(59).unix();
+            $dateTimePicker.getById("violations-start-date").scope.settings.maxDate = $violations.violations.filter.endDate;
             var division = $tree.getById("session-divisions-tree").selectedItem;
             if (division !== undefined)
                 $violations.violations.getByDivisionId(division.key);
         };
 
-
+        /*
         $scope.clearEndDate = function () {
-            $violations.violations.endDate = 0;
+            $violations.violations.filter.endDate = 0;
             $violations.violations.setStart(0);
             //$dateTimePicker.getAll()[0].scope.settings.maxDate = $scope.today;
             $dateTimePicker.getById("violations-start-date").scope.settings.maxDate = $scope.today;
+            var division = $tree.getById("session-divisions-tree").selectedItem;
+            if (division !== undefined)
+                $violations.violations.getByDivisionId(division.key);
+        };
+        */
+
+        $scope.cancelEndDate = function () {
+            $violations.violations.filter.cancelEndDate(function () {
+                $violations.violations.setStart(0);
+                $dateTimePicker.getById("violations-start-date").scope.settings.maxDate = $scope.today;
+                var division = $tree.getById("session-divisions-tree").selectedItem;
+                if (division !== undefined)
+                    $violations.violations.getByDivisionId(division.key);
+            });
+        };
+
+
+        $scope.cancelBothDates = function () {
+            $violations.violations.setStart(0);
+            $violations.violations.filter.cancelStartDate();
+            $dateTimePicker.getById("violations-start-date").scope.settings.maxDate = $scope.today;
+            $violations.violations.filter.cancelEndDate();
+            $dateTimePicker.getById("violations-end-date").scope.settings.minDate = 0;
             var division = $tree.getById("session-divisions-tree").selectedItem;
             if (division !== undefined)
                 $violations.violations.getByDivisionId(division.key);
@@ -988,7 +1025,7 @@ angular
             $violations.violations.setStart(0);
             if (division.isSelected === true) {
                 $violations.violations.getNew().divisionId.value = division.key;
-                $violations.violations.getByDivisionId(division.key, $violations.violations.startDate, $violations.violations.endDate);
+                $violations.violations.getByDivisionId(division.key, $violations.violations.filter.startDate, $violations.violations.filter.endDate);
                 //$log.log("new = ", $violations.violations.getNew());
 
             }
@@ -1001,6 +1038,26 @@ angular
                     $location.url("/violations/" + violationId);
                 });
             }
+        };
+
+
+        $scope.clearViolationId = function () {};
+
+        $scope.onChangeViolationId = function () {
+            $log.log("violationId changed");
+            var violationId = $violations.violations.filter.violationId;
+            if (violationId !== "") {
+                if (isNaN(violationId))
+                    $violations.violations.filter.violationId = "";
+                else
+                    $violations.violations.filter.violationId = Math.floor(violationId);
+            }
+        };
+
+
+        $scope.searchViolationById = function () {
+            $log.log("search pressed");
+            $violations.violations.filter.isIdSent(true);
         };
 
     }]);
@@ -1768,16 +1825,18 @@ angular.module("violations")
             var totalViolations = 0;
             var totalAttachments = 0;
             var thursday = 0;
+            var isLoading = false;
 
-            var startDate = 0;
-            var endDate = 0;
+
+            var isFilterEnabled = true;
+            var isViolationIdSent = false;
 
             var pages = 0;
             var pagesLoaded = 1;
             var total = 0;
             var start = 0;
 
-            return {
+            return api = {
                 init: function () {
                     if (window.initialData !== undefined) {
 
@@ -1894,6 +1953,12 @@ angular.module("violations")
                     endDate: 0,
                     loadMore: true,
 
+                    loading: function (flag) {
+                        if (flag !== undefined)
+                            isLoading = flag;
+                        return isLoading;
+                    },
+
                     filterStartDate: function (date) {
                         if (date !== undefined)
                             startDate = date;
@@ -1978,8 +2043,10 @@ angular.module("violations")
                                 id: id
                             }
                         };
+                        isLoading = true;
                         return $http.post("/serverside/api.php", params).then(
                             function success(response) {
+                                isLoading = false;
                                 //$log.info("promise success");
                                 var violation = $factory({classes: ["Violation", "Model", "Backup", "States"], base_class: "Violation"});
                                 violation._model_.fromJSON(response.data.violation);
@@ -2000,9 +2067,51 @@ angular.module("violations")
                                 return currentViolation;
                             },
                             function error() {
+                                isLoading = false;
                                 return undefined;
                             }
                         );
+                    },
+
+
+                    searchById: function (id, callback) {
+                        if (id === undefined) {
+                            $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$violations -> violations -> searchById: Не задан параметр - идентификатор технологического нарушения");
+                            return false;
+                        }
+
+                        var params = {
+                            action: "searchById",
+                            data: {
+                                id: id
+                            }
+                        };
+                        isLoading = true;
+                        $http.post("/serverside/api.php", params).then(
+                            function success (response) {
+                                if (data !== undefined) {
+                                    var violation = $factory({ classes: ["Violation", "Model", "Backup", "States"], base_class: "Violation" });
+                                    violation._model_.fromJSON(response.data.violation);
+                                    violation._backup_.setup();
+
+                                    var user = $factory({ classes: ["AppUser", "Model", "Backup", "States"], base_class: "AppUser" });
+                                    user._model_.fromJSON(response.data.user);
+                                    violation.user = user;
+
+                                    var length = response.data.attachments.length;
+                                    for (var i = 0; i < length; i++) {
+                                        var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
+                                        attachment._model_.fromJSON(response.data.attachments[i]);
+                                        violation.attachments.push(attachment);
+                                    }
+                                }
+                            },
+                            function error () {
+                                $errors.throw($errors.type.ERROR_TYPE_ENGINE, "$violations -> violations -> searchById: В процессе поиска возникла ошибка");
+                                return false;
+                            }
+                        );
+
                     },
 
                     select: function (id, callback) {
@@ -2055,8 +2164,8 @@ angular.module("violations")
                             action: "getViolationsByDivisionId",
                             data: {
                                 divisionId: divisionId,
-                                startDate: this.startDate,
-                                endDate: this.endDate,
+                                startDate: api.violations.filter.startDate,
+                                endDate: api.violations.filter.endDate,
                                 start: start
                             }
                         };
@@ -2069,8 +2178,10 @@ angular.module("violations")
                             totalViolations = 0;
                         }
 
+                        isLoading = true;
                         $http.post("serverside/api.php", params)
                             .success(function (data) {
+                                isLoading = false;
                                 if (start === 0)
                                     violations = [];
                                 if (data !== undefined && data.length > 0) {
@@ -2247,6 +2358,47 @@ angular.module("violations")
                             callback(attachment);
 
                         return true;
+                    },
+
+
+                    filter: {
+                        violationId: "",
+                        startDate: 0,
+                        endDate: 0,
+                        eskGroupId: 0,
+
+                        enabled: function (flag) {
+                            if (flag !== undefined)
+                                isFilterEnabled = flag;
+                            return isFilterEnabled;
+                        },
+
+                        isIdSent: function (flag) {
+                            if (flag !== undefined)
+                                isViolationIdSent = flag;
+                            return isViolationIdSent;
+                        },
+
+                        cancelStartDate: function (callback) {
+                            this.startDate = 0;
+                            if (callback !== undefined && typeof callback === "function")
+                                callback();
+                            return true;
+                        },
+
+                        cancelEndDate: function (callback) {
+                            this.endDate = 0;
+                            if (callback !== undefined && typeof callback === "function")
+                                callback();
+                            return true;
+                        },
+
+                        cancelEskGroup: function (callback) {
+                            this.eskGroupId = 0;
+                            if (callback !== undefined && typeof callback === "function")
+                                callback();
+                            return true;
+                        }
                     }
                 },
 
@@ -2337,7 +2489,7 @@ angular.module("violations")
                             });
                     }
                 }
-            }
+            };
         }]);
 angular
     .module("application", ["ngRoute", "ngCookies", "ngAnimate", "violations", "homunculus", "homunculus.ui"])
