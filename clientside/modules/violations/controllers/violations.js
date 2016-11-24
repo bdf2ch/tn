@@ -93,7 +93,7 @@ angular
             $violations.violations.setStart(0);
             if (division.isSelected === true) {
                 $violations.violations.getNew().divisionId.value = division.key;
-                $violations.violations.getByDivisionId(division.key, $violations.violations.filter.startDate, $violations.violations.filter.endDate);
+                $violations.violations.getByDivisionId(division.key);
                 //$log.log("new = ", $violations.violations.getNew());
 
             }
@@ -126,6 +126,13 @@ angular
         $scope.searchViolationById = function () {
             $log.log("search pressed");
             $violations.violations.filter.isIdSent(true);
+        };
+
+
+        $scope.selectEskGroup = function () {
+            var division = $tree.getById("session-divisions-tree").selectedItem;
+            if (division !== undefined)
+                $violations.violations.getByDivisionId(division.key);
         };
 
     }]);

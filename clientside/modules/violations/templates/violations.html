@@ -232,7 +232,8 @@
                         ng-class="{ 'width-100': violations.violations.filter.eskGroupId === 0 }"
                         ng-model="violations.violations.filter.eskGroupId"
                         ng-options="group.id.value as group.title.value for group in misc.eskGroups.getAll()"
-                        ng-change="$violations.violations.getNew()._states_.changed(true)">
+                        ng-disabled="violations.violations.loading() === true"
+                        ng-change="selectEskGroup()">
                 </select>
                 <button class="blue width-5"
                         ng-show="violations.violations.filter.eskGroupId !== 0"

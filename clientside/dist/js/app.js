@@ -1025,7 +1025,7 @@ angular
             $violations.violations.setStart(0);
             if (division.isSelected === true) {
                 $violations.violations.getNew().divisionId.value = division.key;
-                $violations.violations.getByDivisionId(division.key, $violations.violations.filter.startDate, $violations.violations.filter.endDate);
+                $violations.violations.getByDivisionId(division.key);
                 //$log.log("new = ", $violations.violations.getNew());
 
             }
@@ -1058,6 +1058,13 @@ angular
         $scope.searchViolationById = function () {
             $log.log("search pressed");
             $violations.violations.filter.isIdSent(true);
+        };
+
+
+        $scope.selectEskGroup = function () {
+            var division = $tree.getById("session-divisions-tree").selectedItem;
+            if (division !== undefined)
+                $violations.violations.getByDivisionId(division.key);
         };
 
     }]);
@@ -1232,72 +1239,6 @@ angular
             }
         }
     }]);
-angular
-    .module("violations")
-    .filter("byViolationId", ["$log", function ($log) {
-        return function (input, violationId) {
-            if (violationId !== undefined && violationId !== 0) {
-                var length = input.length;
-                var result = [];
-                
-                for (var i = 0; i < length; i++) {
-                    if (input[i].violationId.value === violationId)
-                        result.push(input[i]);
-                }
-                return result;
-            } else
-                return input;
-
-        }
-    }]);
-angular.module("violations")
-    .filter("dateFilter", ["$log", function ($log) {
-        return function (input) {
-            return moment.unix(input).format("DD MMMM YYYY, HH:mm");
-        }
-    }]);
-angular.module("violations")
-    .filter("dateShort", ["$log", function ($log) {
-        return function (input) {
-            return moment.unix(input).format("DD.MM.YYYY");
-        }
-    }]);
-angular.module("violations")
-    .filter("day", ["$log", function ($log) {
-        return function (input) {
-            return moment.unix(input).format("DD MMMM YYYY");
-        }
-    }]);
-
-angular
-    .module("violations")
-    .filter("filesize", [function () {
-        return function (input, precision) {
-            if (typeof precision === 'undefined') precision = 1;
-            var units = ['байт', 'кб', 'мб', 'гб', 'тв', 'пб'];
-            var number = Math.floor(Math.log(input) / Math.log(1024));
-            return (input / Math.pow(1024, Math.floor(number))).toFixed(precision) +  ' ' + units[number];
-        }
-    }]);
-
-angular.module("violations")
-    .filter("time", ["$log", function ($log) {
-        return function (input) {
-            return moment.unix(input).format("HH:mm");
-        }
-    }]);
-angular
-    .module("violations")
-    .filter('toArray', [function () {
-        return function (input) {
-            var result = [];
-            for (var index in input) {
-                result.push(input[index]);
-            }
-            return result;
-        }
-    }]);
-
 angular
     .module("violations")
     .factory("$divisions", ["$log", "$http", "$factory", "$errors", "$session", "$violations", "$tree", function ($log, $http, $factory, $errors, $session, $violations, $tree) {
@@ -2166,6 +2107,7 @@ angular.module("violations")
                                 divisionId: divisionId,
                                 startDate: api.violations.filter.startDate,
                                 endDate: api.violations.filter.endDate,
+                                eskGroupId: api.violations.filter.eskGroupId,
                                 start: start
                             }
                         };
@@ -2491,6 +2433,72 @@ angular.module("violations")
                 }
             };
         }]);
+angular
+    .module("violations")
+    .filter("byViolationId", ["$log", function ($log) {
+        return function (input, violationId) {
+            if (violationId !== undefined && violationId !== 0) {
+                var length = input.length;
+                var result = [];
+                
+                for (var i = 0; i < length; i++) {
+                    if (input[i].violationId.value === violationId)
+                        result.push(input[i]);
+                }
+                return result;
+            } else
+                return input;
+
+        }
+    }]);
+angular.module("violations")
+    .filter("dateFilter", ["$log", function ($log) {
+        return function (input) {
+            return moment.unix(input).format("DD MMMM YYYY, HH:mm");
+        }
+    }]);
+angular.module("violations")
+    .filter("dateShort", ["$log", function ($log) {
+        return function (input) {
+            return moment.unix(input).format("DD.MM.YYYY");
+        }
+    }]);
+angular.module("violations")
+    .filter("day", ["$log", function ($log) {
+        return function (input) {
+            return moment.unix(input).format("DD MMMM YYYY");
+        }
+    }]);
+
+angular
+    .module("violations")
+    .filter("filesize", [function () {
+        return function (input, precision) {
+            if (typeof precision === 'undefined') precision = 1;
+            var units = ['байт', 'кб', 'мб', 'гб', 'тв', 'пб'];
+            var number = Math.floor(Math.log(input) / Math.log(1024));
+            return (input / Math.pow(1024, Math.floor(number))).toFixed(precision) +  ' ' + units[number];
+        }
+    }]);
+
+angular.module("violations")
+    .filter("time", ["$log", function ($log) {
+        return function (input) {
+            return moment.unix(input).format("HH:mm");
+        }
+    }]);
+angular
+    .module("violations")
+    .filter('toArray', [function () {
+        return function (input) {
+            var result = [];
+            for (var index in input) {
+                result.push(input[index]);
+            }
+            return result;
+        }
+    }]);
+
 angular
     .module("application", ["ngRoute", "ngCookies", "ngAnimate", "violations", "homunculus", "homunculus.ui"])
     .config(["$routeProvider", "$locationProvider", "$httpProvider", function ($routeProvider, $locationProvider, $httpProvider) {

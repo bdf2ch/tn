@@ -1,3 +1,135 @@
+$classesInjector.add("TreeItem", {
+        key: 0,
+        parentKey: 0,
+        display: "",
+        children: {},
+        childrenCount: 0,
+        order: 0,
+        data: {},
+        isExpanded: false,
+        isSelected: false,
+        isChecked: false,
+        isVisible: true,
+        notifications: {
+            items: [],
+
+            add: function (parameters) {
+                if (parameters === undefined) {
+                    $errors.add(ERROR_TYPE_DEFAULT, "TreeItem -> notifications -> add: Не задан параметр - объект с настройками уведомления уведомления");
+                    return false;
+                }
+
+                if (parameters.id === undefined) {
+                    $errors.add(ERROR_TYPE_DEFAULT, "TreeItem -> notifications -> add: Не задана настройка - идентификатор уведомления");
+                    return false;
+                }
+
+                if (parameters.value === undefined) {
+                    $errors.add(ERROR_TYPE_DEFAULT, "TreeItem -> notifications -> add: Не задана настройка - значение уведомления");
+                    return false;
+                }
+
+                var notification = factory({ classes: ["TreeItemNotification"], base_class: "TreeItemNotification" });
+                notification.id = parameters.id;
+                notification.value = parameters.value;
+                notification.icon = parameters.icon !== undefined ? parameters.icon : "";
+                notification.class = parameters.class !== undefined ? parameters.class : "";
+                notification.isVisible = parameters.isVisible;
+                this.items.push(notification);
+
+                return true;
+            },
+
+            getById: function (id) {
+                if (id === undefined) {
+                    $errors.add(ERROR_TYPE_DEFAULT, "TreeItem -> notifications -> getById: Не задан параметр - идентификатор уведомления");
+                    return false;
+                }
+
+                var length = this.items.length;
+                for (var i = 0; i < length; i++) {
+                    if (this.items[i].id === id)
+                        return this.items[i];
+                }
+
+                return false;
+            }
+        },
+        onAddChildren: function (children, data) {},
+        onDeleteChildren: function (children) {},
+        onSelect: function (item) {}
+    });
+$classesInjector.add("TreeItemNotification", {
+        id: "",
+        value: 0,
+        icon: "",
+        class: "",
+        isVisible: true
+    });
+$classesInjector
+    .add("TreeStructure", {
+        id: "",
+        rootKey: 0,
+        expandOnSelect: false,
+        collapseOnDeselect: false,
+        showNotifications: true,
+        class: "",
+        stack: {},
+        initial: {},
+        selectedItem: false,
+        onAddItem: function (item) {}
+    });
+
+$classesInjector
+    .add("Attachment", {
+        _dependencies__: [],
+        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        violationId: new Field({ source: "VIOLATION_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        title: new Field({ source: "TITLE", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
+        type: new Field({ source: "MIME_TYPE", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
+        size: new Field({ source: "SIZE", type: DATA_TYPE_INTEGER, default_value: 0, value: 0, backupable: true, displayable: true }),
+        url: new Field({ source: "URL", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
+        added: new Field({ source: "DATE_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        isInAddMode: false
+    });
+
+$classesInjector
+    .add("Division", {
+        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        parentId: new Field({ source: "PARENT_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, bacupable: true }),
+        sortId: new Field({ source: "SORT_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        shortTitle: new Field({ source: "TITLE_SHORT", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
+        fullTitle: new Field({ source: "TITLE_FULL", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
+        violationsAdded: new Field({ source: "VIOLATIONS_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        attachmentsAdded: new Field({ source: "ATTACHMENTS_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        storage: new Field({ source: "FILE_STORAGE_HOST", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
+        isDepartment: new Field({ source: "IS_DEPARTMENT", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
+        path: new Field({ source: "PATH", type: DATA_TYPE_STRING, value: "", default_value: "" })
+    });
+
+$classesInjector
+    .add("ESKGroup", {
+        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        title: new Field({ source: "TITLE", type: DATA_TYPE_STRING, value: "", default_value: "" }),
+        description: new Field({ source: "DESCRIPTION", type: DATA_TYPE_STRING, value: "", default_value: "" })
+    });
+$classesInjector
+    .add("Violation", {
+        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        userId: new Field({ source: "USER_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        divisionId: new Field({ source: "DIVISION_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
+        eskGroupId: new Field({ source: "ESK_GROUP_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
+        eskObject: new Field({ source: "ESK_OBJECT", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
+        happened: new Field({ source: "DATE_HAPPENED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        ended: new Field({ source: "DATE_ENDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
+        added: new Field({ source: "DATE_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        description: new Field({ source: "DESCRIPTION", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
+        isConfirmed: new Field({ source: "IS_CONFIRMED", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
+        user: 0,
+        attachments: [],
+        isNew: false,
+        newAttachments: 0
+    });
 
     $classesInjector.add("AppUser", {
         id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
@@ -763,135 +895,3 @@ $classesInjector.add("States", {
         }
     }
 });
-$classesInjector.add("TreeItem", {
-        key: 0,
-        parentKey: 0,
-        display: "",
-        children: {},
-        childrenCount: 0,
-        order: 0,
-        data: {},
-        isExpanded: false,
-        isSelected: false,
-        isChecked: false,
-        isVisible: true,
-        notifications: {
-            items: [],
-
-            add: function (parameters) {
-                if (parameters === undefined) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "TreeItem -> notifications -> add: Не задан параметр - объект с настройками уведомления уведомления");
-                    return false;
-                }
-
-                if (parameters.id === undefined) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "TreeItem -> notifications -> add: Не задана настройка - идентификатор уведомления");
-                    return false;
-                }
-
-                if (parameters.value === undefined) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "TreeItem -> notifications -> add: Не задана настройка - значение уведомления");
-                    return false;
-                }
-
-                var notification = factory({ classes: ["TreeItemNotification"], base_class: "TreeItemNotification" });
-                notification.id = parameters.id;
-                notification.value = parameters.value;
-                notification.icon = parameters.icon !== undefined ? parameters.icon : "";
-                notification.class = parameters.class !== undefined ? parameters.class : "";
-                notification.isVisible = parameters.isVisible;
-                this.items.push(notification);
-
-                return true;
-            },
-
-            getById: function (id) {
-                if (id === undefined) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "TreeItem -> notifications -> getById: Не задан параметр - идентификатор уведомления");
-                    return false;
-                }
-
-                var length = this.items.length;
-                for (var i = 0; i < length; i++) {
-                    if (this.items[i].id === id)
-                        return this.items[i];
-                }
-
-                return false;
-            }
-        },
-        onAddChildren: function (children, data) {},
-        onDeleteChildren: function (children) {},
-        onSelect: function (item) {}
-    });
-$classesInjector.add("TreeItemNotification", {
-        id: "",
-        value: 0,
-        icon: "",
-        class: "",
-        isVisible: true
-    });
-$classesInjector
-    .add("TreeStructure", {
-        id: "",
-        rootKey: 0,
-        expandOnSelect: false,
-        collapseOnDeselect: false,
-        showNotifications: true,
-        class: "",
-        stack: {},
-        initial: {},
-        selectedItem: false,
-        onAddItem: function (item) {}
-    });
-
-$classesInjector
-    .add("Attachment", {
-        _dependencies__: [],
-        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        violationId: new Field({ source: "VIOLATION_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        title: new Field({ source: "TITLE", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
-        type: new Field({ source: "MIME_TYPE", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
-        size: new Field({ source: "SIZE", type: DATA_TYPE_INTEGER, default_value: 0, value: 0, backupable: true, displayable: true }),
-        url: new Field({ source: "URL", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
-        added: new Field({ source: "DATE_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        isInAddMode: false
-    });
-
-$classesInjector
-    .add("Division", {
-        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        parentId: new Field({ source: "PARENT_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, bacupable: true }),
-        sortId: new Field({ source: "SORT_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        shortTitle: new Field({ source: "TITLE_SHORT", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
-        fullTitle: new Field({ source: "TITLE_FULL", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
-        violationsAdded: new Field({ source: "VIOLATIONS_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        attachmentsAdded: new Field({ source: "ATTACHMENTS_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        storage: new Field({ source: "FILE_STORAGE_HOST", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
-        isDepartment: new Field({ source: "IS_DEPARTMENT", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
-        path: new Field({ source: "PATH", type: DATA_TYPE_STRING, value: "", default_value: "" })
-    });
-
-$classesInjector
-    .add("ESKGroup", {
-        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        title: new Field({ source: "TITLE", type: DATA_TYPE_STRING, value: "", default_value: "" }),
-        description: new Field({ source: "DESCRIPTION", type: DATA_TYPE_STRING, value: "", default_value: "" })
-    });
-$classesInjector
-    .add("Violation", {
-        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        userId: new Field({ source: "USER_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        divisionId: new Field({ source: "DIVISION_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
-        eskGroupId: new Field({ source: "ESK_GROUP_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
-        eskObject: new Field({ source: "ESK_OBJECT", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
-        happened: new Field({ source: "DATE_HAPPENED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        ended: new Field({ source: "DATE_ENDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
-        added: new Field({ source: "DATE_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        description: new Field({ source: "DESCRIPTION", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
-        isConfirmed: new Field({ source: "IS_CONFIRMED", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
-        user: 0,
-        attachments: [],
-        isNew: false,
-        newAttachments: 0
-    });

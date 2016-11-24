@@ -354,6 +354,7 @@ angular.module("violations")
                                 divisionId: divisionId,
                                 startDate: api.violations.filter.startDate,
                                 endDate: api.violations.filter.endDate,
+                                eskGroupId: api.violations.filter.eskGroupId,
                                 start: start
                             }
                         };

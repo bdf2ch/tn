@@ -582,14 +582,25 @@
         $result = array();
 
         $divisionId = $data -> divisionId;
+        $eskGroupId = $data -> eskGroupId;
         $startDate = $data -> startDate;
         $endDate = $data -> endDate == 0 ? time() : $data -> endDate;
         $start = $data -> start;
         $limit = "";
-        if ($endDate != 0 || $startDate != 0)
+        if ($endDate != 0 || $startDate != 0 || $eskGroupId != 0)
             $limit = "";
         else
             $limit = " LIMIT $start, $itemsOnPage";
+
+        $eskGroupQuery = "";
+        if ($eskGroupId != 0) {
+            $eskGroupQuery = " AND ESK_GROUP_ID = $eskGroupId";
+            $limit = "";
+        }
+
+
+
+
         //echo("limit = ".$limit);
 
         /*
@@ -637,7 +648,7 @@
             return false;
         }
         */
-        $total = mysqli_query($mysqli, "SELECT COUNT(*) AS total FROM violations WHERE DIVISION_ID IN $divs AND DATE_HAPPENED >= $startDate AND DATE_HAPPENED <= $endDate");
+        $total = mysqli_query($mysqli, "SELECT COUNT(*) AS total FROM violations WHERE DIVISION_ID IN $divs AND DATE_HAPPENED >= $startDate AND DATE_HAPPENED <= $endDate".$eskGroupQuery);
         if (!$total) {
             echo(json_encode(false));
             return false;
@@ -649,7 +660,7 @@
             return false;
         }
         */
-        $violations = mysqli_query($mysqli, "SELECT * FROM violations WHERE DIVISION_ID IN $divs AND DATE_HAPPENED >= $startDate AND DATE_HAPPENED <= $endDate ORDER BY DATE_HAPPENED DESC ".$limit);
+        $violations = mysqli_query($mysqli, "SELECT * FROM violations WHERE DIVISION_ID IN $divs AND DATE_HAPPENED >= $startDate AND DATE_HAPPENED <= $endDate".$eskGroupQuery." ORDER BY DATE_HAPPENED DESC ".$limit);
         if (!$violations) {
             echo(json_encode(false));
             return false;
