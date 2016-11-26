@@ -25,6 +25,11 @@
                 {{ menu.title }}
             </a>
 
+            <a ng-href="#" ng-show="session.getCurrentUser().isAdministrator.value === true" ng-class="{ active: menu.isActive === true }" ng-click="openSettingsModal()">
+                <span class="fa fa-gears"></span>
+                Настройки
+            </a>
+
             <div class="user-info">
                 <div class="user-name">
                     <span class="fa fa-user"></span>&nbsp;
@@ -46,6 +51,44 @@
         </div>
 
     </div>
+
+
+
+    <div ng-controller="HeaderController" ui-modal modal-id="settings-modal" modal-caption="Настройки" modal-width="450" modal-on-close="">
+        <div class="row padding-10">
+            <label for="start-control-period" class="width-100">
+                Начало периода учета новых ТН
+                <span class="right form-error" ng-show="errors.fullTitle !== undefined">{{ errors.fullTitle }}</span>
+            </label>
+            <select class="width-100"
+                    name="start_control_period"
+                    id="start-control-period"
+                    ng-options="weekday.code as weekday.title for weekday in misc.weekdays.getAll()"
+                    ng-model="monday">
+            </select>
+        </div>
+
+        <div class="row padding-10">
+            <label for="end-control-period" class="width-100">
+                Конец периода учета новых ТН
+                <span class="right form-error" ng-show="errors.fullTitle !== undefined">{{ errors.fullTitle }}</span>
+            </label>
+            <select class="width-100"
+                    name="end_control_period"
+                    id="end-control-period"
+                    ng-options="weekday.code as weekday.title for weekday in misc.weekdays.getAll()"
+                    ng-model="monday"></select>
+        </div>
+        <div class="row padding-10">
+            <button class="green width-50" ng-disabled="divisions.getCurrent()._states_.changed() === false || divisions.getCurrent()._states_.loading() === true" ng-click="save()">
+                Сохранить
+            </button>
+            <button class="red width-50" ng-click="modals.close()">
+                Отмена
+            </button>
+        </div>
+    </div>
+
 
     <script src="/clientside/libs/angularjs/angular-route.min.js"></script>
     <script src="/clientside/libs/angularjs/angular-cookies.min.js"></script>

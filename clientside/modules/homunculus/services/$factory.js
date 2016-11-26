@@ -71,6 +71,16 @@ angular
                         this.__class__ = parameters["base_class"];
                     }
                 }
+
+                if (parameters.hasOwnProperty("init")) {
+                    for (var x in parameters.init) {
+                        if (this.hasOwnProperty(x))
+                            if (this[x].constructor === Field)
+                                this[x].value = parameters.init[x];
+                            else
+                                this[x] = parameters.init[x];
+                    }
+                }
             }
 
         };

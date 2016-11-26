@@ -47,6 +47,7 @@ angular.module("violations", [])
             isVisible: $session.getCurrentUser().isAdministrator.value === true ? true : false
         });
 
+
         $navigation.add({
             id: "help",
             url: "/help/",

@@ -3,7 +3,17 @@ angular
     .factory("$misc", ["$log", "$http", "$errors", "$factory", function ($log, $http, $errors, $factory) {
 
         var eskGroups = [];
-        var weekdays = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресение"];
+        var weekdays = [
+            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { title: "Понедельник", code: "monday" } }),
+            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { title: "Вторник", code: "tuesday" } }),
+            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { title: "Среда", code: "wednesday" } }),
+            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { title: "Четверг", code: "thursday" } }),
+            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { title: "Пятница", code: "friday" } }),
+            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { title: "Суббота", code: "saturday" } }),
+            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { title: "Воскресение", code: "sunday" } })
+        ];
+
+        $log.info(weekdays);
 
         return {
 

@@ -47,6 +47,7 @@ angular.module("violations", [])
             isVisible: $session.getCurrentUser().isAdministrator.value === true ? true : false
         });
 
+
         $navigation.add({
             id: "help",
             url: "/help/",
@@ -107,6 +108,12 @@ $classesInjector
         isNew: false,
         newAttachments: 0
     });
+$classesInjector
+    .add("Weekday", {
+        title: "",
+        code: ""
+    });
+
 angular
     .module("violations")
     .controller("DivisionsController", ["$log", "$scope", "$divisions", "$violations", "$tree", "$modals", function ($log, $scope, $divisions, $violations, $tree, $modals) {
@@ -228,9 +235,16 @@ angular
 
 angular
     .module("violations")
-    .controller("HeaderController", ["$log", "$scope", "$session", "$navigation", "$window", function ($log, $scope, $session, $navigation, $window) {
+    .controller("HeaderController", ["$log", "$scope", "$session", "$navigation", "$window", "$modals", "$misc", function ($log, $scope, $session, $navigation, $window, $modals, $misc) {
+        $scope.misc = $misc;
         $scope.session = $session;
         $scope.navigation = $navigation;
+        $scope.modals = $modals;
+
+
+        $scope.openSettingsModal = function () {
+            $modals.open("settings-modal");
+        };
 
 
         $scope.logout = function () {
@@ -1241,6 +1255,72 @@ angular
     }]);
 angular
     .module("violations")
+    .filter("byViolationId", ["$log", function ($log) {
+        return function (input, violationId) {
+            if (violationId !== undefined && violationId !== 0) {
+                var length = input.length;
+                var result = [];
+                
+                for (var i = 0; i < length; i++) {
+                    if (input[i].violationId.value === violationId)
+                        result.push(input[i]);
+                }
+                return result;
+            } else
+                return input;
+
+        }
+    }]);
+angular.module("violations")
+    .filter("dateFilter", ["$log", function ($log) {
+        return function (input) {
+            return moment.unix(input).format("DD MMMM YYYY, HH:mm");
+        }
+    }]);
+angular.module("violations")
+    .filter("dateShort", ["$log", function ($log) {
+        return function (input) {
+            return moment.unix(input).format("DD.MM.YYYY");
+        }
+    }]);
+angular.module("violations")
+    .filter("day", ["$log", function ($log) {
+        return function (input) {
+            return moment.unix(input).format("DD MMMM YYYY");
+        }
+    }]);
+
+angular
+    .module("violations")
+    .filter("filesize", [function () {
+        return function (input, precision) {
+            if (typeof precision === 'undefined') precision = 1;
+            var units = ['байт', 'кб', 'мб', 'гб', 'тв', 'пб'];
+            var number = Math.floor(Math.log(input) / Math.log(1024));
+            return (input / Math.pow(1024, Math.floor(number))).toFixed(precision) +  ' ' + units[number];
+        }
+    }]);
+
+angular.module("violations")
+    .filter("time", ["$log", function ($log) {
+        return function (input) {
+            return moment.unix(input).format("HH:mm");
+        }
+    }]);
+angular
+    .module("violations")
+    .filter('toArray', [function () {
+        return function (input) {
+            var result = [];
+            for (var index in input) {
+                result.push(input[index]);
+            }
+            return result;
+        }
+    }]);
+
+angular
+    .module("violations")
     .factory("$divisions", ["$log", "$http", "$factory", "$errors", "$session", "$violations", "$tree", function ($log, $http, $factory, $errors, $session, $violations, $tree) {
         var divisions = [];
         var currentDivision = undefined;
@@ -1691,7 +1771,17 @@ angular
     .factory("$misc", ["$log", "$http", "$errors", "$factory", function ($log, $http, $errors, $factory) {
 
         var eskGroups = [];
-        var weekdays = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресение"];
+        var weekdays = [
+            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { title: "Понедельник", code: "monday" } }),
+            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { title: "Вторник", code: "tuesday" } }),
+            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { title: "Среда", code: "wednesday" } }),
+            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { title: "Четверг", code: "thursday" } }),
+            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { title: "Пятница", code: "friday" } }),
+            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { title: "Суббота", code: "saturday" } }),
+            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { title: "Воскресение", code: "sunday" } })
+        ];
+
+        $log.info(weekdays);
 
         return {
 
@@ -2433,72 +2523,6 @@ angular.module("violations")
                 }
             };
         }]);
-angular
-    .module("violations")
-    .filter("byViolationId", ["$log", function ($log) {
-        return function (input, violationId) {
-            if (violationId !== undefined && violationId !== 0) {
-                var length = input.length;
-                var result = [];
-                
-                for (var i = 0; i < length; i++) {
-                    if (input[i].violationId.value === violationId)
-                        result.push(input[i]);
-                }
-                return result;
-            } else
-                return input;
-
-        }
-    }]);
-angular.module("violations")
-    .filter("dateFilter", ["$log", function ($log) {
-        return function (input) {
-            return moment.unix(input).format("DD MMMM YYYY, HH:mm");
-        }
-    }]);
-angular.module("violations")
-    .filter("dateShort", ["$log", function ($log) {
-        return function (input) {
-            return moment.unix(input).format("DD.MM.YYYY");
-        }
-    }]);
-angular.module("violations")
-    .filter("day", ["$log", function ($log) {
-        return function (input) {
-            return moment.unix(input).format("DD MMMM YYYY");
-        }
-    }]);
-
-angular
-    .module("violations")
-    .filter("filesize", [function () {
-        return function (input, precision) {
-            if (typeof precision === 'undefined') precision = 1;
-            var units = ['байт', 'кб', 'мб', 'гб', 'тв', 'пб'];
-            var number = Math.floor(Math.log(input) / Math.log(1024));
-            return (input / Math.pow(1024, Math.floor(number))).toFixed(precision) +  ' ' + units[number];
-        }
-    }]);
-
-angular.module("violations")
-    .filter("time", ["$log", function ($log) {
-        return function (input) {
-            return moment.unix(input).format("HH:mm");
-        }
-    }]);
-angular
-    .module("violations")
-    .filter('toArray', [function () {
-        return function (input) {
-            var result = [];
-            for (var index in input) {
-                result.push(input[index]);
-            }
-            return result;
-        }
-    }]);
-
 angular
     .module("application", ["ngRoute", "ngCookies", "ngAnimate", "violations", "homunculus", "homunculus.ui"])
     .config(["$routeProvider", "$locationProvider", "$httpProvider", function ($routeProvider, $locationProvider, $httpProvider) {
