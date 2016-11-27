@@ -24,9 +24,13 @@ angular.module("violations")
             var total = 0;
             var start = 0;
 
-            return api = {
+            var api = {
                 init: function () {
                     if (window.initialData !== undefined) {
+
+                        $log.log("startPeriod = ", moment.unix(window.initialData.startPeriod).format("DD.MM.YYYY HH:mm"));
+                        $log.log("endPeriod = ", moment.unix(window.initialData.endPeriod).format("DD.MM.YYYY HH:mm"));
+                        $log.log("today = ", moment.unix(window.initialData.today).format("DD.MM.YYYY HH:mm"));
 
                         if (window.initialData.thursday !== undefined && window.initialData.thursday !== null) {
                             thursday = window.initialData.thursday;
@@ -679,4 +683,6 @@ angular.module("violations")
                     }
                 }
             };
+
+            return api;
         }]);

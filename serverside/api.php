@@ -50,6 +50,9 @@
         case "editDivision":
             editDivision($postdata -> data);
             break;
+        case "saveSettings":
+            saveSettings($postdata -> data);
+            break;
     }
 
 
@@ -66,6 +69,7 @@
         global $mysqli;
 
         $result = new stdClass();
+        $result -> settings = array();
         $result -> divisions = array();
         $result -> users = array();
         $result -> eskGroups = array();
@@ -76,36 +80,15 @@
         //$result -> thursday = date('W', $thursday) == date('W') ? $thursday - (7 * 86400) : $thursday;
         $result -> thursday = $thursday;
 
-
-        /*
-        $link = mysql_connect($db_host, $db_user, $db_password);
-        if (!$link) {
-            echo("Error connecting DB: ".mysql_error());
-            return false;
-        }
-
-        $db = mysql_select_db($db_name, $link);
-        if (!$db) {
-            echo("Error selecting DB: ".mysql_error());
-            return false;
-        }
-
-        $encoding = mysql_query("SET NAMES utf8");
-        if (!$encoding) {
-            echo("Error setting encoding: ".mysql_error());
-            return false;
-        }
-        */
+        $controlPeriodStartWeekDay = "";
+        $controlPeriodStartHours = 0;
+        $controlPeriodStartMinutes = 0;
+        $controlPeriodEndWeekDay = "";
+        $controlPeriodEndHours = 0;
+        $controlPeriodEndMinutes = 0;
 
 
         $userId = $_COOKIE["tn_user_id"];
-        /*
-        $user = mysql_query("SELECT * FROM users WHERE ID = $userId", $link);
-        if (!$user) {
-            echo("Error executing query: ".mysql_error());
-            return false;
-        }
-        */
         $user = mysqli_query($mysqli, "SELECT * FROM users WHERE ID = $userId");
         if (!$user) {
             echo "Не удалось выполнить запрос1: (" . $mysqli -> errno . ") " . $mysqli -> error;
@@ -113,71 +96,83 @@
         }
         $result -> user = mysqli_fetch_assoc($user);
 
-        /*
-        $divisions = mysql_query("SELECT ID, PARENT_ID, TITLE_FULL, SORT_ID, TITLE_SHORT, IS_DEPARTMENT, PATH, FILE_STORAGE_HOST, (SELECT COUNT(*) FROM violations WHERE division_id = divisions.ID AND date_happened > ".$result -> thursday.") AS VIOLATIONS_ADDED, (SELECT COUNT(*) FROM attachments WHERE DIVISION_ID = divisions.ID AND DATE_ADDED > ".$result -> thursday.") AS ATTACHMENTS_ADDED FROM divisions ORDER By PARENT_ID ASC", $link);
-        if (!$divisions) {
-            echo("Error executing query: ".mysql_error());
+
+        $settings = mysqli_query($mysqli, "SELECT * FROM settings");
+        if (!$settings) {
+            echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
             return false;
         }
-        */
-        $divisions = mysqli_query($mysqli, "SELECT ID, PARENT_ID, TITLE_FULL, SORT_ID, TITLE_SHORT, IS_DEPARTMENT, PATH, FILE_STORAGE_HOST, (SELECT COUNT(*) FROM violations WHERE division_id = divisions.ID AND date_happened > ".$result -> thursday.") AS VIOLATIONS_ADDED, (SELECT COUNT(*) FROM attachments WHERE DIVISION_ID = divisions.ID AND DATE_ADDED > ".$result -> thursday.") AS ATTACHMENTS_ADDED FROM divisions ORDER By PARENT_ID ASC");
+        while ($setting = mysqli_fetch_assoc($settings)) {
+            switch ($setting["CODE"]) {
+                case "control-period-start-weekday":
+                    $controlPeriodStartWeekDay = $setting["VALUE"];
+                    break;
+                case "control-period-start-hours":
+                    $controlPeriodStartHours = intval($setting["VALUE"]);
+                    break;
+                case "control-period-start-minutes":
+                    $controlPeriodStartMinutes = intval($setting["VALUE"]);
+                    break;
+                case "control-period-end-weekday":
+                    $controlPeriodEndWeekDay = $setting["VALUE"];
+                    break;
+                case "control-period-end-hours":
+                    $controlPeriodEndHours = intval($setting["VALUE"]);
+                    break;
+                case "control-period-end-minutes":
+                    $controlPeriodEndMinutes = intval($setting["VALUE"]);
+                    break;
+            }
+            array_push($result -> settings, $setting);
+        }
+        $today = strtotime("today 0 hours 0 minutes");
+        $result -> today = $today;
+        $result -> startPeriod = strtotime($controlPeriodStartWeekDay." ".$controlPeriodStartHours." hours ".$controlPeriodStartMinutes." minutes");
+        $result -> endPeriod = strtotime($controlPeriodEndWeekDay." ".$controlPeriodEndHours." hours ".$controlPeriodEndMinutes." minutes");
+        if (strtotime($controlPeriodStartWeekDay." 0 hours 0 minutes 0 seconds") == $today)
+            $result -> startPeriod = strtotime($controlPeriodStartWeekDay." 0 hours 0 minutes 0");
+        if ($result -> startPeriod > $result -> endPeriod)
+            $result -> startPeriod = strtotime("-1 week", $result -> startPeriod);
+        if ($result -> startPeriod == $result -> endPeriod)
+            $result -> endPeriod = strtotime("+1 week", $result -> endPeriod);
+
+
+
+        $divisions = mysqli_query($mysqli, "SELECT ID, PARENT_ID, TITLE_FULL, SORT_ID, TITLE_SHORT, IS_DEPARTMENT, PATH, FILE_STORAGE_HOST, (SELECT COUNT(*) FROM violations WHERE division_id = divisions.ID AND date_happened > ".$result -> startPeriod." AND date_happened < ".$result -> endPeriod.") AS VIOLATIONS_ADDED, (SELECT COUNT(*) FROM attachments WHERE DIVISION_ID = divisions.ID AND DATE_ADDED > ".$result -> startPeriod." AND DATE_ADDED < ".$result -> endPeriod.") AS ATTACHMENTS_ADDED FROM divisions ORDER By PARENT_ID ASC");
         if (!$divisions) {
             echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
             return false;
         }
-
         while ($division = mysqli_fetch_assoc($divisions)) {
             array_push($result -> divisions, $division);
         }
 
 
-        /*
-        $users = mysql_query("SELECT * FROM users", $link);
-        if (!$users) {
-            echo("Error executing query: ".mysql_error());
-            return false;
-        }
-        */
         $users = mysqli_query($mysqli, "SELECT * FROM users");
         if (!$users) {
             echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
             return false;
         }
-
         while ($user = mysqli_fetch_assoc($users)) {
             array_push($result -> users, $user);
         }
 
-        /*
-        $eskGroups = mysql_query("SELECT * FROM esk_groups", $link);
-        if (!$eskGroups) {
-            echo("Error executing query: ".mysql_error());
-            return false;
-        }
-        */
+
         $eskGroups = mysqli_query($mysqli, "SELECT * FROM esk_groups");
         if (!$eskGroups) {
             echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
             return false;
         }
-
         while ($group = mysqli_fetch_assoc($eskGroups)) {
             array_push($result -> eskGroups, $group);
         }
 
-        /*
-        $d = mysql_query("SELECT * FROM divisions WHERE PATH LIKE '%/".$result -> user["DIVISION_ID"] ."/%'", $link);
-        if (!$d) {
-            echo("Error executing query");
-            return false;
-        }
-        */
+
         $d = mysqli_query($mysqli, "SELECT * FROM divisions WHERE PATH LIKE '%/".$result -> user["DIVISION_ID"]."/%'");
         if (!$d) {
             echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
             return false;
         }
-
         $divs = " (";
         while ($division = mysqli_fetch_assoc($d)) {
             $divs = $divs.$division["ID"].",";
@@ -185,31 +180,18 @@
         $divs = rtrim($divs, ",");
         $divs = $divs.")";
 
-        /*
-        $violations = mysql_query("SELECT * FROM violations WHERE DIVISION_ID IN $divs ORDER BY DATE_HAPPENED DESC LIMIT 0, $itemsOnPage", $link);
-        if (!$violations) {
-            echo("Error executing query: ".mysql_error());
-            return false;
-        }
-        */
+
         $violations = mysqli_query($mysqli, "SELECT * FROM violations WHERE DIVISION_ID IN $divs ORDER BY DATE_HAPPENED DESC LIMIT 0, $itemsOnPage");
         if (!$violations) {
             echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
             return false;
         }
-
         while ($violation = mysqli_fetch_assoc($violations)) {
             $violationItem = new stdClass();
             $violationItem -> violation = $violation;
             $userId = intval($violation["USER_ID"]);
             $violationId = intval($violation["ID"]);
-            /*
-            $user = mysql_query("SELECT * FROM users WHERE ID = $userId", $link);
-            if (!$user) {
-                echo("Error executing query: ".mysql_error());
-                return false;
-            }
-            */
+
             $user = mysqli_query($mysqli, "SELECT * FROM users WHERE ID = $userId");
             if (!$user) {
                 echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
@@ -217,13 +199,7 @@
             }
             $violationItem -> user = mysqli_fetch_assoc($user);
             $violationItem -> attachments = array();
-            /*
-            $attachments = mysql_query("SELECT * FROM attachments WHERE VIOLATION_ID = $violationId", $link);
-            if (!$attachments) {
-                echo("Error executing query: ".mysql_error());
-                return false;
-            }
-            */
+
             $attachments = mysqli_query($mysqli, "SELECT * FROM attachments WHERE VIOLATION_ID = $violationId");
             if (!$attachments) {
                 echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
@@ -234,29 +210,18 @@
             }
             array_push($result -> violations, $violationItem);
         }
-        /*
-        $attachments = mysql_query("SELECT * FROM attachments", $link);
-        if (!$attachments) {
-            echo("Error executing query: ".mysql_error());
-            return false;
-        }
-        */
+
+
         $attachments = mysqli_query($mysqli, "SELECT * FROM attachments");
         if (!$attachments) {
             echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
             return false;
         }
-
         while ($attachment = mysqli_fetch_assoc($attachments)) {
             array_push($result -> attachments, $attachment);
         }
-        /*
-        $total = mysql_query("SELECT COUNT(*) AS total FROM violations WHERE DIVISION_ID IN $divs");
-        if (!$total) {
-            echo("Error setting encoding: ".mysql_error());
-            return false;
-        }
-        */
+
+
         $total = mysqli_query($mysqli, "SELECT COUNT(*) AS total FROM violations WHERE DIVISION_ID IN $divs");
         if (!$total) {
             echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
@@ -334,59 +299,19 @@
         $result = new stdClass();
         $result -> attachments = array();
 
-        /*
-        $link = mysql_connect($db_host, $db_user, $db_password);
-        if (!$link) {
-            echo("Error connecting DB: ".mysql_error());
-            return false;
-        }
-
-        $db = mysql_select_db($db_name, $link);
-        if (!$db) {
-            echo("Error selecting DB: ".mysql_error());
-            return false;
-        }
-
-        $encoding = mysql_query("SET NAMES utf8");
-        if (!$encoding) {
-            echo("Error setting encoding: ".mysql_error());
-            return false;
-        }
-        */
-
         if ($id != 0) {
-            /*
-            $query = mysql_query("UPDATE violations SET USER_ID = $userId, DIVISION_ID = $divisionId, ESK_GROUP_ID = $eskGroupId, ESK_OBJECT = '$eskObject', DESCRIPTION = '$description', DATE_HAPPENED = $happened, DATE_ADDED = $added WHERE ID = $id", $link);
-            if (!$query) {
-                echo("Не удалось обновить информацию о технологическом нарушении");
-                return false;
-            }
-            */
             $query = mysqli_query($mysqli, "UPDATE violations SET USER_ID = $userId, DIVISION_ID = $divisionId, ESK_GROUP_ID = $eskGroupId, ESK_OBJECT = '$eskObject', DESCRIPTION = '$description', DATE_HAPPENED = $happened, DATE_ENDED = $ended, DURATION = $duration, DATE_ADDED = $added WHERE ID = $id");
             if (!$query) {
                 echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
                 return false;
             }
-            /*
-            $query = mysql_query("UPDATE attachments SET DIVISION_ID = $divisionId WHERE VIOLATION_ID = $id", $link);
-            if (!$query) {
-                echo("Не удалось обновить информацию о прикрепленных документах");
-                return false;
-            }
-            */
+
             $query = mysqli_query($mysqli, "UPDATE attachments SET DIVISION_ID = $divisionId WHERE VIOLATION_ID = $id");
             if (!$query) {
                 echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
                 return false;
             }
 
-            /*
-            $violation = mysql_query("SELECT * FROM violations WHERE ID = $id", $link);
-            if (!$violation) {
-                echo(json_encode(false));
-                return false;
-            }
-            */
             $violation = mysqli_query($mysqli, "SELECT * FROM violations WHERE ID = $id");
             if (!$violation) {
                 echo(json_encode(false));
@@ -394,26 +319,13 @@
             }
             $result -> violation = mysqli_fetch_assoc($violation);
 
-            /*
-            $user = mysql_query("SELECT * FROM users WHERE ID = $userId", $link);
-            if (!$user) {
-                echo(json_encode(false));
-                return false;
-            }
-            */
             $user = mysqli_query($mysqli, "SELECT * FROM users WHERE ID = $userId");
             if (!$user) {
                 echo(json_encode(false));
                 return false;
             }
             $result -> user = mysqli_fetch_assoc($user);
-            /*
-            $attachments = mysql_query("SELECT * FROM attachments WHERE VIOLATION_ID = $id", $link);
-            if (!$attachments) {
-                echo(json_encode(false));
-                return false;
-            }
-            */
+
             $attachments = mysqli_query($mysqli, "SELECT * FROM attachments WHERE VIOLATION_ID = $id");
             if (!$attachments) {
                 echo(json_encode(false));
@@ -425,13 +337,6 @@
 
             echo(json_encode($result));
         } else {
-            /*
-            $query = mysql_query("INSERT INTO violations (USER_ID, DIVISION_ID, ESK_GROUP_ID, ESK_OBJECT, DESCRIPTION, DATE_HAPPENED, DATE_ADDED) VALUES ($userId, $divisionId, $eskGroupId, '$eskObject', '$description', $happened, $added)", $link);
-            if (!$query) {
-                echo(json_encode(false));
-                return false;
-            }
-            */
             $query = mysqli_query($mysqli, "INSERT INTO violations (USER_ID, DIVISION_ID, ESK_GROUP_ID, ESK_OBJECT, DESCRIPTION, DATE_HAPPENED, DATE_ENDED, DURATION, DATE_ADDED) VALUES ($userId, $divisionId, $eskGroupId, '$eskObject', '$description', $happened, $ended, $duration, $added)");
             if (!$query) {
                 echo(json_encode(false));
@@ -439,13 +344,6 @@
             }
 
             $id = mysqli_insert_id($mysqli);
-            /*
-            $violation = mysql_query("SELECT * FROM violations WHERE ID = $id", $link);
-            if (!$violation) {
-                echo(json_encode(false));
-                return false;
-            }
-            */
             $violation = mysqli_query($mysqli, "SELECT * FROM violations WHERE ID = $id");
             if (!$violation) {
                 echo(json_encode(false));
@@ -453,13 +351,6 @@
             }
             $result -> violation = mysqli_fetch_assoc($violation);
 
-            /*
-            $user = mysql_query("SELECT * FROM users WHERE ID = $userId", $link);
-            if (!$user) {
-                echo(json_encode(false));
-                return false;
-            }
-            */
             $user = mysqli_query($mysqli, "SELECT * FROM users WHERE ID = $userId");
             if (!$user) {
                 echo(json_encode(false));
@@ -520,45 +411,12 @@
         global $mysqli;
         $id = $data -> id;
 
-        /*
-        $link = mysql_connect($db_host, $db_user, $db_password);
-        if (!$link) {
-            echo("Error connecting DB: ".mysql_error());
-            return false;
-        }
-
-        $db = mysql_select_db($db_name, $link);
-        if (!$db) {
-            echo("Error selecting DB: ".mysql_error());
-            return false;
-        }
-
-        $encoding = mysql_query("SET NAMES utf8");
-        if (!$encoding) {
-            echo("Error setting encoding: ".mysql_error());
-            return false;
-        }
-        */
-
-        /*
-        $violation = mysql_query("DELETE FROM violations WHERE ID = $id", $link);
-        if (!$violation) {
-            echo("Error executing query");
-            return false;
-        }
-        */
         $violation = mysqli_query($mysqli, "DELETE FROM violations WHERE ID = $id");
         if (!$violation) {
             echo(json_encode(false));
             return false;
         }
-        /*
-        $attachments = mysql_query("DELETE FROM attachments WHERE VIOLATION_ID = $id", $link);
-        if (!$attachments) {
-            echo("Error executing query");
-            return false;
-        }
-        */
+
         $attachments = mysqli_query($mysqli, "DELETE FROM attachments WHERE VIOLATION_ID = $id");
         if (!$attachments) {
             echo(json_encode(false));
@@ -1145,6 +1003,23 @@
     }
 
 
+
+    function saveSettings ($data) {
+        global $mysqli;
+        $code = $data -> code;
+        $value = $data -> value;
+
+        foreach ($data as $key => $param) {
+            $setting = "UPDATE settings SET VALUE = '$param' WHERE CODE = '$key'";
+            $query = mysqli_query($mysqli, $setting);
+            if (!$query) {
+                echo(json_encode(false));
+                return false;
+            }
+        }
+        echo(json_encode(true));
+        return true;
+    }
 
     //if (!mysqli_close($mysqli)) {
     //    echo "Не удалось закрыть соединение с БД: (".$mysqli -> errno.") ".$mysqli -> error;

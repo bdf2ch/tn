@@ -56,34 +56,86 @@
 
     <div ng-controller="HeaderController" ui-modal modal-id="settings-modal" modal-caption="Настройки" modal-width="450" modal-on-close="">
         <div class="row padding-10">
-            <label for="start-control-period" class="width-100">
-                Начало периода учета новых ТН
-                <span class="right form-error" ng-show="errors.fullTitle !== undefined">{{ errors.fullTitle }}</span>
-            </label>
-            <select class="width-100"
-                    name="start_control_period"
-                    id="start-control-period"
-                    ng-options="weekday.code as weekday.title for weekday in misc.weekdays.getAll()"
-                    ng-model="monday">
-            </select>
+            <div class="width-60">
+                <label for="control-period-start-weekday" class="width-100">
+                    День недели
+                    <span class="right form-error" ng-show="errors.fullTitle !== undefined">{{ errors.fullTitle }}</span>
+                </label>
+                <select class="width-100"
+                        name="control_period_start_weekday"
+                        id="control-period-start-weekday"
+                        ng-options="weekday.code as weekday.title for weekday in misc.weekdays.getAll()"
+                        ng-model="settings.getByCode('control-period-start-weekday').value.value"
+                        ng-change="settings.changed(true)">
+                </select>
+            </div>
+
+            <div class="width-40">
+                <label for="control-period-start-hours" class="width-90 right">Время</label>
+                <div class="width-90 right">
+                    <input type="number"
+                           name="start_hours"
+                           id="control-period-start-hours"
+                           min="0"
+                           max="23"
+                           class="width-45 text-center"
+                           ng-model="settings.getByCode('control-period-start-hours').value.value"
+                           ng-change="settings.changed(true)">
+                    <span class="width-10 text-center time-separator">:</span>
+                    <input type="number"
+                           name="time_minutes"
+                           id="control-period-start-minutes"
+                           min="0"
+                           max="59"
+                           class="width-45 text-center"
+                           ng-model="settings.getByCode('control-period-start-minutes').value.value"
+                           ng-change="settings.changed(true)">
+                </div>
+            </div>
         </div>
 
         <div class="row padding-10">
-            <label for="end-control-period" class="width-100">
-                Конец периода учета новых ТН
-                <span class="right form-error" ng-show="errors.fullTitle !== undefined">{{ errors.fullTitle }}</span>
-            </label>
-            <select class="width-100"
-                    name="end_control_period"
-                    id="end-control-period"
-                    ng-options="weekday.code as weekday.title for weekday in misc.weekdays.getAll()"
-                    ng-model="monday"></select>
+            <div class="width-60">
+                <label for="control-period-end-weekday" class="width-100">
+                    День недели
+                </label>
+                <select class="width-100"
+                        name="econtrol_period_end_weekday"
+                        id="control-period-end-weekday"
+                        ng-options="weekday.code as weekday.title for weekday in misc.weekdays.getAll()"
+                        ng-model="settings.getByCode('control-period-end-weekday').value.value"
+                        ng-change="settings.changed(true)">
+                </select>
+            </div>
+
+            <div class="width-40">
+                <label for="control-period-end-hours" class="width-90 right">Время</label>
+                <div class="width-90 right">
+                    <input type="number"
+                           name="start_hours"
+                           id="control-period-end-hours"
+                           min="0"
+                           max="23"
+                           class="width-45 text-center"
+                           ng-model="settings.getByCode('control-period-end-hours').value.value"
+                           ng-change="settings.changed(true)">
+                    <span class="width-10 text-center time-separator">:</span>
+                    <input type="number"
+                           name="time_minutes"
+                           id="control-period-end-minutes"
+                           min="0"
+                           max="59"
+                           class="width-45 text-center"
+                           ng-model="settings.getByCode('control-period-end-minutes').value.value"
+                           ng-change="settings.changed(true)">
+                </div>
+            </div>
         </div>
         <div class="row padding-10">
-            <button class="green width-50" ng-disabled="divisions.getCurrent()._states_.changed() === false || divisions.getCurrent()._states_.loading() === true" ng-click="save()">
+            <button class="green width-50" ng-disabled="settings.changed() === false" ng-click="saveSettings()">
                 Сохранить
             </button>
-            <button class="red width-50" ng-click="modals.close()">
+            <button class="red width-50" ng-click="closeSettingsModal()">
                 Отмена
             </button>
         </div>
