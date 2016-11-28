@@ -55,7 +55,10 @@
 
 
     <div ng-controller="HeaderController" ui-modal modal-id="settings-modal" modal-caption="Настройки" modal-width="450" modal-on-close="">
-        <div class="row padding-10">
+        <div class="row modal-block-separator margin-top-10">
+            Начало периода учета новых ТН и документов
+        </div>
+        <div class="row padding-10 margin-bottom-10">
             <div class="width-60">
                 <label for="control-period-start-weekday" class="width-100">
                     День недели
@@ -64,7 +67,7 @@
                 <select class="width-100"
                         name="control_period_start_weekday"
                         id="control-period-start-weekday"
-                        ng-options="weekday.code as weekday.title for weekday in misc.weekdays.getAll()"
+                        ng-options="weekday.id as weekday.title for weekday in misc.weekdays.getAll()"
                         ng-model="settings.getByCode('control-period-start-weekday').value.value"
                         ng-change="settings.changed(true)">
                 </select>
@@ -94,6 +97,9 @@
             </div>
         </div>
 
+        <div class="row modal-block-separator">
+            Окончание периода учета новых ТН и документов
+        </div>
         <div class="row padding-10">
             <div class="width-60">
                 <label for="control-period-end-weekday" class="width-100">
@@ -102,7 +108,7 @@
                 <select class="width-100"
                         name="econtrol_period_end_weekday"
                         id="control-period-end-weekday"
-                        ng-options="weekday.code as weekday.title for weekday in misc.weekdays.getAll()"
+                        ng-options="weekday.id as weekday.title for weekday in misc.weekdays.getAll()"
                         ng-model="settings.getByCode('control-period-end-weekday').value.value"
                         ng-change="settings.changed(true)">
                 </select>

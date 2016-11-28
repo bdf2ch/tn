@@ -91,6 +91,10 @@ angular
                     var division = $factory({ classes: ["Division", "Model", "Backup", "States"], base_class: "Division" });
                     division._model_.fromJSON(source[i]);
                     division._backup_.setup();
+                    if (division.id.value === $session.getCurrentUser().divisionId.value) {
+                        division._states_.selected(true);
+                        currentDivision = division;
+                    }
                     divisions.push(division);
 
                     var item = $tree.addItem({
@@ -134,10 +138,12 @@ angular
 
                 sessionDivisionsTree.onSelect = function (item) {
                     //$log.log("selected item = ", item);
-                    $violations.violations.setStart(0);
+                    //$violations.violations.setStart(0);
                     if (item.isSelected === true) {
                         $violations.violations.getNew().divisionId.value = item.key;
-                        $violations.violations.getByDivisionId(item.key);
+                        if (currentDivision.id.value !== item.key)
+                            $violations.violations.clear();
+
                         //$log.log("new = ", $violations.violations.getNew());
 
                         var length = divisions.length;
@@ -154,6 +160,7 @@ angular
                                 }
                             }
                         }
+                        $violations.violations.getByDivisionId(item.key);
 
                     }
                 };

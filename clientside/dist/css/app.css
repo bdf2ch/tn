@@ -582,6 +582,9 @@ table tfoot td.buttoned:hover {
 .margin-top-5 {
   margin-top: 5px;
 }
+.margin-top-10 {
+  margin-top: 10px;
+}
 .margin-20 {
   margin: 20px !important;
 }
@@ -1309,6 +1312,15 @@ body {
   color: lightgrey;
   border-top: 1px solid #00796B;
 }
+.modal-block-separator {
+  margin-left: 10px;
+  margin-right: 10px;
+  font-family: "PT Sans Bold";
+  font-size: 13px;
+  text-transform: uppercase;
+  color: #006064;
+  border-bottom: 1px solid #BDBDBD;
+}
 
 html,
 body {
@@ -1671,6 +1683,9 @@ body {
 }
 .margin-top-5 {
   margin-top: 5px;
+}
+.margin-top-10 {
+  margin-top: 10px;
 }
 .margin-20 {
   margin: 20px !important;
@@ -3400,6 +3415,9 @@ a.blue:hover {
 }
 .margin-top-5 {
   margin-top: 5px;
+}
+.margin-top-10 {
+  margin-top: 10px;
 }
 .margin-20 {
   margin: 20px !important;

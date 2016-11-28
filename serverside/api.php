@@ -1,6 +1,7 @@
 <?php
     session_start();
     require_once $_SERVER["DOCUMENT_ROOT"].DIRECTORY_SEPARATOR."serverside".DIRECTORY_SEPARATOR."config.php";
+    date_default_timezone_set("Europe/Moscow");
 
     $mysqli = new mysqli($db_host, $db_user, $db_password, $db_name);
     if ($mysqli -> connect_errno) {
@@ -81,9 +82,11 @@
         $result -> thursday = $thursday;
 
         $controlPeriodStartWeekDay = "";
+        $controlPeriodStartWeekDayTitle = "";
         $controlPeriodStartHours = 0;
         $controlPeriodStartMinutes = 0;
         $controlPeriodEndWeekDay = "";
+        $controlPeriodEndWeekDayTitle = "";
         $controlPeriodEndHours = 0;
         $controlPeriodEndMinutes = 0;
 
@@ -105,7 +108,30 @@
         while ($setting = mysqli_fetch_assoc($settings)) {
             switch ($setting["CODE"]) {
                 case "control-period-start-weekday":
-                    $controlPeriodStartWeekDay = $setting["VALUE"];
+                    $controlPeriodStartWeekDay = intval($setting["VALUE"]);
+                    switch ($controlPeriodStartWeekDay) {
+                        case 1:
+                            $controlPeriodStartWeekDayTitle = "monday";
+                            break;
+                        case 2:
+                            $controlPeriodStartWeekDayTitle = "tuesday";
+                            break;
+                        case 3:
+                            $controlPeriodStartWeekDayTitle = "wednesday";
+                            break;
+                        case 4:
+                            $controlPeriodStartWeekDayTitle = "thursday";
+                            break;
+                        case 5:
+                            $controlPeriodStartWeekDayTitle = "friday";
+                            break;
+                        case 6:
+                            $controlPeriodStartWeekDayTitle = "saturday";
+                            break;
+                        case 7:
+                            $controlPeriodStartWeekDayTitle = "sunday";
+                            break;
+                    }
                     break;
                 case "control-period-start-hours":
                     $controlPeriodStartHours = intval($setting["VALUE"]);
@@ -114,7 +140,30 @@
                     $controlPeriodStartMinutes = intval($setting["VALUE"]);
                     break;
                 case "control-period-end-weekday":
-                    $controlPeriodEndWeekDay = $setting["VALUE"];
+                    $controlPeriodEndWeekDay = intval($setting["VALUE"]);
+                    switch ($controlPeriodEndWeekDay) {
+                        case 1:
+                            $controlPeriodEndWeekDayTitle = "monday";
+                            break;
+                        case 2:
+                            $controlPeriodEndWeekDayTitle = "tuesday";
+                            break;
+                        case 3:
+                            $controlPeriodEndWeekDayTitle = "wednesday";
+                            break;
+                        case 4:
+                            $controlPeriodEndWeekDayTitle = "thursday";
+                            break;
+                        case 5:
+                            $controlPeriodEndWeekDayTitle = "friday";
+                            break;
+                        case 6:
+                            $controlPeriodEndWeekDayTitle = "saturday";
+                            break;
+                        case 7:
+                            $controlPeriodEndWeekDayTitle = "sunday";
+                            break;
+                    }
                     break;
                 case "control-period-end-hours":
                     $controlPeriodEndHours = intval($setting["VALUE"]);
@@ -126,19 +175,35 @@
             array_push($result -> settings, $setting);
         }
         $today = strtotime("today 0 hours 0 minutes");
-        $result -> today = $today;
-        $result -> startPeriod = strtotime($controlPeriodStartWeekDay." ".$controlPeriodStartHours." hours ".$controlPeriodStartMinutes." minutes");
-        $result -> endPeriod = strtotime($controlPeriodEndWeekDay." ".$controlPeriodEndHours." hours ".$controlPeriodEndMinutes." minutes");
-        if (strtotime($controlPeriodStartWeekDay." 0 hours 0 minutes 0 seconds") == $today)
-            $result -> startPeriod = strtotime($controlPeriodStartWeekDay." 0 hours 0 minutes 0");
-        if ($result -> startPeriod > $result -> endPeriod)
+        $todayWeekDay = intval(date("N", $today));
+        $result -> startPeriod = strtotime($controlPeriodStartWeekDayTitle." ".$controlPeriodStartHours." hours ".$controlPeriodStartMinutes." minutes");
+        $result -> endPeriod = strtotime($controlPeriodEndWeekDayTitle." ".$controlPeriodEndHours." hours ".$controlPeriodEndMinutes." minutes");
+
+        // День начала = текущему дню, время начала > текущего времени, день конца = текущему дню, время конца > текущего времени
+        if ($todayWeekDay == $controlPeriodStartWeekDay && strtotime($controlPeriodStartWeekDayTitle." ".$controlPeriodStartHours." hours ".$controlPeriodStartMinutes." minutes") > time() && $todayWeekDay == $controlPeriodEndWeekDay && strtotime($controlPeriodEndWeekDayTitle." ".$controlPeriodEndHours." hours ".$controlPeriodEndMinutes." minutes") > time()) {
             $result -> startPeriod = strtotime("-1 week", $result -> startPeriod);
-        if ($result -> startPeriod == $result -> endPeriod)
+        }
+
+        // День начала = текущему дню, время начала > текущего времени, день конца = текущему дню, время конца < текущего времени
+        if ($todayWeekDay == $controlPeriodStartWeekDay && strtotime($controlPeriodStartWeekDayTitle." ".$controlPeriodStartHours." hours ".$controlPeriodStartMinutes." minutes") > time() && $todayWeekDay == $controlPeriodEndWeekDay && strtotime($controlPeriodEndWeekDayTitle." ".$controlPeriodEndHours." hours ".$controlPeriodEndMinutes." minutes") < time()) {
+            $result -> startPeriod = strtotime("-1 week", $result -> startPeriod);
+        }
+
+        // День начала = текущему дню, время начала < текущего времени, день конца = текущему дню, время конца > текущего времени
+        if ($todayWeekDay == $controlPeriodStartWeekDay && strtotime($controlPeriodStartWeekDayTitle." ".$controlPeriodStartHours." hours ".$controlPeriodStartMinutes." minutes") < time() && $todayWeekDay == $controlPeriodEndWeekDay && strtotime($controlPeriodEndWeekDayTitle." ".$controlPeriodEndHours." hours ".$controlPeriodEndMinutes." minutes") > time()) {
             $result -> endPeriod = strtotime("+1 week", $result -> endPeriod);
+        }
 
+        // День начала = текущему дню, время начала < текущего времени, день конца = текущему дню, время конца < текущего времени
+        if ($todayWeekDay == $controlPeriodStartWeekDay && strtotime($controlPeriodStartWeekDayTitle." ".$controlPeriodStartHours." hours ".$controlPeriodStartMinutes." minutes") < time() && $todayWeekDay == $controlPeriodEndWeekDay && strtotime($controlPeriodEndWeekDayTitle." ".$controlPeriodEndHours." hours ".$controlPeriodEndMinutes." minutes") < time()) {
+            $result -> endPeriod = strtotime("+1 week", $result -> endPeriod);
+        }
 
+        if ($todayWeekDay < $controlPeriodStartWeekDay) {
+            $result -> startPeriod = strtotime("-1 week", $result -> startPeriod);
+        }
 
-        $divisions = mysqli_query($mysqli, "SELECT ID, PARENT_ID, TITLE_FULL, SORT_ID, TITLE_SHORT, IS_DEPARTMENT, PATH, FILE_STORAGE_HOST, (SELECT COUNT(*) FROM violations WHERE division_id = divisions.ID AND date_happened > ".$result -> startPeriod." AND date_happened < ".$result -> endPeriod.") AS VIOLATIONS_ADDED, (SELECT COUNT(*) FROM attachments WHERE DIVISION_ID = divisions.ID AND DATE_ADDED > ".$result -> startPeriod." AND DATE_ADDED < ".$result -> endPeriod.") AS ATTACHMENTS_ADDED FROM divisions ORDER By PARENT_ID ASC");
+        $divisions = mysqli_query($mysqli, "SELECT ID, PARENT_ID, TITLE_FULL, SORT_ID, TITLE_SHORT, IS_DEPARTMENT, PATH, FILE_STORAGE_HOST, (SELECT COUNT(*) FROM violations WHERE DIVISION_ID = divisions.ID AND DATE_HAPPENED >= ".$result -> startPeriod." AND DATE_HAPPENED <= ".$result -> endPeriod.") AS VIOLATIONS_ADDED, (SELECT COUNT(*) FROM attachments WHERE DIVISION_ID = divisions.ID AND DATE_ADDED > ".$result -> startPeriod." AND DATE_ADDED < ".$result -> endPeriod.") AS ATTACHMENTS_ADDED FROM divisions ORDER BY PARENT_ID ASC");
         if (!$divisions) {
             echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
             return false;
@@ -439,16 +504,17 @@
         global $mysqli;
         $result = array();
 
+        $violationId = $data -> violationId;
         $divisionId = $data -> divisionId;
         $eskGroupId = $data -> eskGroupId;
         $startDate = $data -> startDate;
         $endDate = $data -> endDate == 0 ? time() : $data -> endDate;
         $start = $data -> start;
-        $limit = "";
-        if ($endDate != 0 || $startDate != 0 || $eskGroupId != 0)
-            $limit = "";
-        else
-            $limit = " LIMIT $start, $itemsOnPage";
+        $limit = $data -> limit;
+        //if ($endDate != 0 || $startDate != 0 || $eskGroupId != 0)
+        //    $limit = "";
+        //else
+        //    $limit = " LIMIT $start, $itemsOnPage";
 
         $eskGroupQuery = "";
         if ($eskGroupId != 0) {
@@ -457,36 +523,6 @@
         }
 
 
-
-
-        //echo("limit = ".$limit);
-
-        /*
-        $link = mysql_connect($db_host, $db_user, $db_password);
-        if (!$link) {
-            echo("Error connecting DB: ".mysql_error());
-            return false;
-        }
-
-        $db = mysql_select_db($db_name, $link);
-        if (!$db) {
-            echo("Error selecting DB: ".mysql_error());
-            return false;
-        }
-
-        $encoding = mysql_query("SET NAMES utf8");
-        if (!$encoding) {
-            echo("Error setting encoding: ".mysql_error());
-            return false;
-        }
-        */
-        /*
-        $divisions = mysql_query("SELECT * FROM divisions WHERE PATH LIKE '%/$divisionId/%'", $link);
-        if (!$divisions) {
-            echo("Error executing query");
-            return false;
-        }
-        */
         $divisions = mysqli_query($mysqli, "SELECT * FROM divisions WHERE PATH LIKE '%/$divisionId/%'");
         if (!$divisions) {
             echo(json_encode(false));
@@ -499,26 +535,14 @@
         }
         $divs = rtrim($divs, ",");
         $divs = $divs.")";
-        /*
-        $total = mysql_query("SELECT COUNT(*) AS total FROM violations WHERE DIVISION_ID IN $divs AND DATE_HAPPENED >= $startDate AND DATE_HAPPENED <= $endDate", $link);
-        if (!$total) {
-            echo("Error executing query");
-            return false;
-        }
-        */
+
         $total = mysqli_query($mysqli, "SELECT COUNT(*) AS total FROM violations WHERE DIVISION_ID IN $divs AND DATE_HAPPENED >= $startDate AND DATE_HAPPENED <= $endDate".$eskGroupQuery);
         if (!$total) {
             echo(json_encode(false));
             return false;
         }
-        /*
-        $violations = mysql_query("SELECT * FROM violations WHERE DIVISION_ID IN $divs AND DATE_HAPPENED >= $startDate AND DATE_HAPPENED <= $endDate ORDER BY DATE_HAPPENED DESC ".$limit, $link);
-        if (!$violations) {
-            echo("Error executing query");
-            return false;
-        }
-        */
-        $violations = mysqli_query($mysqli, "SELECT * FROM violations WHERE DIVISION_ID IN $divs AND DATE_HAPPENED >= $startDate AND DATE_HAPPENED <= $endDate".$eskGroupQuery." ORDER BY DATE_HAPPENED DESC ".$limit);
+
+        $violations = mysqli_query($mysqli, "SELECT * FROM violations WHERE DIVISION_ID IN $divs AND DATE_HAPPENED >= $startDate AND DATE_HAPPENED <= $endDate".$eskGroupQuery." ORDER BY DATE_HAPPENED DESC LIMIT $start, $limit");
         if (!$violations) {
             echo(json_encode(false));
             return false;
@@ -530,13 +554,7 @@
             $violationItem -> violation = $violation;
             $violationItem -> total = intval(mysqli_fetch_assoc($total)["total"]);
             $userId = intval($violation["USER_ID"]);
-            /*
-            $user = mysql_query("SELECT * FROM users WHERE ID = $userId LIMIT 1", $link);
-            if (!$user) {
-                echo("Error executing query");
-                return false;
-            }
-            */
+
             $user = mysqli_query($mysqli, "SELECT * FROM users WHERE ID = $userId LIMIT 1");
             if (!$user) {
                 echo(json_encode(false));
@@ -545,13 +563,7 @@
             $violationItem -> user = mysqli_fetch_assoc($user);
 
             $violationId = intval($violation["ID"]);
-            /*
-            $attachments = mysql_query("SELECT * FROM attachments WHERE VIOLATION_ID = $violationId", $link);
-            if (!$attachments) {
-                echo("Error executing query");
-                return false;
-            }
-            */
+
             $attachments = mysqli_query($mysqli, "SELECT * FROM attachments WHERE VIOLATION_ID = $violationId");
             if (!$attachments) {
                 echo(json_encode(false));

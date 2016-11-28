@@ -94,6 +94,7 @@
             };
 
 
+
             $scope.onEndHoursChange = function () {
                 var exp = new RegExp("^(0|[0-9]|[0-2][0-9])$");
                 if (exp.test($scope.endHours)) {
@@ -145,23 +146,32 @@
                             $location.url("/");
                         });
 
-                        $violations.violations.getNew().id.value = 0;
-                        $violations.violations.getNew().happened.value = new moment().unix();
-                        $violations.violations.getNew().eskGroupId.value = 0;
-                        $violations.violations.getNew().eskObject.value = "";
-                        $violations.violations.getNew().description.value = "";
-                        $violations.attachments.getNew().splice(0, $violations.attachments.getNew().length);
-
                         var item = $tree.getItemByKey("session-divisions-tree", violation.divisionId.value);
-                        item.data.violationsAdded++;
-                        item.data.violationsTotal++;
-                        item.notifications.getById("violations").value += 1;
-                        item.notifications.getById("violations").isVisible = item.notifications.getById("violations").value > 0 ? true : false;
-                        var att = violation.attachments.length;
-                        item.notifications.getById("attachments").value += att;
-                        item.notifications.getById("attachments").isVisible = item.notifications.getById("attachments").value > 0 ? true : false;
-                        item.data.attachmentsTotal += att;
-                        item.data.attachmentsAdded += att;
+                        if ($violations.violations.getNew().happened.value >= $violations.violations.startControlPeriod() && $violations.violations.getNew().happened.value <= $violations.violations.endControlPeriod()) {
+                            item.data.violationsAdded++;
+                            item.data.violationsTotal++;
+                            item.notifications.getById("violations").value += 1;
+                            item.notifications.getById("violations").isVisible = item.notifications.getById("violations").value > 0 ? true : false;
+                            var att = violation.attachments.length;
+                            item.notifications.getById("attachments").value += att;
+                            item.notifications.getById("attachments").isVisible = item.notifications.getById("attachments").value > 0 ? true : false;
+                            item.data.attachmentsTotal += att;
+                            item.data.attachmentsAdded += att;
+
+                            var parent = $tree.getItemByKey("global-divisions-tree", item.parentKey);
+                            while (parent) {
+                                //$log.log("parent found = ", parent);
+                                parent.data.violationsTotal++;
+                                parent.notifications.getById("violations").value += 1;
+                                parent.notifications.getById("violations").isVisible = parent.notifications.getById("violations").value > 0 ? true : false;
+                                parent.data.attachmentsTotal += att;
+                                parent.notifications.getById("attachments").value += att;
+                                parent.notifications.getById("attachments").isVisible = parent.notifications.getById("attachments").value > 0 ? true : false;
+                                parent = $tree.getItemByKey("global-divisions-tree", parent.parentKey);
+                            }
+                            $tree.getById("global-divisions-tree").calcRoot();
+                        }
+
 
                         var length = violation.attachments.length;
                         for (var i = 0; i < length; i++) {
@@ -169,18 +179,13 @@
                                 violation.attachments[i].isInAddMode = false;
                         }
 
-                        var parent = $tree.getItemByKey("global-divisions-tree", item.parentKey);
-                        while (parent) {
-                            //$log.log("parent found = ", parent);
-                            parent.data.violationsTotal++;
-                            parent.notifications.getById("violations").value += 1;
-                            parent.notifications.getById("violations").isVisible = parent.notifications.getById("violations").value > 0 ? true : false;
-                            parent.data.attachmentsTotal += att;
-                            parent.notifications.getById("attachments").value += att;
-                            parent.notifications.getById("attachments").isVisible = parent.notifications.getById("attachments").value > 0 ? true : false;
-                            parent = $tree.getItemByKey("global-divisions-tree", parent.parentKey);
-                        }
-                        $tree.getById("global-divisions-tree").calcRoot();
+
+                        $violations.violations.getNew().id.value = 0;
+                        $violations.violations.getNew().happened.value = new moment().unix();
+                        $violations.violations.getNew().eskGroupId.value = 0;
+                        $violations.violations.getNew().eskObject.value = "";
+                        $violations.violations.getNew().description.value = "";
+                        $violations.attachments.getNew().splice(0, $violations.attachments.getNew().length);
                     });
                 }
             };

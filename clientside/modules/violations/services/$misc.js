@@ -4,13 +4,13 @@ angular
 
         var eskGroups = [];
         var weekdays = [
-            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { title: "Понедельник", code: "monday" } }),
-            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { title: "Вторник", code: "tuesday" } }),
-            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { title: "Среда", code: "wednesday" } }),
-            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { title: "Четверг", code: "thursday" } }),
-            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { title: "Пятница", code: "friday" } }),
-            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { title: "Суббота", code: "saturday" } }),
-            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { title: "Воскресение", code: "sunday" } })
+            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { id: 1,title: "Понедельник", code: "monday" } }),
+            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { id: 2,title: "Вторник", code: "tuesday" } }),
+            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { id: 3, title: "Среда", code: "wednesday" } }),
+            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { id: 4, title: "Четверг", code: "thursday" } }),
+            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { id: 5, title: "Пятница", code: "friday" } }),
+            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { id: 6, title: "Суббота", code: "saturday" } }),
+            $factory({ classes: ["Weekday"], base_class: "Weekday", init: { id: 7, title: "Воскресение", code: "sunday" } })
         ];
 
         $log.info(weekdays);

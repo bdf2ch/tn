@@ -1,7 +1,8 @@
 angular
     .module("violations")
-    .controller("ViolationsController", ["$log", "$scope", "$violations", "$misc", "$vFilters", "$location", "$tree", "$session", "$dateTimePicker", function ($log, $scope, $violations, $misc, $vFilters, $location, $tree, $session, $dateTimePicker) {
+    .controller("ViolationsController", ["$log", "$scope", "$violations", "$divisions", "$misc", "$vFilters", "$location", "$tree", "$session", "$dateTimePicker", function ($log, $scope, $violations, $divisions, $misc, $vFilters, $location, $tree, $session, $dateTimePicker) {
         $scope.violations = $violations;
+        $scope.divisions = $divisions;
         $scope.misc = $misc;
         $scope.filters = $vFilters;
         $scope.today = new moment().hours(23).minutes(59).seconds(59).unix();
@@ -90,10 +91,11 @@ angular
 
 
         $scope.selectDivision = function (division) {
-            $violations.violations.setStart(0);
+            //$violations.violations.setStart(0);
             if (division.isSelected === true) {
                 $violations.violations.getNew().divisionId.value = division.key;
-                $violations.violations.getByDivisionId(division.key);
+                if ($divisions.getCurrent().id.value !== division.key)
+                    $violations.violations.getByDivisionId(division.key);
                 //$log.log("new = ", $violations.violations.getNew());
 
             }
