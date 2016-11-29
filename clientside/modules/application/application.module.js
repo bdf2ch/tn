@@ -24,7 +24,7 @@ angular
                 controller: "ViolationController",
                 resolve: {
                     violation: ["$log", "$http", "$route", "$violations", function ($log, $http, $route, $violations) {
-                        $violations.violations.getById(parseInt($route.current.params.violationId));
+                        $violations.getById(parseInt($route.current.params.violationId));
                     }]
                 }
             })
@@ -82,7 +82,7 @@ angular
     }])
     .run(["$log", "$violations", "$navigation", function ($log, $violations, $navigation) {
         moment.locale("ru");
-        $violations.violations.getNew().happened.value = new moment().hours(0).minutes(0).seconds(0).unix();
-        $violations.violations.getNew().ended.value = $violations.violations.getNew().happened.value;
+        $violations.getNew().happened.value = new moment().hours(0).minutes(0).seconds(0).unix();
+        $violations.getNew().ended.value = $violations.getNew().happened.value;
         //$log.log(window.initialData);
     }]);

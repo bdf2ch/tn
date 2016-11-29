@@ -14,7 +14,6 @@ angular
 
 
         $scope.closeSettingsModal = function () {
-            $log.log("close modal");
             if ($settings.changed() === true) {
                 for (var setting in $settings.getAll()) {
                     $settings.getAll()[setting]._backup_.restore();
@@ -23,6 +22,7 @@ angular
             }
             $settings.changed(false);
             $modals.close();
+            $window.location.reload();
         };
 
 

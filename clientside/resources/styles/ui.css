@@ -269,6 +269,11 @@ input[type='number'] {
   padding: 7px;
   box-sizing: border-box;
 }
+input[type='text'].error,
+input[type='password'].error,
+input[type='number'].error {
+  background: #FFCDD2;
+}
 input[type='text'].label,
 input[type='password'].label,
 input[type='number'].label {

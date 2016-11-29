@@ -137,14 +137,12 @@ angular
                 }
 
                 sessionDivisionsTree.onSelect = function (item) {
-                    //$log.log("selected item = ", item);
-                    //$violations.violations.setStart(0);
+                    $log.log("selected item = ", item);
                     if (item.isSelected === true) {
-                        $violations.violations.getNew().divisionId.value = item.key;
-                        if (currentDivision.id.value !== item.key)
-                            $violations.violations.clear();
+                        $violations.getNew().divisionId.value = item.key;
+                        if (currentDivision !== undefined && currentDivision.id.value !== item.key)
+                            $violations.clear();
 
-                        //$log.log("new = ", $violations.violations.getNew());
 
                         var length = divisions.length;
                         var found = false;
@@ -160,7 +158,7 @@ angular
                                 }
                             }
                         }
-                        $violations.violations.getByDivisionId(item.key);
+                        $violations.getByDivisionId(item.key);
 
                     }
                 };
@@ -177,7 +175,7 @@ angular
                     onSelect: function (item) {
                         //var division = this.getById(item.key);
                         //$log.log("div = ", division);
-                        $violations.violations.getNew().divisionId.value = item.key;
+                        $violations.getNew().divisionId.value = item.key;
                         //$log.log("div id = ", item.key);
                     }
 

@@ -1,63 +1,61 @@
 angular.module("violations", [])
-    .run(["$log", "$divisions", "$violations", "$misc", "$session", "$users", "$navigation", "$settings", function ($log, $divisions, $violations, $misc, $session, $users, $navigation, $settings) {
-        //$log.log("violations module run...");
+    .run(["$log", "$divisions", "$violations", "$misc", "$session", "$users", "$navigation", "$settings",
+        function ($log, $divisions, $violations, $misc, $session, $users, $navigation, $settings) {
+            //$log.log("violations module run...");
 
-        $session.init(window.initialData);
-        $settings.init(window.initialData.settings);
-        $users.users.init(window.initialData.users);
-        $divisions.init(window.initialData.divisions);
-        $violations.init();
-        $misc.init(window.initialData);
-        $violations.violations.getNew().userId.value = $session.getCurrentUser().id.value;
-        $violations.violations.getNew().divisionId.value = $session.getCurrentUser().divisionId.value;
-        //$violations.violations.startDate = new moment().unix();
+            $session.init(window.initialData);
+            $settings.init(window.initialData.settings);
+            $users.users.init(window.initialData.users);
+            $divisions.init(window.initialData.divisions);
+            $violations.init();
+            $misc.init(window.initialData);
+            $violations.getNew().userId.value = $session.getCurrentUser().id.value;
+            $violations.getNew().divisionId.value = $session.getCurrentUser().divisionId.value;
+            //$violations.startDate = new moment().unix();
 
+            $navigation.add({
+                id: "violations",
+                url: "/",
+                icon: "fa fa-bolt",
+                title: "Нарушения",
+                order: 1
+            });
 
-        $navigation.add({
-            id: "violations",
-            url: "/",
-            icon: "fa fa-bolt",
-            title: "Нарушения",
-            order: 1
-        });
+            $navigation.add({
+                id: "users",
+                url: "/users/",
+                icon: "fa fa-user",
+                title: "Пользователи",
+                order: 3,
+                isVisible: $session.getCurrentUser().isAdministrator.value === true ? true : false
+            });
 
-        $navigation.add({
-            id: "users",
-            url: "/users/",
-            icon: "fa fa-user",
-            title: "Пользователи",
-            order: 3,
-            isVisible: $session.getCurrentUser().isAdministrator.value === true ? true : false
-        });
+            $navigation.add({
+                id: "user",
+                parentId: "users",
+                url: "/user/",
+                icon: "fa fa-user",
+                title: "",
+                isVisible: false
+            });
 
-        $navigation.add({
-            id: "user",
-            parentId: "users",
-            url: "/user/",
-            icon: "fa fa-user",
-            title: "",
-            isVisible: false
-        });
+            $navigation.add({
+                id: "divisions",
+                url: "/divisions/",
+                icon: "fa fa-building",
+                title: "Стр. подразделения",
+                order: 2,
+                isVisible: $session.getCurrentUser().isAdministrator.value === true ? true : false
+            });
 
-        $navigation.add({
-            id: "divisions",
-            url: "/divisions/",
-            icon: "fa fa-building",
-            title: "Стр. подразделения",
-            order: 2,
-            isVisible: $session.getCurrentUser().isAdministrator.value === true ? true : false
-        });
-
-
-        $navigation.add({
-            id: "help",
-            url: "/help/",
-            icon: "fa fa-info",
-            title: "Помощь",
-            order: 4,
-            isVisible: true
-        });
-        
+            $navigation.add({
+                id: "help",
+                url: "/help/",
+                icon: "fa fa-info",
+                title: "Помощь",
+                order: 4,
+                isVisible: true
+            });
     }]);
 $classesInjector
     .add("Attachment", {
@@ -109,6 +107,24 @@ $classesInjector
         isNew: false,
         newAttachments: 0
     });
+$classesInjector
+    .add("ViolationFilter", {
+        code: new Field({ source: "", type: DATA_TYPE_STRING, value: "", default_value: "" }),
+        title: new Field({ source: "", type: DATA_TYPE_STRING, value: "", default_value: "" }),
+        startValue: new Field({ source: "", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
+        endValue: new Field({ source: "", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
+        isEnabled: false,
+        isActive: false,
+
+        resetStartValue: function () {
+            this.startValue.value = 0;
+        },
+
+        resetEndValue: function () {
+            this.endValue.value = 0;
+        }
+    });
+
 $classesInjector
     .add("Weekday", {
         id: 0,
@@ -251,7 +267,6 @@ angular
 
 
         $scope.closeSettingsModal = function () {
-            $log.log("close modal");
             if ($settings.changed() === true) {
                 for (var setting in $settings.getAll()) {
                     $settings.getAll()[setting]._backup_.restore();
@@ -260,6 +275,7 @@ angular
             }
             $settings.changed(false);
             $modals.close();
+            $window.location.reload();
         };
 
 
@@ -458,18 +474,18 @@ angular
              */
             $scope.cancel = function () {
                 $location.url("/");
-                var division = $divisions.getById($violations.violations.getNew().divisionId.value);
-                var departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
+                var division = $divisions.getById($violations.getNew().divisionId.value);
+                var departmentId = $divisions.getDepartmentByDivisionId($violations.getNew().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.getNew().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
                 var url = division.storage.value !== "" ? division.storage.value + "/serverside/cancel.php" : "/serverside/cancel.php";
 
-                if ($violations.violations.getNew().id.value !== 0) {
-                    $violations.violations.cancel($violations.violations.getNew().id.value, url, departmentId, function () {
+                if ($violations.getNew().id.value !== 0) {
+                    $violations.cancel($violations.getNew().id.value, url, departmentId, function () {
                         $violations.attachments.getNew().splice(0, $violations.attachments.getNew().length);
                     });
                 }
 
                 if ($divisions.getCurrent() !== undefined && $divisions.getCurrent().id.value === 1) {
-                    $violations.violations.getNew().divisionId.value = 0;
+                    $violations.getNew().divisionId.value = 0;
                 }
             };
 
@@ -477,21 +493,21 @@ angular
 
             $scope.selectStartDate = function (date) {
                 //$dateTimePicker.getById("new-violation-end-date").scope.settings.value = moment.unix(date).hours($scope.hours).minutes($scope.minutes).seconds(0).unix();
-                $violations.violations.getNew()._states_.changed(true);
-                $violations.violations.getNew().ended.value = $violations.violations.getNew().happened.value;
-                $dateTimePicker.getById("new-violation-end-date").scope.settings.minDate = $violations.violations.getNew().happened.value;
+                $violations.getNew()._states_.changed(true);
+                $violations.getNew().ended.value = $violations.getNew().happened.value;
+                $dateTimePicker.getById("new-violation-end-date").scope.settings.minDate = $violations.getNew().happened.value;
             };
 
 
             $scope.onHoursChange = function () {
                 var exp = new RegExp("^(0|[0-9]|[0-2][0-9])$");
                 if (exp.test($scope.hours)) {
-                    $violations.violations.getNew().happened.value = moment.unix($violations.violations.getNew().happened.value).hours($scope.hours).unix();
+                    $violations.getNew().happened.value = moment.unix($violations.getNew().happened.value).hours($scope.hours).unix();
                 } else {
                     $scope.hours = 0;
-                    $violations.violations.getNew().happened.value = moment.unix($violations.violations.getNew().happened.value).hours($scope.hours).unix();
+                    $violations.getNew().happened.value = moment.unix($violations.getNew().happened.value).hours($scope.hours).unix();
                 }
-                $violations.violations.getNew()._states_.changed(true);
+                $violations.getNew()._states_.changed(true);
             };
 
 
@@ -499,12 +515,12 @@ angular
             $scope.onMinutesChange = function () {
                 var exp = new RegExp("^(0|[0-9]|[0-5][0-9])$");
                 if (exp.test($scope.minutes)) {
-                    $violations.violations.getNew().happened.value = moment.unix($violations.violations.getNew().happened.value).minutes($scope.minutes).unix();
+                    $violations.getNew().happened.value = moment.unix($violations.getNew().happened.value).minutes($scope.minutes).unix();
                 } else {
                     $scope.minutes = 0;
-                    $violations.violations.getNew().happened.value = moment.unix($violations.violations.getNew().happened.value).minutes($scope.minutes).unix();
+                    $violations.getNew().happened.value = moment.unix($violations.getNew().happened.value).minutes($scope.minutes).unix();
                 }
-                $violations.violations.getNew()._states_.changed(true);
+                $violations.getNew()._states_.changed(true);
             };
 
 
@@ -512,12 +528,12 @@ angular
             $scope.onEndHoursChange = function () {
                 var exp = new RegExp("^(0|[0-9]|[0-2][0-9])$");
                 if (exp.test($scope.endHours)) {
-                    $violations.violations.getNew().ended.value = moment.unix($violations.violations.getNew().ended.value).hours($scope.endHours).unix();
+                    $violations.getNew().ended.value = moment.unix($violations.getNew().ended.value).hours($scope.endHours).unix();
                 } else {
                     $scope.hours = 0;
-                    $violations.violations.getNew().ended.value = moment.unix($violations.violations.getNew().ended.value).hours($scope.endHours).unix();
+                    $violations.getNew().ended.value = moment.unix($violations.getNew().ended.value).hours($scope.endHours).unix();
                 }
-                $violations.violations.getNew()._states_.changed(true);
+                $violations.getNew()._states_.changed(true);
             };
 
 
@@ -525,12 +541,12 @@ angular
             $scope.onEndMinutesChange = function () {
                 var exp = new RegExp("^(0|[0-9]|[0-5][0-9])$");
                 if (exp.test($scope.endMinutes)) {
-                    $violations.violations.getNew().ended.value = moment.unix($violations.violations.getNew().ended.value).minutes($scope.endMinutes).unix();
+                    $violations.getNew().ended.value = moment.unix($violations.getNew().ended.value).minutes($scope.endMinutes).unix();
                 } else {
                     $scope.endMinutes = 0;
-                    $violations.violations.getNew().ended.value = moment.unix($violations.violations.getNew().ended.value).minutes($scope.endMinutes).unix();
+                    $violations.getNew().ended.value = moment.unix($violations.getNew().ended.value).minutes($scope.endMinutes).unix();
                 }
-                $violations.violations.getNew()._states_.changed(true);
+                $violations.getNew()._states_.changed(true);
             };
 
 
@@ -540,28 +556,28 @@ angular
                     $scope.errors[error] = undefined;
                 }
 
-                if ($violations.violations.getNew().ended.value < $violations.violations.getNew().happened.value)
+                if ($violations.getNew().ended.value < $violations.getNew().happened.value)
                     $scope.errors.ended = "Дата устренения не может быть раньше времени ТН";
-                if ($violations.violations.getNew().divisionId.value === 0)
+                if ($violations.getNew().divisionId.value === 0)
                     $scope.errors.divisionId = "Вы не выбрали структурное подразделение";
-                if ($violations.violations.getNew().eskGroupId.value === 0)
+                if ($violations.getNew().eskGroupId.value === 0)
                     $scope.errors.eskGroupId = "Вы не выбрали группу ЭСК";
-                if ($violations.violations.getNew().eskObject.value === "")
+                if ($violations.getNew().eskObject.value === "")
                     $scope.errors.eskObject = "Вы не указали объект ЭСК";
-                if ($violations.violations.getNew().description.value === "")
+                if ($violations.getNew().description.value === "")
                     $scope.errors.description = "Вы не указали описание";
 
                 if ($scope.errors.date === undefined & $scope.errors.divisionId === undefined &&
                     $scope.errors.eskGroupId === undefined && $scope.errors.eskObject === undefined &&
                     $scope.errors.description === undefined && $scope.errors.ended === undefined) {
-                    $violations.violations.add(function (violation) {
-                        $violations.violations.setStart(0);
-                        $violations.violations.getByDivisionId(violation.divisionId.value, function () {
+                    $violations.add(function (violation) {
+                        $violations.clear();
+                        $violations.getByDivisionId(violation.divisionId.value, function () {
                             $location.url("/");
                         });
 
                         var item = $tree.getItemByKey("session-divisions-tree", violation.divisionId.value);
-                        if ($violations.violations.getNew().happened.value >= $violations.violations.startControlPeriod() && $violations.violations.getNew().happened.value <= $violations.violations.endControlPeriod()) {
+                        if ($violations.getNew().happened.value >= $violations.startControlPeriod() && $violations.getNew().happened.value <= $violations.endControlPeriod()) {
                             item.data.violationsAdded++;
                             item.data.violationsTotal++;
                             item.notifications.getById("violations").value += 1;
@@ -594,11 +610,11 @@ angular
                         }
 
 
-                        $violations.violations.getNew().id.value = 0;
-                        $violations.violations.getNew().happened.value = new moment().unix();
-                        $violations.violations.getNew().eskGroupId.value = 0;
-                        $violations.violations.getNew().eskObject.value = "";
-                        $violations.violations.getNew().description.value = "";
+                        $violations.getNew().id.value = 0;
+                        $violations.getNew().happened.value = new moment().unix();
+                        $violations.getNew().eskGroupId.value = 0;
+                        $violations.getNew().eskObject.value = "";
+                        $violations.getNew().description.value = "";
                         $violations.attachments.getNew().splice(0, $violations.attachments.getNew().length);
                     });
                 }
@@ -610,15 +626,15 @@ angular
                 //$log.info("uploader onBeforeUpload");
 
                 $scope.isUploadInProgress = true;
-                $scope.uploaderData.violationId = $violations.violations.getNew().id.value;
+                $scope.uploaderData.violationId = $violations.getNew().id.value;
 
                 //var division = $divisions.getById($session.getCurrentUser().divisionId.value);
-                var division = $divisions.getById($violations.violations.getNew().divisionId.value);
+                var division = $divisions.getById($violations.getNew().divisionId.value);
                 //$log.log("current division = ", division);
                 if (division.storage.value === "") {
                     $scope.uploaderLink = "/serverside/uploader.php";
-                    //$log.log("departments = ", $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value));
-                    $scope.uploaderData.departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
+                    //$log.log("departments = ", $divisions.getDepartmentByDivisionId($violations.getNew().divisionId.value));
+                    $scope.uploaderData.departmentId = $divisions.getDepartmentByDivisionId($violations.getNew().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.getNew().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
                 } else
                     $scope.uploaderLink = division.storage.value + "/upload/share";
                 //$log.log("uploaderlink = ", $scope.uploaderLink);
@@ -633,7 +649,7 @@ angular
                 var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
                 attachment._model_.fromJSON(data);
                 attachment.isInAddMode = true;
-                $violations.violations.addAttachmentToNew(attachment);
+                $violations.addAttachmentToNew(attachment);
                 $violations.attachments.add(attachment);
                 $scope.isUploadInProgress = false;
                 delete $scope.uploaderData.storage;
@@ -641,15 +657,15 @@ angular
                 //$log.log("attachment = ", attachment);
 
                 if (attachment.violationId.value !== 0)
-                    $violations.violations.getNew().id.value = attachment.violationId.value;
+                    $violations.getNew().id.value = attachment.violationId.value;
             };
 
 
 
             $scope.deleteAttachment = function (attachmentId) {
                 if (attachmentId !== undefined) {
-                    var division = $divisions.getById($violations.violations.getNew().divisionId.value);
-                    var departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value).id.value : $violations.violations.getNew().divisionId.value;
+                    var division = $divisions.getById($violations.getNew().divisionId.value);
+                    var departmentId = $divisions.getDepartmentByDivisionId($violations.getNew().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.getNew().divisionId.value).id.value : $violations.getNew().divisionId.value;
                     var url = division.storage.value !== "" ? division.storage.value + "/serverside/deleteAttachment.php" : "/serverside/deleteAttachment.php";
 
                     $violations.attachments.delete(attachmentId, departmentId, url, function () {
@@ -819,8 +835,8 @@ angular
         };
         $scope.isUploadInProgress = false;
         $scope.uploaderLink = "test";
-        $scope.endHours = moment.unix($violations.violations.getCurrent().ended.value).hours();
-        $scope.endMinutes = moment.unix($violations.violations.getCurrent().ended.value).minutes();
+        $scope.endHours = moment.unix($violations.getCurrent().ended.value).hours();
+        $scope.endMinutes = moment.unix($violations.getCurrent().ended.value).minutes();
 
 
 
@@ -831,34 +847,34 @@ angular
             $location.url("/");
 
             /*** Отменяем возможность удаления добавленных файлов в выбранном ТН ***/
-            var length = $violations.violations.getCurrent().attachments.length;
+            var length = $violations.getCurrent().attachments.length;
             for (var i = 0; i < length; i++) {
-                if ($violations.violations.getCurrent().attachments[i].isInAddMode === true)
-                    $violations.violations.getCurrent().attachments[i].isInAddMode = false;
+                if ($violations.getCurrent().attachments[i].isInAddMode === true)
+                    $violations.getCurrent().attachments[i].isInAddMode = false;
             }
 
             /*** Если ТН было изменено - отменяем изменения ***/
-            if ($violations.violations.getCurrent()._states_.changed() === true) {
-                $violations.violations.getCurrent()._backup_.restore();
-                $violations.violations.getCurrent()._states_.changed(false);
+            if ($violations.getCurrent()._states_.changed() === true) {
+                $violations.getCurrent()._backup_.restore();
+                $violations.getCurrent()._states_.changed(false);
             }
-            $violations.violations.select(parseInt($routeParams.violationId));
+            $violations.select(parseInt($routeParams.violationId));
         };
 
 
 
         $scope.onBeforeUploadAttachment = function () {
-            $scope.uploaderData.divisionId = $violations.violations.getCurrent().divisionId.value;
-            $violations.violations.getCurrent().isInAddAttachmentMode = true;
+            $scope.uploaderData.divisionId = $violations.getCurrent().divisionId.value;
+            $violations.getCurrent().isInAddAttachmentMode = true;
             $scope.isUploadInProgress = true;
-            $scope.uploaderData.violationId = $violations.violations.getCurrent().id.value;
+            $scope.uploaderData.violationId = $violations.getCurrent().id.value;
 
             //var division = $divisions.getById($session.getCurrentUser().divisionId.value);
-            var division = $divisions.getById($violations.violations.getCurrent().divisionId.value);
+            var division = $divisions.getById($violations.getCurrent().divisionId.value);
             //$log.log("current division = ", division);
             if (division.storage.value === "") {
                 $scope.uploaderLink = "/serverside/uploader.php";
-                $scope.uploaderData.departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getCurrent().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getCurrent().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
+                $scope.uploaderData.departmentId = $divisions.getDepartmentByDivisionId($violations.getCurrent().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.getCurrent().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
             } else
                 $scope.uploaderLink = division.storage.value + "/upload/share";
         };
@@ -869,14 +885,14 @@ angular
             var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
             attachment._model_.fromJSON(data);
             attachment.isInAddMode = true;
-            $violations.violations.getCurrent().attachments.push(attachment);
-            $violations.violations.getCurrent().newAttachments++;
-            $violations.violations.addAttachment();
+            $violations.getCurrent().attachments.push(attachment);
+            $violations.getCurrent().newAttachments++;
+            $violations.addAttachment();
             $scope.isUploadInProgress = false;
 
             var tree = $tree.getById("global-divisions-tree");
             if (tree) {
-                var item = $tree.getItemByKey("global-divisions-tree", $violations.violations.getCurrent().divisionId.value);
+                var item = $tree.getItemByKey("global-divisions-tree", $violations.getCurrent().divisionId.value);
                 item.data.attachmentsAdded++;
                 item.data.attachmentsTotal++;
                 item.notifications.getById("attachments").value += 1;
@@ -900,15 +916,15 @@ angular
 
         $scope.deleteAttachment = function (attachmentId) {
             if (attachmentId !== undefined) {
-                var division = $divisions.getById($violations.violations.getCurrent().divisionId.value);
-                var departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getCurrent().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getCurrent().divisionId.value).id.value : $violations.violations.getCurrent().divisionId.value;
+                var division = $divisions.getById($violations.getCurrent().divisionId.value);
+                var departmentId = $divisions.getDepartmentByDivisionId($violations.getCurrent().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.getCurrent().divisionId.value).id.value : $violations.getCurrent().divisionId.value;
                 var url = division.storage.value !== "" ? division.storage.value + "/serverside/deleteAttachment.php" : "/serverside/deleteAttachment.php";
 
                 $violations.attachments.delete(attachmentId, departmentId, url, function () {
-                    var length = $violations.violations.getCurrent().attachments.length;
+                    var length = $violations.getCurrent().attachments.length;
                     for (var i = 0; i < length; i++) {
-                        if ($violations.violations.getCurrent().attachments[i].id.value === attachmentId) {
-                            $violations.violations.getCurrent().attachments.splice(i, 1);
+                        if ($violations.getCurrent().attachments[i].id.value === attachmentId) {
+                            $violations.getCurrent().attachments.splice(i, 1);
                             break;
                         }
                     }
@@ -923,21 +939,21 @@ angular
                 $scope.errors[error] = undefined;
             }
 
-            if ($violations.violations.getCurrent().ended.value < $violations.violations.getCurrent().happened.value)
+            if ($violations.getCurrent().ended.value < $violations.getCurrent().happened.value)
                 $scope.errors.ended = "Дата устренения не может быть раньше времени ТН";
-            if ($violations.violations.getCurrent().eskGroupId.value === 0)
+            if ($violations.getCurrent().eskGroupId.value === 0)
                 $scope.errors.eskGroupId = "Вы не выбрали группу ЭСК";
-            if ($violations.violations.getCurrent().eskObject.value === "")
+            if ($violations.getCurrent().eskObject.value === "")
                 $scope.errors.eskObject = "Вы не указали объект ЭСК";
-            if ($violations.violations.getCurrent().description.value === "")
+            if ($violations.getCurrent().description.value === "")
                 $scope.errors.description = "Вы не указали описание";
 
             if ($scope.errors.eskGroupId === undefined && $scope.errors.eskObject === undefined && $scope.errors.description === undefined && $scope.errors.ended === undefined) {
                 $scope.inProgress = true;
-                $violations.violations.edit(function () {
+                $violations.edit(function () {
                     $scope.inProgress = false;
-                    $violations.violations.getCurrent()._states_.changed(false);
-                    $violations.violations.getCurrent()._backup_.setup();
+                    $violations.getCurrent()._states_.changed(false);
+                    $violations.getCurrent()._backup_.setup();
                 });
             }
 
@@ -945,119 +961,104 @@ angular
 
 
         $scope.selectEndDate = function () {
-            $violations.violations.getCurrent()._states_.changed(true);
+            $violations.getCurrent()._states_.changed(true);
         };
 
 
         $scope.onEndHoursChange = function () {
-            $violations.violations.getCurrent()._states_.changed(true);
+            $violations.getCurrent()._states_.changed(true);
             var exp = new RegExp("^(0|[0-9]|[0-2][0-9])$");
             if (exp.test($scope.endHours)) {
-                $violations.violations.getCurrent().ended.value = moment.unix($violations.violations.getCurrent().ended.value).hours($scope.endHours).unix();
+                $violations.getCurrent().ended.value = moment.unix($violations.getCurrent().ended.value).hours($scope.endHours).unix();
             } else {
                 $scope.endHours = 0;
-                $violations.violations.getCurrent().ended.value = moment.unix($violations.violations.getCurrent().ended.value).hours($scope.endHours).unix();
+                $violations.getCurrent().ended.value = moment.unix($violations.getCurrent().ended.value).hours($scope.endHours).unix();
             }
         };
 
 
 
         $scope.onEndMinutesChange = function () {
-            $violations.violations.getCurrent()._states_.changed(true);
+            $violations.getCurrent()._states_.changed(true);
             var exp = new RegExp("^(0|[0-9]|[0-5][0-9])$");
             if (exp.test($scope.endMinutes)) {
-                $violations.violations.getCurrent().ended.value = moment.unix($violations.violations.getCurrent().ended.value).minutes($scope.endMinutes).unix();
+                $violations.getCurrent().ended.value = moment.unix($violations.getCurrent().ended.value).minutes($scope.endMinutes).unix();
             } else {
                 $scope.endMinutes = 0;
-                $violations.violations.getCurrent().ended.value = moment.unix($violations.violations.getCurrent().ended.value).minutes($scope.endMinutes).unix();
+                $violations.getCurrent().ended.value = moment.unix($violations.getCurrent().ended.value).minutes($scope.endMinutes).unix();
             }
         };
     }]);
 angular
     .module("violations")
-    .controller("ViolationsController", ["$log", "$scope", "$violations", "$divisions", "$misc", "$vFilters", "$location", "$tree", "$session", "$dateTimePicker", function ($log, $scope, $violations, $divisions, $misc, $vFilters, $location, $tree, $session, $dateTimePicker) {
+    .controller("ViolationsController", ["$log", "$scope", "$violations", "$divisions", "$misc", "$location", "$tree", "$session", "$dateTimePicker", function ($log, $scope, $violations, $divisions, $misc, $location, $tree, $session, $dateTimePicker) {
         $scope.violations = $violations;
         $scope.divisions = $divisions;
         $scope.misc = $misc;
-        $scope.filters = $vFilters;
         $scope.today = new moment().hours(23).minutes(59).seconds(59).unix();
+
+
 
         $scope.selectStartDate = function (value) {
             $log.log("onSelect called", value);
-            //$violations.violations.filter.setStartDate(value);
-            $violations.violations.setStart(0);
-            $dateTimePicker.getById("violations-end-date").scope.settings.minDate = $violations.violations.filter.startDate;
+            $dateTimePicker.getById("violations-end-date").scope.settings.minDate = $violations.filter.getByCode("violation-date").startValue.value;
             var division = $tree.getById("session-divisions-tree").selectedItem;
-            if (division !== undefined)
-                $violations.violations.getByDivisionId(division.key);
+            if (division !== undefined) {
+                $violations.clear();
+                $violations.getByDivisionId(division.key);
+            }
         };
 
-
-        /*
-        $scope.clearStartDate = function () {
-            $violations.violations.filter.startDate = 0;
-            $violations.violations.setStart(0);
-            $dateTimePicker.getById("violations-end-date").scope.settings.minDate = 0;
-            var division = $tree.getById("session-divisions-tree").selectedItem;
-            if (division !== undefined)
-                $violations.violations.getByDivisionId(division.key);
-        };
-        */
 
 
         $scope.cancelStartDate = function () {
-            $violations.violations.filter.cancelStartDate(function () {
-                $violations.violations.setStart(0);
-                $dateTimePicker.getById("violations-end-date").scope.settings.minDate = 0;
-                var division = $tree.getById("session-divisions-tree").selectedItem;
-                if (division !== undefined)
-                    $violations.violations.getByDivisionId(division.key);
-            });
+            $dateTimePicker.getById("violations-end-date").scope.settings.minDate = 0;
+            var division = $tree.getById("session-divisions-tree").selectedItem;
+            if (division !== undefined) {
+                $violations.clear();
+                $violations.filter.getByCode("violation-date").resetStartValue();
+                $violations.getByDivisionId(division.key);
+            }
         };
+
 
 
         $scope.selectEndDate = function () {
-            $violations.violations.setStart(0);
-            $violations.violations.endDate = moment.unix($violations.violations.filter.endDate).hours(23).minutes(59).seconds(59).unix();
-            $dateTimePicker.getById("violations-start-date").scope.settings.maxDate = $violations.violations.filter.endDate;
+            $violations.filter.endDate = moment.unix($violations.filter.getByCode("violation-date").endValue.value).hours(23).minutes(59).seconds(59).unix();
+            $dateTimePicker.getById("violations-start-date").scope.settings.maxDate = $violations.filter.endDate;
             var division = $tree.getById("session-divisions-tree").selectedItem;
-            if (division !== undefined)
-                $violations.violations.getByDivisionId(division.key);
+            if (division !== undefined) {
+                $violations.clear();
+                $violations.getByDivisionId(division.key);
+            }
         };
 
-        /*
-        $scope.clearEndDate = function () {
-            $violations.violations.filter.endDate = 0;
-            $violations.violations.setStart(0);
-            //$dateTimePicker.getAll()[0].scope.settings.maxDate = $scope.today;
-            $dateTimePicker.getById("violations-start-date").scope.settings.maxDate = $scope.today;
-            var division = $tree.getById("session-divisions-tree").selectedItem;
-            if (division !== undefined)
-                $violations.violations.getByDivisionId(division.key);
-        };
-        */
+
 
         $scope.cancelEndDate = function () {
-            $violations.violations.filter.cancelEndDate(function () {
-                $violations.violations.setStart(0);
-                $dateTimePicker.getById("violations-start-date").scope.settings.maxDate = $scope.today;
-                var division = $tree.getById("session-divisions-tree").selectedItem;
-                if (division !== undefined)
-                    $violations.violations.getByDivisionId(division.key);
-            });
+            $dateTimePicker.getById("violations-start-date").scope.settings.maxDate = $scope.today;
+            var division = $tree.getById("session-divisions-tree").selectedItem;
+            if (division !== undefined) {
+                $violations.clear();
+                $violations.filter.getByCode("violation-date").resetEndValue();
+                $violations.getByDivisionId(division.key);
+            }
         };
+
 
 
         $scope.cancelBothDates = function () {
-            $violations.violations.setStart(0);
-            $violations.violations.filter.cancelStartDate();
             $dateTimePicker.getById("violations-start-date").scope.settings.maxDate = $scope.today;
-            $violations.violations.filter.cancelEndDate();
+            $violations.filter.getByCode("violation-date").resetStartValue();
+            $violations.filter.getByCode("violation-date").resetEndValue();
             $dateTimePicker.getById("violations-end-date").scope.settings.minDate = 0;
             var division = $tree.getById("session-divisions-tree").selectedItem;
-            if (division !== undefined)
-                $violations.violations.getByDivisionId(division.key);
+            if (division !== undefined) {
+                $violations.clear();
+                $violations.getByDivisionId(division.key);
+            }
         };
+
 
 
         $scope.gotoNewViolation = function () {
@@ -1065,51 +1066,94 @@ angular
         };
 
 
-        $scope.selectDivision = function (division) {
-            //$violations.violations.setStart(0);
-            if (division.isSelected === true) {
-                $violations.violations.getNew().divisionId.value = division.key;
-                if ($divisions.getCurrent().id.value !== division.key)
-                    $violations.violations.getByDivisionId(division.key);
-                //$log.log("new = ", $violations.violations.getNew());
 
+        $scope.selectDivision = function (division) {
+            if (division.isSelected === true) {
+                $violations.getNew().divisionId.value = division.key;
+                if ($divisions.getCurrent().id.value !== division.key)
+                    $violations.getByDivisionId(division.key);
             }
         };
 
 
+
         $scope.selectViolation = function (violationId) {
             if (violationId !== undefined) {
-                $violations.violations.select(violationId, function () {
+                $violations.select(violationId, function () {
                     $location.url("/violations/" + violationId);
                 });
             }
         };
 
 
-        $scope.clearViolationId = function () {};
-
-        $scope.onChangeViolationId = function () {
-            $log.log("violationId changed");
-            var violationId = $violations.violations.filter.violationId;
-            if (violationId !== "") {
-                if (isNaN(violationId))
-                    $violations.violations.filter.violationId = "";
-                else
-                    $violations.violations.filter.violationId = Math.floor(violationId);
+        $scope.cancelViolationId = function () {
+            var division = $tree.getById("session-divisions-tree").selectedItem;
+            if (division !== undefined) {
+                $violations.clear();
+                $violations.filter.isIdSent(false);
+                $violations.filter.cancelViolationId();
+                $violations.getByDivisionId(division.key);
             }
         };
 
 
+
+        $scope.onChangeViolationId = function () {
+            $log.log("violationId changed");
+            if ($violations.filter.getByCode("violation-id").startValue.value !== "") {
+                if (isNaN($violations.filter.getByCode("violation-id").startValue.value))
+                    $violations.filter.getByCode("violation-id").startValue.value = 0;
+                else
+                    $violations.filter.getByCode('violation-id').startValue.value = Math.floor($violations.filter.getByCode("violation-id").startValue.value);
+            }
+        };
+
+
+
         $scope.searchViolationById = function () {
             $log.log("search pressed");
-            $violations.violations.filter.isIdSent(true);
+            $violations.filter.isIdSent(true);
+            $violations.filter.cancelStartDate();
+            $violations.filter.cancelEndDate();
+            $violations.filter.cancelEskGroup();
+            $violations.filter.getByCode('violation-id')._backup_.setup();
+            $violations.searchById($violations.filter.getByCode('violation-id').startValue.value, function (violation) {
+                $log.log("violation # " + $violations.filter.violationId + " found");
+                $violations.clear();
+                $violations.getAll().push(violation);
+            });
         };
+
+
+
+        $scope.cancelViolationId = function () {
+            $violations.filter.getByCode("violation-id").resetStartValue();
+            $violations.filter.isIdSent(false);
+            var division = $tree.getById("session-divisions-tree").selectedItem;
+            if (division !== undefined) {
+                $violations.clear();
+                $violations.getByDivisionId(division.key);
+            }
+        };
+
 
 
         $scope.selectEskGroup = function () {
             var division = $tree.getById("session-divisions-tree").selectedItem;
-            if (division !== undefined)
-                $violations.violations.getByDivisionId(division.key);
+            if (division !== undefined) {
+                $violations.clear();
+                $violations.getByDivisionId(division.key);
+            }
+        };
+
+
+        $scope.cancelEskGroup = function () {
+            var division = $tree.getById("session-divisions-tree").selectedItem;
+            if (division !== undefined) {
+                $violations.filter.getByCode("violation-esk-group").resetStartValue();
+                $violations.clear();
+                $violations.getByDivisionId(division.key);
+            }
         };
 
     }]);
@@ -1286,6 +1330,31 @@ angular
     }]);
 angular
     .module("violations")
+    .directive("violationId", ["$log", function ($log) {
+        return {
+            restrict: "A",
+            require: "ngModel",
+            scope: false,
+            link: function (scope, element, attrs, controller) {
+                $log.log("controller = ", controller);
+
+                controller.$parsers.push(function (val) {
+                        return val;
+                });
+
+                controller.$formatters.push(function (val) {
+                    $log.log("value = ", val);
+                    if (val === 0)
+                        return "";
+                    else
+                        return val;
+                });
+            }
+        }
+    }]);
+
+angular
+    .module("violations")
     .filter("byViolationId", ["$log", function ($log) {
         return function (input, violationId) {
             if (violationId !== undefined && violationId !== 0) {
@@ -1320,6 +1389,17 @@ angular.module("violations")
             return moment.unix(input).format("DD MMMM YYYY");
         }
     }]);
+
+angular.module("violations")
+    .filter("emptyViolationId", ["$log", function ($log) {
+        return function (input) {
+            if (input === 0)
+                return "";
+            else
+                return input;
+        }
+    }]);
+
 
 angular
     .module("violations")
@@ -1489,14 +1569,12 @@ angular
                 }
 
                 sessionDivisionsTree.onSelect = function (item) {
-                    //$log.log("selected item = ", item);
-                    //$violations.violations.setStart(0);
+                    $log.log("selected item = ", item);
                     if (item.isSelected === true) {
-                        $violations.violations.getNew().divisionId.value = item.key;
-                        if (currentDivision.id.value !== item.key)
-                            $violations.violations.clear();
+                        $violations.getNew().divisionId.value = item.key;
+                        if (currentDivision !== undefined && currentDivision.id.value !== item.key)
+                            $violations.clear();
 
-                        //$log.log("new = ", $violations.violations.getNew());
 
                         var length = divisions.length;
                         var found = false;
@@ -1512,7 +1590,7 @@ angular
                                 }
                             }
                         }
-                        $violations.violations.getByDivisionId(item.key);
+                        $violations.getByDivisionId(item.key);
 
                     }
                 };
@@ -1529,7 +1607,7 @@ angular
                     onSelect: function (item) {
                         //var division = this.getById(item.key);
                         //$log.log("div = ", division);
-                        $violations.violations.getNew().divisionId.value = item.key;
+                        $violations.getNew().divisionId.value = item.key;
                         //$log.log("div id = ", item.key);
                     }
 
@@ -1743,69 +1821,6 @@ angular
     }]);
 angular
     .module("violations")
-    .factory("$vFilters", ["$log", "$errors", "$violations", function ($log, $errors, $violations) {
-        var isEnabled = false;
-        var isFilterByNumberActive = true;
-        var isFilterByDateActive = false;
-        var isFilterByEskGroupActive = false;
-        var startDate = 0;
-        var endDate = 0;
-        var filters = [];
-
-        return {
-            violationNumber: "",
-            startDate: 0,
-            endDate: 0,
-            eskGroupId: 0,
-
-
-            enabled: function (flag) {
-                //if (flag !== undefined && typeof flag !== "boolean") {
-                //    $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$filters -> Неверно задан тип параметра");
-                //    return false;
-                //} else
-                if (flag !== undefined)
-                    isEnabled = flag;
-                return isEnabled;
-            },
-
-            getActive: function () {
-                return filters;
-            },
-
-            add: function () {},
-
-
-            filterByNumber: function (flag) {
-                if (flag !== undefined) {
-                    isFilterByNumberActive = flag;
-                    isFilterByDateActive = false;
-                    isFilterByEskGroupActive = false;
-                }
-                return isFilterByNumberActive;
-            },
-
-            filterByDate: function (flag) {
-                if (flag !== undefined) {
-                    isFilterByDateActive = flag;
-                    isFilterByNumberActive = false;
-                    isFilterByEskGroupActive = false;
-                }
-                return isFilterByDateActive;
-            },
-
-            filterByEskGroup: function (flag) {
-                if (flag !== undefined) {
-                    isFilterByEskGroupActive = flag;
-                    isFilterByNumberActive = false;
-                    isFilterByDateActive = false;
-                }
-                return isFilterByEskGroupActive;
-            }
-        }
-    }]);
-angular
-    .module("violations")
     .factory("$misc", ["$log", "$http", "$errors", "$factory", function ($log, $http, $errors, $factory) {
 
         var eskGroups = [];
@@ -1893,10 +1908,13 @@ angular.module("violations")
             var currentViolationAttachments = [];
             var totalViolations = 0;
             var totalAttachments = 0;
-            var thursday = 0;
             var isLoading = false;
 
-
+            var filters = [
+                $factory({ classes: ["ViolationFilter", "Backup"], base_class: "ViolationFilter", init: { code: "violation-id", title: "Поиск по # ТН", startValue: 0, isActive: true } }),
+                $factory({ classes: ["ViolationFilter", "Backup"], base_class: "ViolationFilter", init: { code: "violation-date", title: "Фильтр по дате нарушения"}, startValue: 0, endValue: 0 }),
+                $factory({ classes: ["ViolationFilter", "Backup"], base_class: "ViolationFilter", init: { code: "violation-esk-group", title: "Поиск по группе ЭСК"} })
+            ];
             var isFilterEnabled = true;
             var isViolationIdSent = false;
             var startControlPeriod = 0;
@@ -1904,9 +1922,6 @@ angular.module("violations")
             var violationsTotal = 0;
             var violationsLoaded = 0;
 
-            var pages = 0;
-            var pagesLoaded = 1;
-            //var total = 0;
             var start = 0;
 
             var api = {
@@ -1916,41 +1931,35 @@ angular.module("violations")
                         $log.log("startPeriod = ", moment.unix(window.initialData.startPeriod).format("DD.MM.YYYY HH:mm"), window.initialData.startPeriod);
                         $log.log("endPeriod = ", moment.unix(window.initialData.endPeriod).format("DD.MM.YYYY HH:mm"), window.initialData.endPeriod);
 
-                        if (window.initialData.thursday !== undefined) {
-                            thursday = window.initialData.thursday;
-                        }
+
 
                         if (window.initialData.startPeriod !== undefined) {
                             startControlPeriod = window.initialData.startPeriod;
                         }
-
                         if (window.initialData.endPeriod !== undefined) {
                             endControlPeriod = window.initialData.endPeriod;
                         }
-
                         $log.log("startControlPeriod = ", startControlPeriod);
                         $log.log("endControlPeriod = ", endControlPeriod);
+
+
 
                         if (window.initialData.violations !== undefined) {
 
                             if (window.initialData.total !== undefined) {
                                 violationsTotal = window.initialData.total;
                                 $log.log("total = ", violationsTotal);
-                                //pages = Math.ceil(window.initialData.total / itemsOnPage);
                             }
 
                             var length = window.initialData.violations.length;
                             for (var i = 0; i < length; i++) {
-                                //totalViolations++;
                                 var violation = $factory({ classes: ["Violation", "Model", "Backup", "States"], base_class: "Violation" });
                                 violation._model_.fromJSON(window.initialData.violations[i].violation);
                                 violation.isNew = violation.happened.value >= startControlPeriod && violation.happened.value <= endControlPeriod ? true : false;
-                                $log.log("id = ", violation.id.value, ", happened = ", violation.happened.value, "isNew = ", violation.isNew);
                                 violation._backup_.setup();
                                 var user = $factory({ classes: ["AppUser", "Model", "Backup", "States"], base_class: "AppUser" });
                                 user._model_.fromJSON(window.initialData.violations[i].user);
                                 violation.user = user;
-                                //violation.attachments = [];
 
                                 if (window.initialData.violations[i].attachments !== undefined && window.initialData.violations[i].attachments.length > 0) {
                                     var l = window.initialData.violations[i].attachments.length;
@@ -1958,7 +1967,7 @@ angular.module("violations")
                                         totalAttachments++;
                                         var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
                                         attachment._model_.fromJSON(window.initialData.violations[i].attachments[x]);
-                                        violation.newAttachments += attachment.added.value > moment.unix(thursday).hours(23).minutes(59).seconds(59).unix() ? 1 : 0;
+                                        violation.newAttachments += attachment.added.value >= startControlPeriod && attachment.added.value <= endControlPeriod ? 1 : 0;
                                         violation.attachments.push(attachment);
                                     }
                                 }
@@ -1966,550 +1975,562 @@ angular.module("violations")
                                 violations.push(violation);
                                 violationsLoaded++;
                             }
-                            //start = totalViolations;
-                            //$log.log("violations = ", violations);
-                        }
-
-
-                        if (window.initialData.attachments !== undefined) {
-                            var length = window.initialData.attachments.length;
-                            for (var i = 0; i < length; i++) {
-                                var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
-                                attachment._model_.fromJSON(window.initialData.attachments[i]);
-                                attachment._backup_.setup();
-                                attachments.push(attachment);
-                            }
-                            //$log.log("attachments = ", attachments);
                         }
                     }
                 },
 
-                violations: {
-                   /* pages: {
-                        isMoreItems: function () {
 
-                        },
-                        getTotal: function () {
-                            return total;
-                        },
-                        loadNextPage: function () {
-                            var params = {
-                                action: "getViolationsByDivisionId",
-                                divisionId: currentDivision.id.value,
-                                start: start
-                            };
-                            $http.post("/serverside/api.php", params)
-                                .success(function (data) {
-                                    if (data !== undefined && data.length > 0) {
-                                        var length = data.length;
-                                        for (var i = 0; i < length; i++) {
-                                            var violation = $factory({ classes: ["Violation", "Model", "Backup", "States"], base_class: "Violation" });
-                                            violation._model_.fromJSON(data[i].violation);
-                                            violation._backup_.setup();
-                                            var user = $factory({ classes: ["AppUser", "Model", "Backup", "States"], base_class: "AppUser" });
-                                            user._model_.fromJSON(data[i].user);
-                                            violation.user = user;
-                                            //violation.attachments = [];
-
-                                            if (data[i].attachments !== undefined && data[i].attachments.length > 0) {
-                                                var l = data[i].attachments.length;
-                                                for (var x = 0; x < l; x++) {
-                                                    var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
-                                                    attachment._model_.fromJSON(data[i].attachments[x]);
-                                                    violation.attachments.push(attachment);
-                                                }
-                                            }
-
-                                                violations.push(violation);
-                                        }
-
-
-
-
-                                            var length = data.length;
-                                            for (var i = 0; i < length; i++) {
-                                                var violation = $factory({ classes: ["Violation", "Model", "Backup", "States"], base_class: "Violation" });
-                                                violation._model_.fromJSON(data[i]);
-                                                violation._backup_.setup();
-                                                violations.push(violation);
-                                            }
-                                    }
-                                });
-                        }
-                    },*/
-                    
-                    //startDate: 0,
-                    //endDate: 0,
-                    //loadMore: true,
-
-                    loading: function (flag) {
+                loading: function (flag) {
                         if (flag !== undefined)
                             isLoading = flag;
                         return isLoading;
-                    },
+                },
 
-                    startControlPeriod: function () {
-                        return startControlPeriod;
-                    },
+                startControlPeriod: function () {
+                    return startControlPeriod;
+                },
 
-                    endControlPeriod: function () {
-                        return endControlPeriod;
-                    },
+                endControlPeriod: function () {
+                    return endControlPeriod;
+                },
 
-                    clear: function () {
-                        violations = [];
-                        violationsTotal = 0;
-                        violationsLoaded = 0;
-                        return true;
-                    },
 
-                    getNewByDivisionId: function (divisionId) {
-                        var length = violations.length;
-                        var result = {
-                            violations: 0,
-                            attachments: 0
-                        };
-                        for (var i = 0; i < length; i++) {
-                            if (violations[i].divisionId.value === divisionId && violations[i].happened.value > this.getLastFriday()) {
-                                result.violations++;
-                                var al = violations[i].attachments.length;
-                                for (var x = 0; x < al; x++) {
-                                    if (violations[i].attachments[x].added.value > this.getLastFriday())
-                                        result.attachments++;
-                                }
+                /**
+                 * Очищает массив с нарушениями
+                 * @returns {boolean}
+                 */
+                clear: function () {
+                    violations = [];
+                    violationsTotal = 0;
+                    violationsLoaded = 0;
+                    return true;
+                },
+
+                getNewByDivisionId: function (divisionId) {
+                    var length = violations.length;
+                    var result = {
+                        violations: 0,
+                        attachments: 0
+                    };
+                    for (var i = 0; i < length; i++) {
+                        if (violations[i].divisionId.value === divisionId && violations[i].happened.value > this.getLastFriday()) {
+                            result.violations++;
+                            var al = violations[i].attachments.length;
+                            for (var x = 0; x < al; x++) {
+                                if (violations[i].attachments[x].added.value > this.getLastFriday())
+                                    result.attachments++;
                             }
                         }
-                        return result;
-                    },
+                    }
+                    return result;
+                },
 
-                    setStart: function (value) {
-                        start = value;
-                    },
+                setStart: function (value) {
+                    start = value;
+                },
 
-                    getTotalViolations: function () {
-                        return totalViolations;
-                    },
-                    
-                    getTotalAttachments: function () {
-                        return totalAttachments;
-                    },
-                    
-                    addAttachment: function () {
-                        totalAttachments++;
-                    },
+                getTotalViolations: function () {
+                    return totalViolations;
+                },
 
-                    getAll: function () {
-                        return violations;
-                    },
+                getTotalAttachments: function () {
+                    return totalAttachments;
+                },
 
-                    getCurrent: function () {
-                        return currentViolation;
-                    },
-                    getNew: function () {
-                        return newViolation;
-                    },
+                addAttachment: function () {
+                    totalAttachments++;
+                },
 
-                    getById: function (id, callback) {
-                        if (id === undefined) {
-                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> loadById: Не задан параметр - идентификатор технологического нарушения");
-                            return false;
+                getAll: function () {
+                    return violations;
+                },
+
+                getCurrent: function () {
+                    return currentViolation;
+                },
+                getNew: function () {
+                    return newViolation;
+                },
+
+                getById: function (id, callback) {
+                    if (id === undefined) {
+                        $errors.add(ERROR_TYPE_DEFAULT, "$violations -> getById: Не задан параметр - идентификатор технологического нарушения");
+                        return false;
+                    }
+
+                    var length = violations.length;
+                    for (var i = 0; i < length; i++) {
+                        if (violations[i].id.value === id) {
+                            //$log.info("getting violation from cache");
+                            currentViolation = violations[i];
+                            return currentViolation;
                         }
+                    }
 
-                        var length = violations.length;
-                        for (var i = 0; i < length; i++) {
-                            if (violations[i].id.value === id) {
-                                //$log.info("getting violation from cache");
-                                currentViolation = violations[i];
-                                return currentViolation;
-                            }
+                    var params = {
+                        action: "getViolationById",
+                        data: {
+                            id: id
                         }
+                    };
+                    isLoading = true;
+                    return $http.post("/serverside/api.php", params).then(
+                        function success(response) {
+                            isLoading = false;
+                            //$log.info("promise success");
+                            var violation = $factory({
+                                classes: ["Violation", "Model", "Backup", "States"],
+                                base_class: "Violation"
+                            });
+                            violation._model_.fromJSON(response.data.violation);
+                            violation._backup_.setup();
 
-                        var params = {
-                            action: "getViolationById",
-                            data: {
-                                id: id
+                            var user = $factory({
+                                classes: ["AppUser", "Model", "Backup", "States"],
+                                base_class: "AppUser"
+                            });
+                            user._model_.fromJSON(response.data.user);
+                            violation.user = user;
+
+                            var length = response.data.attachments.length;
+                            for (var i = 0; i < length; i++) {
+                                var attachment = $factory({
+                                    classes: ["Attachment", "Model", "Backup", "States"],
+                                    base_class: "Attachment"
+                                });
+                                attachment._model_.fromJSON(response.data.attachments[i]);
+                                violation.attachments.push(attachment);
                             }
-                        };
-                        isLoading = true;
-                        return $http.post("/serverside/api.php", params).then(
-                            function success(response) {
-                                isLoading = false;
-                                //$log.info("promise success");
-                                var violation = $factory({classes: ["Violation", "Model", "Backup", "States"], base_class: "Violation"});
+
+                            currentViolation = violation;
+                            return currentViolation;
+                        },
+                        function error() {
+                            isLoading = false;
+                            return undefined;
+                        }
+                    );
+                },
+
+
+                searchById: function (id, onSuccess, onFail) {
+                    if (id === undefined) {
+                        $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$violations -> violations -> searchById: Не задан параметр - идентификатор технологического нарушения");
+                        return false;
+                    }
+
+                    var params = {
+                        action: "searchViolationById",
+                        data: {
+                            id: id
+                        }
+                    };
+                    isLoading = true;
+                    violations = [];
+                    $http.post("/serverside/api.php", params).then(
+                        function success(response) {
+                            $log.info(response);
+                            isLoading = false;
+                            api.filter.isIdSent(true);
+                            if (response.data !== "" && response.data !== "false") {
+                                var violation = $factory({
+                                    classes: ["Violation", "Model", "Backup", "States"],
+                                    base_class: "Violation"
+                                });
                                 violation._model_.fromJSON(response.data.violation);
                                 violation._backup_.setup();
 
-                                var user = $factory({ classes: ["AppUser", "Model", "Backup", "States"], base_class: "AppUser" });
+                                var user = $factory({
+                                    classes: ["AppUser", "Model", "Backup", "States"],
+                                    base_class: "AppUser"
+                                });
                                 user._model_.fromJSON(response.data.user);
                                 violation.user = user;
 
                                 var length = response.data.attachments.length;
                                 for (var i = 0; i < length; i++) {
-                                    var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
+                                    var attachment = $factory({
+                                        classes: ["Attachment", "Model", "Backup", "States"],
+                                        base_class: "Attachment"
+                                    });
                                     attachment._model_.fromJSON(response.data.attachments[i]);
                                     violation.attachments.push(attachment);
                                 }
 
-                                currentViolation = violation;
-                                return currentViolation;
-                            },
-                            function error() {
-                                isLoading = false;
-                                return undefined;
-                            }
-                        );
-                    },
+                                if (onSuccess !== undefined && typeof onSuccess === "function")
+                                    onSuccess(violation);
 
-
-                    searchById: function (id, callback) {
-                        if (id === undefined) {
-                            $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$violations -> violations -> searchById: Не задан параметр - идентификатор технологического нарушения");
+                                return violation;
+                            } else if (onFail !== undefined && typeof onFail === "function")
+                                onFail();
+                        },
+                        function error() {
+                            isLoading = false;
+                            $errors.throw($errors.type.ERROR_TYPE_ENGINE, "$violations -> violations -> searchById: В процессе поиска ТН возникла ошибка");
                             return false;
                         }
+                    );
 
-                        var params = {
-                            action: "searchById",
-                            data: {
-                                id: id
-                            }
-                        };
-                        isLoading = true;
-                        $http.post("/serverside/api.php", params).then(
-                            function success (response) {
-                                if (data !== undefined) {
-                                    var violation = $factory({ classes: ["Violation", "Model", "Backup", "States"], base_class: "Violation" });
-                                    violation._model_.fromJSON(response.data.violation);
-                                    violation._backup_.setup();
+                },
 
-                                    var user = $factory({ classes: ["AppUser", "Model", "Backup", "States"], base_class: "AppUser" });
-                                    user._model_.fromJSON(response.data.user);
-                                    violation.user = user;
+                select: function (id, callback) {
+                    if (id === undefined) {
+                        $errors.add(ERROR_TYPE_DEFAULT, "$violations -> violations -> select: Не залан параметр - идентификатор нарушения");
+                        return false;
+                    }
 
-                                    var length = response.data.attachments.length;
-                                    for (var i = 0; i < length; i++) {
-                                        var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
-                                        attachment._model_.fromJSON(response.data.attachments[i]);
-                                        violation.attachments.push(attachment);
-                                    }
-                                }
-                            },
-                            function error () {
-                                $errors.throw($errors.type.ERROR_TYPE_ENGINE, "$violations -> violations -> searchById: В процессе поиска возникла ошибка");
-                                return false;
-                            }
-                        );
-
-                    },
-
-                    select: function (id, callback) {
-                        if (id === undefined) {
-                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> violations -> select: Не залан параметр - идентификатор нарушения");
-                            return false;
-                        }
-
-                        var length = violations.length;
-                        for (var i = 0; i < length; i++) {
-                            if (violations[i].id.value === id) {
-                                if (violations[i]._states_.selected() === false) {
-                                    violations[i]._states_.selected(true);
-                                    currentViolation = violations[i];
-                                } else {
-                                    violations[i]._states_.selected(false);
-                                    currentViolation = undefined;
-                                }
-                            } else
+                    var length = violations.length;
+                    for (var i = 0; i < length; i++) {
+                        if (violations[i].id.value === id) {
+                            if (violations[i]._states_.selected() === false) {
+                                violations[i]._states_.selected(true);
+                                currentViolation = violations[i];
+                            } else {
                                 violations[i]._states_.selected(false);
-                        }
-
-                        if (callback !== undefined && typeof callback === "function")
-                            callback(currentViolation);
-
-                        return true;
-                    },
-
-
-                    getTotal: function () {
-                        return violationsTotal;
-                    },
-
-                    getLoaded: function () {
-                        return violationsLoaded;
-                    },
-
-
-
-                    getByDivisionId: function (divisionId, callback) {
-                        //$log.log("startDate = ", this.startDate, ", endDate = ", this.endDate);
-                        if (divisionId === undefined) {
-                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> violations -> selectByDivisionId: Не задан парметр - идентификатор структурного подразделения");
-                            return false;
-                        }
-
-                        /*
-                        if (startDate === undefined) {
-                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> violations -> selectByDivisionId: Не задан парметр - начальная дата");
-                            return false;
-                        }
-
-                        if (endDate === undefined) {
-                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> violations -> selectByDivisionId: Не задан парметр - конечная дата");
-                            return false;
-                        }
-                        */
-
-
-                        var params = {
-                            action: "getViolationsByDivisionId",
-                            data: {
-                                divisionId: divisionId,
-                                startDate: api.violations.filter.startDate,
-                                endDate: api.violations.filter.endDate,
-                                eskGroupId: api.violations.filter.eskGroupId,
-                                limit: $settings.getByCode("violations-on-page").value.value,
-                                //start: start
-                                start: violations.length
+                                currentViolation = undefined;
                             }
-                        };
+                        } else
+                            violations[i]._states_.selected(false);
+                    }
 
-                        //if (this.startDate !== 0 || this.endDate !== 0)
-                        //    start = 0;
+                    if (callback !== undefined && typeof callback === "function")
+                        callback(currentViolation);
 
-                        //if (start === 0) {
-                        //    totalAttachments = 0;
-                        //    totalViolations = 0;
-                        //}
-
-                        isLoading = true;
-                        $http.post("serverside/api.php", params)
-                            .success(function (data) {
-                                isLoading = false;
-                                //if (start === 0)
-                                //    violations = [];
-                                if (data !== undefined && data.length > 0) {
-                                    violationsTotal = data[0].total;
-                                    var length = data.length;
-                                    for (var i = 0; i < length; i++) {
-                                        //start++;
-                                        //totalViolations++;
-                                        var violation = $factory({ classes: ["Violation", "Model", "Backup", "States"], base_class: "Violation" });
-                                        violation._model_.fromJSON(data[i].violation);
-                                        violation.isNew = violation.happened.value >= startControlPeriod && violation.happened.value <= endControlPeriod ? true : false;
-                                        violation._backup_.setup();
-                                        var user = $factory({ classes: ["AppUser", "Model", "Backup", "States"], base_class: "AppUser" });
-                                        user._model_.fromJSON(data[i].user);
-                                        violation.user = user;
-                                        //violation.attachments = [];
-
-                                        if (data[i].attachments !== undefined && data[i].attachments.length > 0) {
-                                            var l = data[i].attachments.length;
-                                            for (var x = 0; x < l; x++) {
-                                                totalAttachments++;
-                                                var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
-                                                attachment._model_.fromJSON(data[i].attachments[x]);
-                                                violation.newAttachments += attachment.added.value > moment.unix(thursday).hours(23).minutes(59).seconds(59).unix() ? 1 : 0;
-                                                violation.attachments.push(attachment);
-                                            }
-                                        }
-
-                                        violations.push(violation);
-                                        violationsLoaded++;
-
-                                        if (callback !== undefined && typeof callback === "function")
-                                            callback();
-                                    }
+                    return true;
+                },
 
 
+                getTotal: function () {
+                    return violationsTotal;
+                },
+
+                getLoaded: function () {
+                    return violationsLoaded;
+                },
 
 
-                                    //var length = data.length;
-                                    //for (var i = 0; i < length; i++) {
-                                    //    var violation = $factory({ classes: ["Violation", "Model", "Backup", "States"], base_class: "Violation" });
-                                    //    violation._model_.fromJSON(data[i]);
-                                    //    violation._backup_.setup();
-                                    //    violations.push(violation);
-                                    //}
-                                }
-                            });
-                    },
+                getByDivisionId: function (divisionId, callback) {
+                    //$log.log("startDate = ", this.startDate, ", endDate = ", this.endDate);
+                    if (divisionId === undefined) {
+                        $errors.add(ERROR_TYPE_DEFAULT, "$violations -> violations -> selectByDivisionId: Не задан парметр - идентификатор структурного подразделения");
+                        return false;
+                    }
 
-                    add: function (callback) {
-                        var params = {
-                            action: "addViolation",
-                            data: {
-                                id: newViolation.id.value,
-                                userId: newViolation.userId.value,
-                                divisionId: newViolation.divisionId.value,
-                                eskGroupId: newViolation.eskGroupId.value,
-                                eskObject: newViolation.eskObject.value,
-                                happened: newViolation.happened.value,
-                                ended: newViolation.ended.value,
-                                description: newViolation.description.value
-                            }
-                        };
+                    var params = {
+                        action: "getViolationsByDivisionId",
+                        data: {
+                            divisionId: divisionId,
+                            startDate: api.filter.getByCode('violation-date').startValue.value,
+                            endDate: api.filter.getByCode('violation-date').endValue.value,
+                            eskGroupId: api.filter.getByCode('violation-esk-group').startValue.value,
+                            limit: $settings.getByCode("violations-on-page").value.value,
+                            //start: start
+                            start: violations.length
+                        }
+                    };
 
-                        newViolation._states_.loading(true);
-                        $http.post("/serverside/api.php", params)
-                            .success(function (data) {
-                                newViolation._states_.loading(false);
-                                if (data !== undefined && data !== false) {
-                                    totalViolations++;
-                                    var violation = $factory({ classes: ["Violation", "Model", "Backup", "States"], base_class: "Violation" });
-                                    violation._model_.fromJSON(data.violation);
-                                    violation.isNew = violation.happened.value > moment.unix(thursday).hours(23).minutes(59).seconds(59).unix() ? true : false;
+                    isLoading = true;
+                    $http.post("serverside/api.php", params)
+                        .success(function (data) {
+                            isLoading = false;
+                            //if (start === 0)
+                            //    violations = [];
+                            if (data !== undefined && data.length > 0) {
+                                violationsTotal = data[0].total;
+                                var length = data.length;
+                                for (var i = 0; i < length; i++) {
+                                    //start++;
+                                    //totalViolations++;
+                                    var violation = $factory({
+                                        classes: ["Violation", "Model", "Backup", "States"],
+                                        base_class: "Violation"
+                                    });
+                                    violation._model_.fromJSON(data[i].violation);
+                                    violation.isNew = violation.happened.value >= startControlPeriod && violation.happened.value <= endControlPeriod ? true : false;
                                     violation._backup_.setup();
-                                    var user = $factory({ classes: ["AppUser", "Model", "Backup", "States"], base_class: "AppUser" });
-                                    user._model_.fromJSON(data.user);
+                                    var user = $factory({
+                                        classes: ["AppUser", "Model", "Backup", "States"],
+                                        base_class: "AppUser"
+                                    });
+                                    user._model_.fromJSON(data[i].user);
                                     violation.user = user;
+                                    //violation.attachments = [];
 
-                                    violation.attachments = [];
-                                    var length = data.attachments.length;
-                                    for (var i = 0; i < length; i++) {
-                                        totalAttachments++;
-                                        var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
-                                        attachment._model_.fromJSON(data.attachments[i]);
-                                        violation.newAttachments += attachment.added.value > moment.unix(thursday).hours(23).minutes(59).seconds(59).unix() ? 1 : 0;
-                                        violation.attachments.push(attachment);
+                                    if (data[i].attachments !== undefined && data[i].attachments.length > 0) {
+                                        var l = data[i].attachments.length;
+                                        for (var x = 0; x < l; x++) {
+                                            totalAttachments++;
+                                            var attachment = $factory({
+                                                classes: ["Attachment", "Model", "Backup", "States"],
+                                                base_class: "Attachment"
+                                            });
+                                            attachment._model_.fromJSON(data[i].attachments[x]);
+                                            violation.newAttachments += attachment.added.value >= startControlPeriod && attachment.added.value <= endControlPeriod ? 1 : 0;
+                                            violation.attachments.push(attachment);
+                                        }
                                     }
 
-                                    //violations.push(violation);
+                                    violations.push(violation);
+                                    violationsLoaded++;
 
                                     if (callback !== undefined && typeof callback === "function")
-                                        callback(violation);
-
-                                    return true;
+                                        callback();
                                 }
-                            });
-                    },
-
-                    edit: function (callback) {
-                        var params = {
-                            action: "editViolation",
-                            data: {
-                                id: currentViolation.id.value,
-                                divisionId: currentViolation.divisionId.value,
-                                userId: currentViolation.userId.value,
-                                eskGroupId: currentViolation.eskGroupId.value,
-                                eskObject: currentViolation.eskObject.value,
-                                description: currentViolation.description.value,
-                                happened: currentViolation.happened.value,
-                                ended: currentViolation.ended.value,
-                                isConfirmed: currentViolation.isConfirmed.value === true ? 1: 0
                             }
-                        };
-                        $http.post("/serverside/api.php", params)
-                            .success(function (data) {
-                                if (data !== undefined) {
-                                    currentViolation._backup_.setup();
+                        });
+                },
+
+                add: function (callback) {
+                    var params = {
+                        action: "addViolation",
+                        data: {
+                            id: newViolation.id.value,
+                            userId: newViolation.userId.value,
+                            divisionId: newViolation.divisionId.value,
+                            eskGroupId: newViolation.eskGroupId.value,
+                            eskObject: newViolation.eskObject.value,
+                            happened: newViolation.happened.value,
+                            ended: newViolation.ended.value,
+                            description: newViolation.description.value
+                        }
+                    };
+
+                    newViolation._states_.loading(true);
+                    $http.post("/serverside/api.php", params)
+                        .success(function (data) {
+                            newViolation._states_.loading(false);
+                            if (data !== undefined && data !== false) {
+                                totalViolations++;
+                                var violation = $factory({
+                                    classes: ["Violation", "Model", "Backup", "States"],
+                                    base_class: "Violation"
+                                });
+                                violation._model_.fromJSON(data.violation);
+                                violation.isNew = violation.happened.value > moment.unix(thursday).hours(23).minutes(59).seconds(59).unix() ? true : false;
+                                violation._backup_.setup();
+                                var user = $factory({
+                                    classes: ["AppUser", "Model", "Backup", "States"],
+                                    base_class: "AppUser"
+                                });
+                                user._model_.fromJSON(data.user);
+                                violation.user = user;
+
+                                violation.attachments = [];
+                                var length = data.attachments.length;
+                                for (var i = 0; i < length; i++) {
+                                    totalAttachments++;
+                                    var attachment = $factory({
+                                        classes: ["Attachment", "Model", "Backup", "States"],
+                                        base_class: "Attachment"
+                                    });
+                                    attachment._model_.fromJSON(data.attachments[i]);
+                                    violation.newAttachments += attachment.added.value > moment.unix(thursday).hours(23).minutes(59).seconds(59).unix() ? 1 : 0;
+                                    violation.attachments.push(attachment);
+                                }
+
+                                //violations.push(violation);
+
+                                if (callback !== undefined && typeof callback === "function")
+                                    callback(violation);
+
+                                return true;
+                            }
+                        });
+                },
+
+                edit: function (callback) {
+                    var params = {
+                        action: "editViolation",
+                        data: {
+                            id: currentViolation.id.value,
+                            divisionId: currentViolation.divisionId.value,
+                            userId: currentViolation.userId.value,
+                            eskGroupId: currentViolation.eskGroupId.value,
+                            eskObject: currentViolation.eskObject.value,
+                            description: currentViolation.description.value,
+                            happened: currentViolation.happened.value,
+                            ended: currentViolation.ended.value,
+                            isConfirmed: currentViolation.isConfirmed.value === true ? 1 : 0
+                        }
+                    };
+                    $http.post("/serverside/api.php", params)
+                        .success(function (data) {
+                            if (data !== undefined) {
+                                currentViolation._backup_.setup();
+                                if (callback !== undefined && typeof callback === "function")
+                                    callback(currentViolation);
+                                return true;
+                            }
+                            return false;
+                        });
+                },
+
+
+                cancel: function (violationId, url, departmentId, callback) {
+                    if (violationId === undefined) {
+                        $errors.add(ERROR_TYPE_DEFAULT, "$violations -> violations -> cancel: Не задан параметр - идентификатор технологического нарушения");
+                        return false;
+                    }
+
+                    if (url === undefined) {
+                        $errors.add(ERROR_TYPE_DEFAULT, "$violations -> cancel: Не задан параметр - url");
+                        return false;
+                    }
+
+                    if (departmentId === undefined) {
+                        $errors.add(ERROR_TYPE_DEFAULT, "$violations -> violations -> cancel: Не задан параметр - идентификатор филиала организации");
+                        return false;
+                    }
+
+                    var params = {
+                        action: "cancelViolation",
+                        data: {
+                            serviceId: "violations",
+                            violationId: newViolation.id.value,
+                            departmentId: departmentId
+                        }
+                    };
+
+                    newViolation._states_.loading(true);
+                    $http.post(url, params)
+                        .success(function (data) {
+                            newViolation._states_.loading(false);
+                            if (data !== undefined) {
+                                if (data === "true") {
                                     if (callback !== undefined && typeof callback === "function")
-                                        callback(currentViolation);
+                                        callback();
                                     return true;
                                 }
-                                return false;
-                            });
-                    },
-
-
-
-                    cancel: function (violationId, url, departmentId, callback) {
-                        if (violationId === undefined) {
-                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> violations -> cancel: Не задан параметр - идентификатор технологического нарушения");
-                            return false;
-                        }
-
-                        if (url === undefined) {
-                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> cancel: Не задан параметр - url");
-                            return false;
-                        }
-
-                        if (departmentId === undefined) {
-                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> violations -> cancel: Не задан параметр - идентификатор филиала организации");
-                            return false;
-                        }
-
-                        var params = {
-                            action: "cancelViolation",
-                            data: {
-                                serviceId: "violations",
-                                violationId: newViolation.id.value,
-                                departmentId: departmentId
                             }
-                        };
+                        });
+                },
 
-                        newViolation._states_.loading(true);
-                        $http.post(url, params)
-                            .success(function (data) {
-                                newViolation._states_.loading(false);
-                                if (data !== undefined) {
-                                    if (data === "true") {
-                                        if (callback !== undefined && typeof callback === "function")
-                                            callback();
-                                        return true;
-                                    }
-                                }
-                            });
+                addAttachmentToNew: function (attachment, callback) {
+                    if (attachment === undefined) {
+                        $errors.add(ERROR_TYPE_DEFAULT, "$violations -> violations -> addAttachmentToNew: Не задан параметр - приложение");
+                        return false;
+                    }
+
+                    newViolationAttachments.push(attachment);
+                    if (callback !== undefined && typeof callback === "function")
+                        callback(attachment);
+
+                    return true;
+                },
+
+
+
+
+                filter: {
+                    violationId: "",
+                    startDate: 0,
+                    endDate: 0,
+                    eskGroupId: 0,
+
+
+                    /**
+                     *
+                     * @returns {[*,*,*]}
+                     */
+                    getAll: function () {
+                        return filters;
                     },
 
-                    addAttachmentToNew: function (attachment, callback) {
-                        if (attachment === undefined) {
-                            $errors.add(ERROR_TYPE_DEFAULT, "$violations -> violations -> addAttachmentToNew: Не задан параметр - приложение");
+
+
+                    /**
+                     *
+                     * @param code
+                     * @returns {*}
+                     */
+                    getByCode: function (code) {
+                        if (code === undefined) {
+                            $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$violations -> filter -> getByCode: Не задан параметр - код фильтра");
                             return false;
                         }
 
-                        newViolationAttachments.push(attachment);
-                        if (callback !== undefined && typeof callback === "function")
-                            callback(attachment);
+                        var length = filters.length;
+                        for (var i = 0; i < length; i++) {
+                            if (filters[i].code.value === code)
+                                return filters[i];
+                        }
+
+                        return false;
+                    },
+
+
+                    /**
+                     *
+                     * @param code
+                     * @returns {boolean}
+                     */
+                    selectByCode: function (code) {
+                        if (code === undefined) {
+                            $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$violations -> filter -> selectByCode: Не задан параметр - код фильтра");
+                            return false;
+                        }
+
+                        var length = filters.length;
+                        for (var i = 0; i < length; i++) {
+                            if (filters[i].code.value === code)
+                                filters[i].isActive = true;
+                            else
+                                filters[i].isActive = false;
+                        }
 
                         return true;
                     },
 
 
-                    filter: {
-                        violationId: "",
-                        startDate: 0,
-                        endDate: 0,
-                        eskGroupId: 0,
 
-                        enabled: function (flag) {
-                            if (flag !== undefined)
-                                isFilterEnabled = flag;
-                            return isFilterEnabled;
-                        },
+                    enabled: function (flag) {
+                        if (flag !== undefined)
+                            isFilterEnabled = flag;
+                        return isFilterEnabled;
+                    },
 
-                        isIdSent: function (flag) {
-                            if (flag !== undefined)
-                                isViolationIdSent = flag;
-                            return isViolationIdSent;
-                        },
+                    isIdSent: function (flag) {
+                        if (flag !== undefined)
+                            isViolationIdSent = flag;
+                        return isViolationIdSent;
+                    },
 
-                        cancelStartDate: function (callback) {
-                            this.startDate = 0;
-                            if (callback !== undefined && typeof callback === "function")
-                                callback();
-                            return true;
-                        },
+                    cancelViolationId: function () {
+                        this.violationId = "";
+                        return true;
+                    },
 
-                        cancelEndDate: function (callback) {
-                            this.endDate = 0;
-                            if (callback !== undefined && typeof callback === "function")
-                                callback();
-                            return true;
-                        },
+                    cancelStartDate: function (callback) {
+                        this.startDate = 0;
+                        if (callback !== undefined && typeof callback === "function")
+                            callback();
+                        return true;
+                    },
 
-                        cancelEskGroup: function (callback) {
-                            this.eskGroupId = 0;
-                            if (callback !== undefined && typeof callback === "function")
-                                callback();
-                            return true;
-                        }
+                    cancelEndDate: function (callback) {
+                        this.endDate = 0;
+                        if (callback !== undefined && typeof callback === "function")
+                            callback();
+                        return true;
+                    },
+
+                    cancelEskGroup: function (callback) {
+                        this.eskGroupId = 0;
+                        if (callback !== undefined && typeof callback === "function")
+                            callback();
+                        return true;
                     }
                 },
+
+
+
 
 
                 attachments: {
                     getAll: function () {
                         return attachments;
                     },
-                    
+
                     getNew: function () {
                         return newViolationAttachments;
                     },
@@ -2621,7 +2642,7 @@ angular
                 controller: "ViolationController",
                 resolve: {
                     violation: ["$log", "$http", "$route", "$violations", function ($log, $http, $route, $violations) {
-                        $violations.violations.getById(parseInt($route.current.params.violationId));
+                        $violations.getById(parseInt($route.current.params.violationId));
                     }]
                 }
             })
@@ -2679,7 +2700,7 @@ angular
     }])
     .run(["$log", "$violations", "$navigation", function ($log, $violations, $navigation) {
         moment.locale("ru");
-        $violations.violations.getNew().happened.value = new moment().hours(0).minutes(0).seconds(0).unix();
-        $violations.violations.getNew().ended.value = $violations.violations.getNew().happened.value;
+        $violations.getNew().happened.value = new moment().hours(0).minutes(0).seconds(0).unix();
+        $violations.getNew().ended.value = $violations.getNew().happened.value;
         //$log.log(window.initialData);
     }]);

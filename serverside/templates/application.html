@@ -20,17 +20,25 @@
         <div id="app-header-wrapper">
             <span class="caption">Технологические нарушения</span>
 
-            <a ng-href="{{'#' + menu.url}}" ng-show="menu.isVisible === true" ng-class="{ active: menu.isActive === true }" ng-repeat="menu in navigation.getAll() | orderBy:'order' track by $index">
+            <a ng-href="{{'#' + menu.url}}"
+               ng-cloak
+               ng-show="menu.isVisible === true"
+               ng-class="{ active: menu.isActive === true }"
+               ng-repeat="menu in navigation.getAll() | orderBy:'order' track by $index">
                 <span class="fa {{ menu.icon }}" ng-show="menu.icon !== ''"></span>
                 {{ menu.title }}
             </a>
 
-            <a ng-href="#" ng-show="session.getCurrentUser().isAdministrator.value === true" ng-class="{ active: menu.isActive === true }" ng-click="openSettingsModal()">
+            <a ng-href="#"
+               ng-cloak
+               ng-show="session.getCurrentUser().isAdministrator.value === true"
+               ng-class="{ active: menu.isActive === true }"
+               ng-click="openSettingsModal()">
                 <span class="fa fa-gears"></span>
                 Настройки
             </a>
 
-            <div class="user-info">
+            <div class="user-info" ng-cloak>
                 <div class="user-name">
                     <span class="fa fa-user"></span>&nbsp;
                     {{ session.getCurrentUser().name.value + " " + session.getCurrentUser().surname.value }}
@@ -142,7 +150,7 @@
                 Сохранить
             </button>
             <button class="red width-50" ng-click="closeSettingsModal()">
-                Отмена
+                Закрыть
             </button>
         </div>
     </div>

@@ -33,15 +33,15 @@
                        name="start_date"
                        id="filter-start-date"
                        class="width-80 text-center"
-                       ng-class="{ 'width-80': violations.violations.startDate !== 0, 'width-100': violations.violations.startDate === 0, 'no-date': violations.violations.startDate === 0 }"
-                       ng-model="violations.violations.startDate"
+                       ng-class="{ 'width-80': violations.startDate !== 0, 'width-100': violations.startDate === 0, 'no-date': violations.startDate === 0 }"
+                       ng-model="violations.startDate"
                        ui-date-time-picker
                        date-time-picker-id="violations-start-date"
                        date-time-picker-max-date="today"
                        date-time-picker-modal="1"
                        date-time-picker-no-value="Не задана"
                        date-time-picker-on-select="selectStartDate">
-                <button class="blue width-20" title="Очистить начальную дату" ng-show="violations.violations.startDate !== 0" ng-click="clearStartDate()">
+                <button class="blue width-20" title="Очистить начальную дату" ng-show="violations.startDate !== 0" ng-click="clearStartDate()">
                     <span class="fa fa-times"></span>
                 </button>
             </div>
@@ -54,15 +54,15 @@
                        name="end-date"
                        id="filter-end-date"
                        class="text-center"
-                       ng-class="{ 'width-80': violations.violations.endDate !== 0, 'width-100': violations.violations.endDate === 0, 'no-date': violations.violations.endDate === 0 }"
-                       ng-model="violations.violations.endDate"
+                       ng-class="{ 'width-80': violations.endDate !== 0, 'width-100': violations.endDate === 0, 'no-date': violations.endDate === 0 }"
+                       ng-model="violations.endDate"
                        ui-date-time-picker
                        date-time-picker-id="violations-end-date"
                        date-time-picker-max-date="today"
                        date-time-picker-modal="1"
                        date-time-picker-no-value="Не задана"
                        date-time-picker-on-select="selectEndDate">
-                <button class="blue width-20" title="Очистить конечную дату" ng-show="violations.violations.endDate !== 0" ng-click="clearEndDate()">
+                <button class="blue width-20" title="Очистить конечную дату" ng-show="violations.endDate !== 0" ng-click="clearEndDate()">
                     <span class="fa fa-times"></span>
                 </button>
             </div>
@@ -82,34 +82,41 @@
 
         <div class="width-55 padding-10">
             <button class="blue"
-                    ng-class="{ 'pressed': violations.violations.filter.enabled() === true }"
-                    ng-click="violations.violations.filter.enabled(!violations.violations.filter.enabled())"
+                    ng-class="{ 'pressed': violations.filter.enabled() === true }"
+                    ng-click="violations.filter.enabled(!violations.filter.enabled())"
                     title="Поиск и фильтры">
                 <span class="fa fa-filter"></span>
             </button>&nbsp;
-            <span class="filter-label" ng-show="violations.violations.filter.startDate !== 0 && violations.violations.filter.endDate === 0">
-                с {{ violations.violations.filter.startDate | dateShort }} &nbsp;
+            <span class="filter-label" ng-show="violations.filter.violationId !== '' && violations.filter.isIdSent() === true">
+                # {{ violations.filter.violationId }} &nbsp;
+                <span class="fa fa-times"
+                      title="Отменить фильтр"
+                      ng-click="cancelViolationId()">
+                </span>
+            </span>
+            <span class="filter-label" ng-show="violations.filter.getByCode('violation-date').startValue.value !== 0 && violations.filter.getByCode('violation-date').endValue.value === 0">
+                с {{ violations.filter.getByCode("violation-date").startValue.value | dateShort }} &nbsp;
                 <span class="fa fa-times"
                       title="Отменить фильтр"
                       ng-click="cancelStartDate()">
                 </span>
             </span>
-            <span class="filter-label" ng-show="violations.violations.filter.startDate === 0 && violations.violations.filter.endDate !== 0">
-                по {{ violations.violations.filter.endDate | dateShort }} &nbsp;
+            <span class="filter-label" ng-show="violations.filter.getByCode('violation-date').endValue.value === 0 && violations.filter.getByCode('violation-date').endValue.value !== 0">
+                по {{ violations.filter.getByCode('violation-date').endValue.value | dateShort }} &nbsp;
                 <span class="fa fa-times"
                       title="Отменить фильтр"
                       ng-click="cancelEndDate()">
                 </span>
             </span>
-            <span class="filter-label" ng-show="violations.violations.filter.startDate !== 0 && violations.violations.filter.endDate !== 0">
-                с {{ violations.violations.filter.startDate | dateShort }} по {{ violations.violations.filter.endDate | dateShort }} &nbsp;
+            <span class="filter-label" ng-show="violations.filter.getByCode('violation-date').startValue.value !== 0 && violations.filter.getByCode('violation-date').endValue.value !== 0">
+                с {{ violations.filter.getByCode('violation-date').startValue.value | dateShort }} по {{ violations.filter.getByCode('violation-date').endValue.value | dateShort }} &nbsp;
                 <span class="fa fa-times"
                       title="Отменить фильтр"
                       ng-click="cancelBothDates()"></span>
             </span>
-            <span class="filter-label" ng-show="violations.violations.filter.eskGroupId !== 0">
-                {{ misc.eskGroups.getById(violations.violations.filter.eskGroupId).title.value }} &nbsp;
-                <span class="fa fa-times" title="Отменить фильтр" ng-click="violations.violations.filter.cancelEskGroup()"></span>
+            <span class="filter-label" ng-show="violations.filter.getByCode('violation-esk-group').startValue.value !== 0">
+                {{ misc.eskGroups.getById(violations.filter.getByCode('violation-esk-group').startValue.value).title.value }} &nbsp;
+                <span class="fa fa-times" title="Отменить фильтр" ng-click="cancelEskGroup()"></span>
             </span>
         </div>
 
@@ -135,54 +142,63 @@
     -->
     <div class="content">
 
-        <div class="row" id="filters" ng-show="violations.violations.filter.enabled() === true">
+        <div class="row" id="filters" ng-show="violations.filter.enabled() === true">
 
             <div class="row filter-tabs">
+                <!--
                 <div class="filter-tab" ng-class="{ active: filters.filterByNumber() === true }" ng-click="filters.filterByNumber(true)">Поиск по # нарушения</div>
                 <div class="filter-tab" ng-class="{ active: filters.filterByDate() === true }" ng-click="filters.filterByDate(true)">Фильтр по дате нарушения</div>
                 <div class="filter-tab" ng-class="{ active: filters.filterByEskGroup() === true }" ng-click="filters.filterByEskGroup(true)">Фильтр по группе ЭСК</div>
+                -->
+
+                <div class="filter-tab"
+                     ng-repeat="filter in violations.filter.getAll()"
+                     ng-class="{ active: filter.isActive === true }"
+                     ng-click="violations.filter.selectByCode(filter.code.value)">
+                    {{ filter.title.value }}
+                </div>
             </div>
 
 
-            <div class="row filter-content" ng-show="filters.filterByNumber() === true">
+            <div class="row filter-content" ng-show="violations.filter.getByCode('violation-id').isActive === true">
                 <form>
                     <input type="text"
                            name=""
                            id=""
                            class="width-95"
-                           ng-class="{ 'width-100': violations.violations.filter.violationId === '' && violations.violations.filter.isIdSent() === false, 'width-95': violations.violations.filter.isIdSent() === true  }"
+                           violation-id
+                           ng-class="{ 'width-100': violations.filter.getByCode('violation-id').startValue.value === 0 && violations.filter.isIdSent() === false }"
                            placeholder="Введите # технологического нарушения"
-                           ng-model="violations.violations.filter.violationId"
+                           ng-model="violations.filter.getByCode('violation-id').startValue.value"
                            ng-change="onChangeViolationId()">
                     <button class="green width-5"
                             title="Начать поиск"
-                            ng-show="violations.violations.filter.violationId !== '' && violations.violations.filter.isIdSent() === false"
+                            ng-show="violations.filter.getByCode('violation-id').startValue.value !== 0 && violations.filter.isIdSent() === false"
                             ng-click="searchViolationById()"
-                            ng-disabled="violations.violations.loading() === true">
+                            ng-disabled="violations.loading() === true">
                         <span class="fa fa-search"></span>
                     </button>
                 </form>
 
                 <button class="blue width-5"
                         title="Очистить # ТН"
-                        ng-show="violations.violations.filter.isIdSent() === true"
-                        ng-click="clearViolationId()"
-                        ng-disabled="violations.violations.loading() === true">
+                        ng-show="violations.filter.isIdSent() === true"
+                        ng-click="cancelViolationId()"
+                        ng-disabled="violations.loading() === true">
                     <span class="fa fa-times"></span>
                 </button>
             </div>
 
 
-            <div class="row filter-content" ng-show="filters.filterByDate() === true">
+            <div class="row filter-content" ng-show="violations.filter.getByCode('violation-date').isActive === true">
                 <div class="width-45">
-                    <!--<label for="filter-start-date">Начальная дата</label>-->
                     <input type="text"
                            name="start_date"
                            id="filter-start-date"
                            class="text-center"
-                           ng-class="{ 'width-90': violations.violations.filter.startDate !== 0, 'width-100': violations.violations.filter.startDate === 0, 'no-date': violations.violations.filter.startDate === 0 }"
-                           ng-model="violations.violations.filter.startDate"
-                           ng-disabled="violations.violations.loading() === true"
+                           ng-class="{ 'width-90': violations.filter.getByCode('violation-date').startValue.value !== 0, 'width-100': violations.filter.getByCode('violation-date').startValue.value === 0, 'no-date': violations.filter.getByCode('violation-date').startValue.value === 0 }"
+                           ng-model="violations.filter.getByCode('violation-date').startValue.value"
+                           ng-disabled="violations.loading() === true"
                            ui-date-time-picker
                            date-time-picker-id="violations-start-date"
                            date-time-picker-max-date="today"
@@ -191,9 +207,9 @@
                            date-time-picker-on-select="selectStartDate">
                     <button class="blue width-10"
                             title="Очистить начальную дату"
-                            ng-show="violations.violations.filter.startDate !== 0"
+                            ng-show="violations.filter.getByCode('violation-date').startValue.value != 0"
                             ng-click="cancelStartDate()"
-                            ng-disabled="violations.violations.loading() === true">
+                            ng-disabled="violations.loading() === true">
                         <span class="fa fa-times"></span>
                     </button>
                 </div>
@@ -201,14 +217,13 @@
                 <div class="width-10 text-center mdash">&mdash;</div>
 
                 <div class="width-45">
-                    <!--<label for="filter-end-date">Конечная дата</label>-->
                     <input type="text"
                            name="end-date"
                            id="filter-end-date"
                            class="text-center"
-                           ng-class="{ 'width-90': violations.violations.filter.endDate !== 0, 'width-100': violations.violations.filter.endDate === 0, 'no-date': violations.violations.filter.endDate === 0 }"
-                           ng-model="violations.violations.filter.endDate"
-                           ng-disabled="violations.violations.loading() === true"
+                           ng-class="{ 'width-90': violations.filter.getByCode('violation-date').endValue.value !== 0, 'width-100': violations.filter.getByCode('violation-date').endValue.value === 0, 'no-date': violations.filter.getByCode('violation-date').endValue.value === 0 }"
+                           ng-model="violations.filter.getByCode('violation-date').endValue.value"
+                           ng-disabled="violations.loading() === true"
                            ui-date-time-picker
                            date-time-picker-id="violations-end-date"
                            date-time-picker-max-date="today"
@@ -217,27 +232,27 @@
                            date-time-picker-on-select="selectEndDate">
                     <button class="blue width-10"
                             title="Очистить конечную дату"
-                            ng-show="violations.violations.filter.endDate !== 0"
+                            ng-show="violations.filter.getByCode('violation-date').endValue.value !== 0"
                             ng-click="cancelEndDate()"
-                            ng-disabled="violations.violations.loading() === true">
+                            ng-disabled="violations.loading() === true">
                         <span class="fa fa-times"></span>
                     </button>
                 </div>
             </div>
 
-            <div class="row filter-content" ng-show="filters.filterByEskGroup() === true">
+            <div class="row filter-content" ng-show="violations.filter.getByCode('violation-esk-group').isActive === true">
                 <select class="width-95"
                         name="esk_group"
                         id="new-violation-esk-group"
-                        ng-class="{ 'width-100': violations.violations.filter.eskGroupId === 0 }"
-                        ng-model="violations.violations.filter.eskGroupId"
+                        ng-class="{ 'width-100': violations.filter.getByCode('violation-esk-group').startValue.value === 0 }"
+                        ng-model="violations.filter.getByCode('violation-esk-group').startValue.value"
                         ng-options="group.id.value as group.title.value for group in misc.eskGroups.getAll()"
-                        ng-disabled="violations.violations.loading() === true"
+                        ng-disabled="violations.loading() === true"
                         ng-change="selectEskGroup()">
                 </select>
                 <button class="blue width-5"
-                        ng-show="violations.violations.filter.eskGroupId !== 0"
-                        ng-click="violations.violations.filter.cancelEskGroup()">
+                        ng-show="violations.filter.getByCode('violation-esk-group').startValue.value !== 0"
+                        ng-click="cancelEskGroup()">
                     <span class="fa fa-times"></span>
                 </button>
             </div>
@@ -267,7 +282,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="violation in violations.violations.getAll() | orderBy:'-happened.value' track by $index" ng-click="selectViolation(violation.id.value)" title="{{ violation.description.value }}">
+            <tr ng-repeat="violation in violations.getAll() | orderBy:'-happened.value' track by $index" ng-click="selectViolation(violation.id.value)" title="{{ violation.description.value }}">
                 <td class="width-10 text-center">
                     {{ violation.id.value }}<br>
                     <span class="new-violation-mark"
@@ -300,30 +315,39 @@
                 </td>
             </tr>
             </tbody>
-            <tfoot ng-show="violations.violations.getAll().length !== 0" >
+            <tfoot ng-show="violations.getAll().length !== 0" >
             <tr>
                 <td colspan="5">
                     <span class="width-50 left text-center">
-                        <span class="fa fa-bolt"></span>&nbsp; Нарушений: {{ violations.violations.getLoaded() }}
+                        <span class="fa fa-bolt"></span>&nbsp; Нарушений: {{ violations.getLoaded() }}
                     </span>
                     <span class="width-50 right text-center">
-                        <span class="fa fa-file"></span>&nbsp; Документов: {{ violations.violations.getTotalAttachments() }}
+                        <span class="fa fa-file"></span>&nbsp; Документов: {{ violations.getTotalAttachments() }}
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="buttoned text-center"
                     colspan="5"
-                    ng-show="violations.violations.getAll().length < violations.violations.getTotal()"
-                    ng-click="violations.violations.getByDivisionId(divisions.getCurrent().id.value)">
+                    ng-show="violations.getAll().length < violations.getTotal() && violations.loading() === false"
+                    ng-click="violations.getByDivisionId(divisions.getCurrent().id.value)">
                     Загрузить еще
                 </td>
             </tr>
             </tfoot>
         </table>
 
-        <div class="row text-center padding-20" ng-show="violations.violations.getAll().length === 0">
+        <div class="row text-center result-message" ng-show="violations.loading() === false && violations.getAll().length === 0 && violations.filter.isIdSent() === false">
             Технологические нарушения отсутствуют
+        </div>
+
+        <div class="row text-center result-message" ng-show="violations.filter.isIdSent() === true && violations.getAll().length === 0 && violations.loading() === false">
+            <span>Технологическое нарушение #{{ violations.filter.getByCode('violation-id')._backup_.data.startValue }} не найдено</span>
+        </div>
+
+        <div class="row text-center result-message" ng-show="violations.loading() === true">
+            <span class="fa fa-spinner fa-pulse fa-fw"></span>
+            &nbsp; Загрузка данных...
         </div>
 
 

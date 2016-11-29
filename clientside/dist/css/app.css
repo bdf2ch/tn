@@ -673,6 +673,11 @@ input[type='number'] {
   padding: 7px;
   box-sizing: border-box;
 }
+input[type='text'].error,
+input[type='password'].error,
+input[type='number'].error {
+  background: #FFCDD2;
+}
 input[type='text'].label,
 input[type='password'].label,
 input[type='number'].label {
@@ -1321,6 +1326,17 @@ body {
   color: #006064;
   border-bottom: 1px solid #BDBDBD;
 }
+.fa.big {
+  font-size: 40px;
+  color: #BDBDBD;
+  line-height: 100px;
+  box-sizing: border-box;
+}
+.result-message {
+  height: 100px;
+  line-height: 100px;
+  box-sizing: border-box;
+}
 
 html,
 body {
@@ -1774,6 +1790,11 @@ input[type='number'] {
   height: 35px;
   padding: 7px;
   box-sizing: border-box;
+}
+input[type='text'].error,
+input[type='password'].error,
+input[type='number'].error {
+  background: #FFCDD2;
 }
 input[type='text'].label,
 input[type='password'].label,
@@ -3506,6 +3527,11 @@ input[type='number'] {
   height: 35px;
   padding: 7px;
   box-sizing: border-box;
+}
+input[type='text'].error,
+input[type='password'].error,
+input[type='number'].error {
+  background: #FFCDD2;
 }
 input[type='text'].label,
 input[type='password'].label,

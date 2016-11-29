@@ -21,6 +21,9 @@
         case "getViolationById":
             getViolationById($postdata -> data);
             break;
+        case "searchViolationById":
+            searchViolationById($postdata -> data);
+            break;
         case "addViolation":
             addViolation($postdata -> data);
             break;
@@ -76,7 +79,6 @@
         $result -> eskGroups = array();
         $result -> violations = array();
         $result -> total = 0;
-        $result -> attachments = array();
         $thursday = strtotime("last thursday");
         //$result -> thursday = date('W', $thursday) == date('W') ? $thursday - (7 * 86400) : $thursday;
         $result -> thursday = $thursday;
@@ -277,16 +279,6 @@
         }
 
 
-        $attachments = mysqli_query($mysqli, "SELECT * FROM attachments");
-        if (!$attachments) {
-            echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
-            return false;
-        }
-        while ($attachment = mysqli_fetch_assoc($attachments)) {
-            array_push($result -> attachments, $attachment);
-        }
-
-
         $total = mysqli_query($mysqli, "SELECT COUNT(*) AS total FROM violations WHERE DIVISION_ID IN $divs");
         if (!$total) {
             echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
@@ -338,6 +330,47 @@
             echo(json_encode($result));
         } else
             echo(json_encode(false));
+    }
+
+
+
+
+    function searchViolationById ($data) {
+        global $mysqli;
+        $id = $data -> id;
+        $result = new stdClass();
+        $result -> attachments = array();
+
+        $query = mysqli_query($mysqli, "SELECT * FROM violations WHERE ID = $id LIMIT 1");
+        if (!$query) {
+            //echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
+            echo(json_encode(false));
+            return false;
+        }
+
+        $violation = mysqli_fetch_assoc($query);
+        $result -> violation = $violation;
+        $userId = $violation["USER_ID"];
+        $violationAuthor = mysqli_query($mysqli, "SELECT * FROM users WHERE ID = $userId");
+        if (!$violationAuthor) {
+            //echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
+            echo(json_encode(false));
+            return false;
+        }
+        $result -> user = mysqli_fetch_assoc($violationAuthor);
+
+        $attachments = mysqli_query($mysqli, "SELECT * FROM attachments WHERE VIOLATION_ID = $id");
+        if (!$attachments) {
+            //echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
+            echo(json_encode(false));
+            return false;
+        }
+        while ($attachment = mysqli_fetch_assoc($attachments)) {
+            array_push($result -> attachments, $attachment);
+        }
+
+        echo(json_encode($result));
+        return true;
     }
 
 
@@ -519,7 +552,7 @@
         $eskGroupQuery = "";
         if ($eskGroupId != 0) {
             $eskGroupQuery = " AND ESK_GROUP_ID = $eskGroupId";
-            $limit = "";
+            //$limit = "";
         }
 
 

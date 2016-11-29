@@ -19,8 +19,8 @@ angular
         };
         $scope.isUploadInProgress = false;
         $scope.uploaderLink = "test";
-        $scope.endHours = moment.unix($violations.violations.getCurrent().ended.value).hours();
-        $scope.endMinutes = moment.unix($violations.violations.getCurrent().ended.value).minutes();
+        $scope.endHours = moment.unix($violations.getCurrent().ended.value).hours();
+        $scope.endMinutes = moment.unix($violations.getCurrent().ended.value).minutes();
 
 
 
@@ -31,34 +31,34 @@ angular
             $location.url("/");
 
             /*** Отменяем возможность удаления добавленных файлов в выбранном ТН ***/
-            var length = $violations.violations.getCurrent().attachments.length;
+            var length = $violations.getCurrent().attachments.length;
             for (var i = 0; i < length; i++) {
-                if ($violations.violations.getCurrent().attachments[i].isInAddMode === true)
-                    $violations.violations.getCurrent().attachments[i].isInAddMode = false;
+                if ($violations.getCurrent().attachments[i].isInAddMode === true)
+                    $violations.getCurrent().attachments[i].isInAddMode = false;
             }
 
             /*** Если ТН было изменено - отменяем изменения ***/
-            if ($violations.violations.getCurrent()._states_.changed() === true) {
-                $violations.violations.getCurrent()._backup_.restore();
-                $violations.violations.getCurrent()._states_.changed(false);
+            if ($violations.getCurrent()._states_.changed() === true) {
+                $violations.getCurrent()._backup_.restore();
+                $violations.getCurrent()._states_.changed(false);
             }
-            $violations.violations.select(parseInt($routeParams.violationId));
+            $violations.select(parseInt($routeParams.violationId));
         };
 
 
 
         $scope.onBeforeUploadAttachment = function () {
-            $scope.uploaderData.divisionId = $violations.violations.getCurrent().divisionId.value;
-            $violations.violations.getCurrent().isInAddAttachmentMode = true;
+            $scope.uploaderData.divisionId = $violations.getCurrent().divisionId.value;
+            $violations.getCurrent().isInAddAttachmentMode = true;
             $scope.isUploadInProgress = true;
-            $scope.uploaderData.violationId = $violations.violations.getCurrent().id.value;
+            $scope.uploaderData.violationId = $violations.getCurrent().id.value;
 
             //var division = $divisions.getById($session.getCurrentUser().divisionId.value);
-            var division = $divisions.getById($violations.violations.getCurrent().divisionId.value);
+            var division = $divisions.getById($violations.getCurrent().divisionId.value);
             //$log.log("current division = ", division);
             if (division.storage.value === "") {
                 $scope.uploaderLink = "/serverside/uploader.php";
-                $scope.uploaderData.departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getCurrent().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getCurrent().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
+                $scope.uploaderData.departmentId = $divisions.getDepartmentByDivisionId($violations.getCurrent().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.getCurrent().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
             } else
                 $scope.uploaderLink = division.storage.value + "/upload/share";
         };
@@ -69,14 +69,14 @@ angular
             var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
             attachment._model_.fromJSON(data);
             attachment.isInAddMode = true;
-            $violations.violations.getCurrent().attachments.push(attachment);
-            $violations.violations.getCurrent().newAttachments++;
-            $violations.violations.addAttachment();
+            $violations.getCurrent().attachments.push(attachment);
+            $violations.getCurrent().newAttachments++;
+            $violations.addAttachment();
             $scope.isUploadInProgress = false;
 
             var tree = $tree.getById("global-divisions-tree");
             if (tree) {
-                var item = $tree.getItemByKey("global-divisions-tree", $violations.violations.getCurrent().divisionId.value);
+                var item = $tree.getItemByKey("global-divisions-tree", $violations.getCurrent().divisionId.value);
                 item.data.attachmentsAdded++;
                 item.data.attachmentsTotal++;
                 item.notifications.getById("attachments").value += 1;
@@ -100,15 +100,15 @@ angular
 
         $scope.deleteAttachment = function (attachmentId) {
             if (attachmentId !== undefined) {
-                var division = $divisions.getById($violations.violations.getCurrent().divisionId.value);
-                var departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getCurrent().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getCurrent().divisionId.value).id.value : $violations.violations.getCurrent().divisionId.value;
+                var division = $divisions.getById($violations.getCurrent().divisionId.value);
+                var departmentId = $divisions.getDepartmentByDivisionId($violations.getCurrent().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.getCurrent().divisionId.value).id.value : $violations.getCurrent().divisionId.value;
                 var url = division.storage.value !== "" ? division.storage.value + "/serverside/deleteAttachment.php" : "/serverside/deleteAttachment.php";
 
                 $violations.attachments.delete(attachmentId, departmentId, url, function () {
-                    var length = $violations.violations.getCurrent().attachments.length;
+                    var length = $violations.getCurrent().attachments.length;
                     for (var i = 0; i < length; i++) {
-                        if ($violations.violations.getCurrent().attachments[i].id.value === attachmentId) {
-                            $violations.violations.getCurrent().attachments.splice(i, 1);
+                        if ($violations.getCurrent().attachments[i].id.value === attachmentId) {
+                            $violations.getCurrent().attachments.splice(i, 1);
                             break;
                         }
                     }
@@ -123,21 +123,21 @@ angular
                 $scope.errors[error] = undefined;
             }
 
-            if ($violations.violations.getCurrent().ended.value < $violations.violations.getCurrent().happened.value)
+            if ($violations.getCurrent().ended.value < $violations.getCurrent().happened.value)
                 $scope.errors.ended = "Дата устренения не может быть раньше времени ТН";
-            if ($violations.violations.getCurrent().eskGroupId.value === 0)
+            if ($violations.getCurrent().eskGroupId.value === 0)
                 $scope.errors.eskGroupId = "Вы не выбрали группу ЭСК";
-            if ($violations.violations.getCurrent().eskObject.value === "")
+            if ($violations.getCurrent().eskObject.value === "")
                 $scope.errors.eskObject = "Вы не указали объект ЭСК";
-            if ($violations.violations.getCurrent().description.value === "")
+            if ($violations.getCurrent().description.value === "")
                 $scope.errors.description = "Вы не указали описание";
 
             if ($scope.errors.eskGroupId === undefined && $scope.errors.eskObject === undefined && $scope.errors.description === undefined && $scope.errors.ended === undefined) {
                 $scope.inProgress = true;
-                $violations.violations.edit(function () {
+                $violations.edit(function () {
                     $scope.inProgress = false;
-                    $violations.violations.getCurrent()._states_.changed(false);
-                    $violations.violations.getCurrent()._backup_.setup();
+                    $violations.getCurrent()._states_.changed(false);
+                    $violations.getCurrent()._backup_.setup();
                 });
             }
 
@@ -145,31 +145,31 @@ angular
 
 
         $scope.selectEndDate = function () {
-            $violations.violations.getCurrent()._states_.changed(true);
+            $violations.getCurrent()._states_.changed(true);
         };
 
 
         $scope.onEndHoursChange = function () {
-            $violations.violations.getCurrent()._states_.changed(true);
+            $violations.getCurrent()._states_.changed(true);
             var exp = new RegExp("^(0|[0-9]|[0-2][0-9])$");
             if (exp.test($scope.endHours)) {
-                $violations.violations.getCurrent().ended.value = moment.unix($violations.violations.getCurrent().ended.value).hours($scope.endHours).unix();
+                $violations.getCurrent().ended.value = moment.unix($violations.getCurrent().ended.value).hours($scope.endHours).unix();
             } else {
                 $scope.endHours = 0;
-                $violations.violations.getCurrent().ended.value = moment.unix($violations.violations.getCurrent().ended.value).hours($scope.endHours).unix();
+                $violations.getCurrent().ended.value = moment.unix($violations.getCurrent().ended.value).hours($scope.endHours).unix();
             }
         };
 
 
 
         $scope.onEndMinutesChange = function () {
-            $violations.violations.getCurrent()._states_.changed(true);
+            $violations.getCurrent()._states_.changed(true);
             var exp = new RegExp("^(0|[0-9]|[0-5][0-9])$");
             if (exp.test($scope.endMinutes)) {
-                $violations.violations.getCurrent().ended.value = moment.unix($violations.violations.getCurrent().ended.value).minutes($scope.endMinutes).unix();
+                $violations.getCurrent().ended.value = moment.unix($violations.getCurrent().ended.value).minutes($scope.endMinutes).unix();
             } else {
                 $scope.endMinutes = 0;
-                $violations.violations.getCurrent().ended.value = moment.unix($violations.violations.getCurrent().ended.value).minutes($scope.endMinutes).unix();
+                $violations.getCurrent().ended.value = moment.unix($violations.getCurrent().ended.value).minutes($scope.endMinutes).unix();
             }
         };
     }]);

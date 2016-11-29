@@ -44,18 +44,18 @@
              */
             $scope.cancel = function () {
                 $location.url("/");
-                var division = $divisions.getById($violations.violations.getNew().divisionId.value);
-                var departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
+                var division = $divisions.getById($violations.getNew().divisionId.value);
+                var departmentId = $divisions.getDepartmentByDivisionId($violations.getNew().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.getNew().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
                 var url = division.storage.value !== "" ? division.storage.value + "/serverside/cancel.php" : "/serverside/cancel.php";
 
-                if ($violations.violations.getNew().id.value !== 0) {
-                    $violations.violations.cancel($violations.violations.getNew().id.value, url, departmentId, function () {
+                if ($violations.getNew().id.value !== 0) {
+                    $violations.cancel($violations.getNew().id.value, url, departmentId, function () {
                         $violations.attachments.getNew().splice(0, $violations.attachments.getNew().length);
                     });
                 }
 
                 if ($divisions.getCurrent() !== undefined && $divisions.getCurrent().id.value === 1) {
-                    $violations.violations.getNew().divisionId.value = 0;
+                    $violations.getNew().divisionId.value = 0;
                 }
             };
 
@@ -63,21 +63,21 @@
 
             $scope.selectStartDate = function (date) {
                 //$dateTimePicker.getById("new-violation-end-date").scope.settings.value = moment.unix(date).hours($scope.hours).minutes($scope.minutes).seconds(0).unix();
-                $violations.violations.getNew()._states_.changed(true);
-                $violations.violations.getNew().ended.value = $violations.violations.getNew().happened.value;
-                $dateTimePicker.getById("new-violation-end-date").scope.settings.minDate = $violations.violations.getNew().happened.value;
+                $violations.getNew()._states_.changed(true);
+                $violations.getNew().ended.value = $violations.getNew().happened.value;
+                $dateTimePicker.getById("new-violation-end-date").scope.settings.minDate = $violations.getNew().happened.value;
             };
 
 
             $scope.onHoursChange = function () {
                 var exp = new RegExp("^(0|[0-9]|[0-2][0-9])$");
                 if (exp.test($scope.hours)) {
-                    $violations.violations.getNew().happened.value = moment.unix($violations.violations.getNew().happened.value).hours($scope.hours).unix();
+                    $violations.getNew().happened.value = moment.unix($violations.getNew().happened.value).hours($scope.hours).unix();
                 } else {
                     $scope.hours = 0;
-                    $violations.violations.getNew().happened.value = moment.unix($violations.violations.getNew().happened.value).hours($scope.hours).unix();
+                    $violations.getNew().happened.value = moment.unix($violations.getNew().happened.value).hours($scope.hours).unix();
                 }
-                $violations.violations.getNew()._states_.changed(true);
+                $violations.getNew()._states_.changed(true);
             };
 
 
@@ -85,12 +85,12 @@
             $scope.onMinutesChange = function () {
                 var exp = new RegExp("^(0|[0-9]|[0-5][0-9])$");
                 if (exp.test($scope.minutes)) {
-                    $violations.violations.getNew().happened.value = moment.unix($violations.violations.getNew().happened.value).minutes($scope.minutes).unix();
+                    $violations.getNew().happened.value = moment.unix($violations.getNew().happened.value).minutes($scope.minutes).unix();
                 } else {
                     $scope.minutes = 0;
-                    $violations.violations.getNew().happened.value = moment.unix($violations.violations.getNew().happened.value).minutes($scope.minutes).unix();
+                    $violations.getNew().happened.value = moment.unix($violations.getNew().happened.value).minutes($scope.minutes).unix();
                 }
-                $violations.violations.getNew()._states_.changed(true);
+                $violations.getNew()._states_.changed(true);
             };
 
 
@@ -98,12 +98,12 @@
             $scope.onEndHoursChange = function () {
                 var exp = new RegExp("^(0|[0-9]|[0-2][0-9])$");
                 if (exp.test($scope.endHours)) {
-                    $violations.violations.getNew().ended.value = moment.unix($violations.violations.getNew().ended.value).hours($scope.endHours).unix();
+                    $violations.getNew().ended.value = moment.unix($violations.getNew().ended.value).hours($scope.endHours).unix();
                 } else {
                     $scope.hours = 0;
-                    $violations.violations.getNew().ended.value = moment.unix($violations.violations.getNew().ended.value).hours($scope.endHours).unix();
+                    $violations.getNew().ended.value = moment.unix($violations.getNew().ended.value).hours($scope.endHours).unix();
                 }
-                $violations.violations.getNew()._states_.changed(true);
+                $violations.getNew()._states_.changed(true);
             };
 
 
@@ -111,12 +111,12 @@
             $scope.onEndMinutesChange = function () {
                 var exp = new RegExp("^(0|[0-9]|[0-5][0-9])$");
                 if (exp.test($scope.endMinutes)) {
-                    $violations.violations.getNew().ended.value = moment.unix($violations.violations.getNew().ended.value).minutes($scope.endMinutes).unix();
+                    $violations.getNew().ended.value = moment.unix($violations.getNew().ended.value).minutes($scope.endMinutes).unix();
                 } else {
                     $scope.endMinutes = 0;
-                    $violations.violations.getNew().ended.value = moment.unix($violations.violations.getNew().ended.value).minutes($scope.endMinutes).unix();
+                    $violations.getNew().ended.value = moment.unix($violations.getNew().ended.value).minutes($scope.endMinutes).unix();
                 }
-                $violations.violations.getNew()._states_.changed(true);
+                $violations.getNew()._states_.changed(true);
             };
 
 
@@ -126,28 +126,28 @@
                     $scope.errors[error] = undefined;
                 }
 
-                if ($violations.violations.getNew().ended.value < $violations.violations.getNew().happened.value)
+                if ($violations.getNew().ended.value < $violations.getNew().happened.value)
                     $scope.errors.ended = "Дата устренения не может быть раньше времени ТН";
-                if ($violations.violations.getNew().divisionId.value === 0)
+                if ($violations.getNew().divisionId.value === 0)
                     $scope.errors.divisionId = "Вы не выбрали структурное подразделение";
-                if ($violations.violations.getNew().eskGroupId.value === 0)
+                if ($violations.getNew().eskGroupId.value === 0)
                     $scope.errors.eskGroupId = "Вы не выбрали группу ЭСК";
-                if ($violations.violations.getNew().eskObject.value === "")
+                if ($violations.getNew().eskObject.value === "")
                     $scope.errors.eskObject = "Вы не указали объект ЭСК";
-                if ($violations.violations.getNew().description.value === "")
+                if ($violations.getNew().description.value === "")
                     $scope.errors.description = "Вы не указали описание";
 
                 if ($scope.errors.date === undefined & $scope.errors.divisionId === undefined &&
                     $scope.errors.eskGroupId === undefined && $scope.errors.eskObject === undefined &&
                     $scope.errors.description === undefined && $scope.errors.ended === undefined) {
-                    $violations.violations.add(function (violation) {
-                        $violations.violations.setStart(0);
-                        $violations.violations.getByDivisionId(violation.divisionId.value, function () {
+                    $violations.add(function (violation) {
+                        $violations.clear();
+                        $violations.getByDivisionId(violation.divisionId.value, function () {
                             $location.url("/");
                         });
 
                         var item = $tree.getItemByKey("session-divisions-tree", violation.divisionId.value);
-                        if ($violations.violations.getNew().happened.value >= $violations.violations.startControlPeriod() && $violations.violations.getNew().happened.value <= $violations.violations.endControlPeriod()) {
+                        if ($violations.getNew().happened.value >= $violations.startControlPeriod() && $violations.getNew().happened.value <= $violations.endControlPeriod()) {
                             item.data.violationsAdded++;
                             item.data.violationsTotal++;
                             item.notifications.getById("violations").value += 1;
@@ -180,11 +180,11 @@
                         }
 
 
-                        $violations.violations.getNew().id.value = 0;
-                        $violations.violations.getNew().happened.value = new moment().unix();
-                        $violations.violations.getNew().eskGroupId.value = 0;
-                        $violations.violations.getNew().eskObject.value = "";
-                        $violations.violations.getNew().description.value = "";
+                        $violations.getNew().id.value = 0;
+                        $violations.getNew().happened.value = new moment().unix();
+                        $violations.getNew().eskGroupId.value = 0;
+                        $violations.getNew().eskObject.value = "";
+                        $violations.getNew().description.value = "";
                         $violations.attachments.getNew().splice(0, $violations.attachments.getNew().length);
                     });
                 }
@@ -196,15 +196,15 @@
                 //$log.info("uploader onBeforeUpload");
 
                 $scope.isUploadInProgress = true;
-                $scope.uploaderData.violationId = $violations.violations.getNew().id.value;
+                $scope.uploaderData.violationId = $violations.getNew().id.value;
 
                 //var division = $divisions.getById($session.getCurrentUser().divisionId.value);
-                var division = $divisions.getById($violations.violations.getNew().divisionId.value);
+                var division = $divisions.getById($violations.getNew().divisionId.value);
                 //$log.log("current division = ", division);
                 if (division.storage.value === "") {
                     $scope.uploaderLink = "/serverside/uploader.php";
-                    //$log.log("departments = ", $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value));
-                    $scope.uploaderData.departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
+                    //$log.log("departments = ", $divisions.getDepartmentByDivisionId($violations.getNew().divisionId.value));
+                    $scope.uploaderData.departmentId = $divisions.getDepartmentByDivisionId($violations.getNew().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.getNew().divisionId.value).id.value : $session.getCurrentUser().divisionId.value;
                 } else
                     $scope.uploaderLink = division.storage.value + "/upload/share";
                 //$log.log("uploaderlink = ", $scope.uploaderLink);
@@ -219,7 +219,7 @@
                 var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
                 attachment._model_.fromJSON(data);
                 attachment.isInAddMode = true;
-                $violations.violations.addAttachmentToNew(attachment);
+                $violations.addAttachmentToNew(attachment);
                 $violations.attachments.add(attachment);
                 $scope.isUploadInProgress = false;
                 delete $scope.uploaderData.storage;
@@ -227,15 +227,15 @@
                 //$log.log("attachment = ", attachment);
 
                 if (attachment.violationId.value !== 0)
-                    $violations.violations.getNew().id.value = attachment.violationId.value;
+                    $violations.getNew().id.value = attachment.violationId.value;
             };
 
 
 
             $scope.deleteAttachment = function (attachmentId) {
                 if (attachmentId !== undefined) {
-                    var division = $divisions.getById($violations.violations.getNew().divisionId.value);
-                    var departmentId = $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.violations.getNew().divisionId.value).id.value : $violations.violations.getNew().divisionId.value;
+                    var division = $divisions.getById($violations.getNew().divisionId.value);
+                    var departmentId = $divisions.getDepartmentByDivisionId($violations.getNew().divisionId.value) !== undefined ? $divisions.getDepartmentByDivisionId($violations.getNew().divisionId.value).id.value : $violations.getNew().divisionId.value;
                     var url = division.storage.value !== "" ? division.storage.value + "/serverside/deleteAttachment.php" : "/serverside/deleteAttachment.php";
 
                     $violations.attachments.delete(attachmentId, departmentId, url, function () {
