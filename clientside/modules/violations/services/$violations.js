@@ -35,6 +35,8 @@ angular.module("violations")
                         $log.log("startPeriod = ", moment.unix(window.initialData.startPeriod).format("DD.MM.YYYY HH:mm"), window.initialData.startPeriod);
                         $log.log("endPeriod = ", moment.unix(window.initialData.endPeriod).format("DD.MM.YYYY HH:mm"), window.initialData.endPeriod);
 
+                        $log.log("testError = ", window.initialData.testError);
+
 
 
                         if (window.initialData.startPeriod !== undefined) {

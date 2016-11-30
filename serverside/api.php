@@ -82,6 +82,8 @@
         $thursday = strtotime("last thursday");
         //$result -> thursday = date('W', $thursday) == date('W') ? $thursday - (7 * 86400) : $thursday;
         $result -> thursday = $thursday;
+        //Services -> Errors = new Errors();
+        $result -> testError = Services::Errors;
 
         $controlPeriodStartWeekDay = "";
         $controlPeriodStartWeekDayTitle = "";
@@ -288,6 +290,7 @@
 
         return $result;
     }
+
 
 
     function getViolationById ($data) {
