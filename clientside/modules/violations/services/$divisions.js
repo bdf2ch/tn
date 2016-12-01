@@ -6,7 +6,7 @@ angular
         var newDivision = $factory({ classes: ["Division",  "Model", "Backup", "States"], base_class: "Division" });
         newDivision._backup_.setup();
 
-        return {
+        var api =  {
 
 
             /**
@@ -137,30 +137,40 @@ angular
                 }
 
                 sessionDivisionsTree.onSelect = function (item) {
-                    $log.log("selected item = ", item);
+                    //$log.log("selected item = ", item);
                     if (item.isSelected === true) {
+                        //$log.log("selected");
+
+                        //$log.log("current", currentDivision);
                         $violations.getNew().divisionId.value = item.key;
-                        if (currentDivision !== undefined && currentDivision.id.value !== item.key)
+
+                        if (currentDivision !== undefined && currentDivision.id.value !== item.key) {
+                            currentDivision = api.getById(item.key);
                             $violations.clear();
 
-
-                        var length = divisions.length;
-                        var found = false;
-                        for (var i = 0; i < length; i++) {
-                            if (divisions[i].id.value === item.key) {
-                                found = true;
-                                if (divisions[i]._states_.selected() === false) {
-                                    divisions[i]._states_.selected(true);
-                                    currentDivision = divisions[i];
-                                } else {
-                                    divisions[i]._states_.selected(false);
-                                    currentDivision = undefined;
+                            /*
+                            var length = divisions.length;
+                            var found = false;
+                            for (var i = 0; i < length; i++) {
+                                if (divisions[i].id.value === item.key) {
+                                    //found = true;
+                                    //if (divisions[i]._states_.selected() === false) {
+                                    //    divisions[i]._states_.selected(true);
+                                        currentDivision = divisions[i];
+                                    //} else {
+                                    //    divisions[i]._states_.selected(false);
+                                    //    currentDivision = undefined;
+                                    //}
                                 }
                             }
+                            */
+                            $violations.getByDivisionId(item.key);
                         }
-                        $violations.getByDivisionId(item.key);
-
                     }
+                    //else {
+                    //    currentDivision = undefined;
+                        //$violations.getNew().divisionId.value = item.key;
+                    //}
                 };
 
 
@@ -386,4 +396,6 @@ angular
                 }
             }
         }
+
+        return api;
     }]);

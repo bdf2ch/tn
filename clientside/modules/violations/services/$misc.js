@@ -1,7 +1,6 @@
 angular
     .module("violations")
     .factory("$misc", ["$log", "$http", "$errors", "$factory", function ($log, $http, $errors, $factory) {
-
         var eskGroups = [];
         var weekdays = [
             $factory({ classes: ["Weekday"], base_class: "Weekday", init: { id: 1,title: "Понедельник", code: "monday" } }),
@@ -13,10 +12,13 @@ angular
             $factory({ classes: ["Weekday"], base_class: "Weekday", init: { id: 7, title: "Воскресение", code: "sunday" } })
         ];
 
-        $log.info(weekdays);
-
         return {
 
+            /**
+             *
+             * @param source
+             * @returns {boolean}
+             */
             init: function (source) {
                 if (source === undefined) {
                     $errors.add(ERROR_TYPE_DEFAULT, "$misc -> init: Не задан параметр - источник данных");
@@ -42,10 +44,20 @@ angular
 
             eskGroups: {
 
+                /**
+                 *
+                 * @returns {Array}
+                 */
                 getAll: function () {
                     return eskGroups;
                 },
 
+
+                /**
+                 *
+                 * @param id
+                 * @returns {*}
+                 */
                 getById: function (id) {
                     if (id === undefined) {
                         $errors.add(ERROR_TYPE_DEFAULT, "$misc -> eskGroups -> getById: Не задан параметр - идентификатор группы ЭСК");
@@ -65,6 +77,10 @@ angular
 
             weekdays: {
 
+                /**
+                 *
+                 * @returns {[*,*,*,*,*,*,*]}
+                 */
                 getAll: function () {
                     return weekdays;
                 }

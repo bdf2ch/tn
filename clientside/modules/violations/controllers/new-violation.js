@@ -21,8 +21,8 @@
             };
             $scope.uploaderData = {
                 serviceId: "violations",
-                violationId: $violations.violations.getNew().id.value,
-                divisionId: $violations.violations.getNew().divisionId.value
+                violationId: $violations.getNew().id.value,
+                divisionId: $violations.getNew().divisionId.value
             };
             $scope.today = new moment().hours(23).minutes(59).seconds(59).unix();
             $scope.hours = 0;

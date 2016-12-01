@@ -3,9 +3,7 @@ angular
     .factory("$tree", ["$log", "$classes", "$factory", "$errors", function ($log, $classes, $factory, $errors) {
         var trees = [];
         
-        return {
-
-
+        var api =  {
 
             register: function (parameters) {
                 //$log.log("parameters = ", parameters);
@@ -56,6 +54,21 @@ angular
                     if (trees[i].id === treeId)
                         return trees[i];
                 }
+
+                return false;
+            },
+
+
+
+            getItems: function (treeId) {
+                if (treeId === undefined) {
+                    $errors.add(ERROR_TYPE_DEFAULT, "$tree -> getItems: Не задан параметр - идентификатор дерева");
+                    return false;
+                }
+
+                var tree = api.getById(treeId);
+                if (tree)
+                    return tree.stack;
 
                 return false;
             },
@@ -380,8 +393,7 @@ angular
 
                 return result;
             }
+        };
 
-
-
-        }
+        return api;
     }]);

@@ -21,6 +21,7 @@ angular.module("violations", [])
                 order: 1
             });
 
+            /*
             $navigation.add({
                 id: "users",
                 url: "/users/",
@@ -29,6 +30,7 @@ angular.module("violations", [])
                 order: 3,
                 isVisible: $session.getCurrentUser().isAdministrator.value === true ? true : false
             });
+            */
 
             $navigation.add({
                 id: "user",
@@ -39,6 +41,7 @@ angular.module("violations", [])
                 isVisible: false
             });
 
+            /*
             $navigation.add({
                 id: "divisions",
                 url: "/divisions/",
@@ -47,6 +50,7 @@ angular.module("violations", [])
                 order: 2,
                 isVisible: $session.getCurrentUser().isAdministrator.value === true ? true : false
             });
+            */
 
             $navigation.add({
                 id: "help",

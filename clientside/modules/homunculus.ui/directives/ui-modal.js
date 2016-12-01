@@ -17,13 +17,10 @@ angular
 
             },
             link: function (scope, element, attrs, ctrl) {
-                $log.log("modal directive");
-
                 if (attrs.modalId === undefined) {
                     $errors.add(ERROR_TYPE_DEFAULT, "krypton.ui -> modal: Не задан идентификатор модального окна - аттрибут 'modal-id'");
                     return false;
                 }
-
 
                 var modal  = {
                     id: attrs.modalId,
@@ -38,11 +35,9 @@ angular
                     onOpen: attrs.modalOnOpen !== undefined && typeof scope.$eval(attrs.modalOnOpen) === "function" ? scope.$eval(attrs.modalOnOpen) : undefined
                 };
 
-
                 element[0].innerHTML = "";
                 element[0].classList.add("ng-hide");
                 $modals.register(modal);
-
 
                 var check = document.getElementsByClassName("krypton-ui-modal");
                 if (check.length === 0) {
@@ -70,7 +65,6 @@ angular
                     modal.appendChild(content);
                     modal.appendChild(footer);
                 }
-
 
                 var fog = document.getElementsByClassName("krypton-ui-fog");
                 if (fog.length === 0) {

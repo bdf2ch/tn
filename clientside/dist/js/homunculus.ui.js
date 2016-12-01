@@ -419,9 +419,7 @@ angular
     .factory("$tree", ["$log", "$classes", "$factory", "$errors", function ($log, $classes, $factory, $errors) {
         var trees = [];
         
-        return {
-
-
+        var api =  {
 
             register: function (parameters) {
                 //$log.log("parameters = ", parameters);
@@ -472,6 +470,21 @@ angular
                     if (trees[i].id === treeId)
                         return trees[i];
                 }
+
+                return false;
+            },
+
+
+
+            getItems: function (treeId) {
+                if (treeId === undefined) {
+                    $errors.add(ERROR_TYPE_DEFAULT, "$tree -> getItems: Не задан параметр - идентификатор дерева");
+                    return false;
+                }
+
+                var tree = api.getById(treeId);
+                if (tree)
+                    return tree.stack;
 
                 return false;
             },
@@ -796,10 +809,9 @@ angular
 
                 return result;
             }
+        };
 
-
-
-        }
+        return api;
     }]);
 
 angular
@@ -1307,13 +1319,10 @@ angular
 
             },
             link: function (scope, element, attrs, ctrl) {
-                $log.log("modal directive");
-
                 if (attrs.modalId === undefined) {
                     $errors.add(ERROR_TYPE_DEFAULT, "krypton.ui -> modal: Не задан идентификатор модального окна - аттрибут 'modal-id'");
                     return false;
                 }
-
 
                 var modal  = {
                     id: attrs.modalId,
@@ -1328,11 +1337,9 @@ angular
                     onOpen: attrs.modalOnOpen !== undefined && typeof scope.$eval(attrs.modalOnOpen) === "function" ? scope.$eval(attrs.modalOnOpen) : undefined
                 };
 
-
                 element[0].innerHTML = "";
                 element[0].classList.add("ng-hide");
                 $modals.register(modal);
-
 
                 var check = document.getElementsByClassName("krypton-ui-modal");
                 if (check.length === 0) {
@@ -1360,7 +1367,6 @@ angular
                     modal.appendChild(content);
                     modal.appendChild(footer);
                 }
-
 
                 var fog = document.getElementsByClassName("krypton-ui-fog");
                 if (fog.length === 0) {

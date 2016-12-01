@@ -697,8 +697,6 @@ angular
                     setting._backup_.setup();
                     settings[setting.code.value] = setting;
                 }
-
-                console.log(settings);
             },
 
 

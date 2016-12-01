@@ -87,8 +87,8 @@
                     title="Поиск и фильтры">
                 <span class="fa fa-filter"></span>
             </button>&nbsp;
-            <span class="filter-label" ng-show="violations.filter.violationId !== '' && violations.filter.isIdSent() === true">
-                # {{ violations.filter.violationId }} &nbsp;
+            <span class="filter-label" ng-show=" violations.filter.getByCode('violation-id').startValue.value !== 0 && violations.filter.isIdSent() === true">
+                # {{ violations.filter.getByCode("violation-id")._backup_.data.startValue }} &nbsp;
                 <span class="fa fa-times"
                       title="Отменить фильтр"
                       ng-click="cancelViolationId()">
@@ -101,7 +101,7 @@
                       ng-click="cancelStartDate()">
                 </span>
             </span>
-            <span class="filter-label" ng-show="violations.filter.getByCode('violation-date').endValue.value === 0 && violations.filter.getByCode('violation-date').endValue.value !== 0">
+            <span class="filter-label" ng-show="violations.filter.getByCode('violation-date').startValue.value === 0 && violations.filter.getByCode('violation-date').endValue.value !== 0">
                 по {{ violations.filter.getByCode('violation-date').endValue.value | dateShort }} &nbsp;
                 <span class="fa fa-times"
                       title="Отменить фильтр"
@@ -127,29 +127,12 @@
         </div>
     </div>
 
-    <!--
-    <div class="header">
-        Нарушения &nbsp;
 
-        <button class="blue" ng-class="{ 'pressed': filters.enabled() === true }" ng-click="filters.enabled(!filters.enabled())">
-            <span class="fa fa-filter"></span>
-        </button>
-
-        <button class="blue right" ng-click="gotoNewViolation()">
-            <span class="fa fa-plus"></span> Добавить нарушение
-        </button>
-    </div>
-    -->
     <div class="content">
 
         <div class="row" id="filters" ng-show="violations.filter.enabled() === true">
 
             <div class="row filter-tabs">
-                <!--
-                <div class="filter-tab" ng-class="{ active: filters.filterByNumber() === true }" ng-click="filters.filterByNumber(true)">Поиск по # нарушения</div>
-                <div class="filter-tab" ng-class="{ active: filters.filterByDate() === true }" ng-click="filters.filterByDate(true)">Фильтр по дате нарушения</div>
-                <div class="filter-tab" ng-class="{ active: filters.filterByEskGroup() === true }" ng-click="filters.filterByEskGroup(true)">Фильтр по группе ЭСК</div>
-                -->
 
                 <div class="filter-tab"
                      ng-repeat="filter in violations.filter.getAll()"
@@ -169,8 +152,7 @@
                            violation-id
                            ng-class="{ 'width-100': violations.filter.getByCode('violation-id').startValue.value === 0 && violations.filter.isIdSent() === false }"
                            placeholder="Введите # технологического нарушения"
-                           ng-model="violations.filter.getByCode('violation-id').startValue.value"
-                           ng-change="onChangeViolationId()">
+                           ng-model="violations.filter.getByCode('violation-id').startValue.value">
                     <button class="green width-5"
                             title="Начать поиск"
                             ng-show="violations.filter.getByCode('violation-id').startValue.value !== 0 && violations.filter.isIdSent() === false"

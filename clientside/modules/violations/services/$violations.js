@@ -19,7 +19,7 @@ angular.module("violations")
                 $factory({ classes: ["ViolationFilter", "Backup"], base_class: "ViolationFilter", init: { code: "violation-date", title: "Фильтр по дате нарушения"}, startValue: 0, endValue: 0 }),
                 $factory({ classes: ["ViolationFilter", "Backup"], base_class: "ViolationFilter", init: { code: "violation-esk-group", title: "Поиск по группе ЭСК"} })
             ];
-            var isFilterEnabled = true;
+            var isFilterEnabled = false;
             var isViolationIdSent = false;
             var startControlPeriod = 0;
             var endControlPeriod = 0;
@@ -31,13 +31,9 @@ angular.module("violations")
             var api = {
                 init: function () {
                     if (window.initialData !== undefined) {
-
-                        $log.log("startPeriod = ", moment.unix(window.initialData.startPeriod).format("DD.MM.YYYY HH:mm"), window.initialData.startPeriod);
-                        $log.log("endPeriod = ", moment.unix(window.initialData.endPeriod).format("DD.MM.YYYY HH:mm"), window.initialData.endPeriod);
-
-                        $log.log("testError = ", window.initialData.testError);
-
-
+                        //$log.log("startPeriod = ", moment.unix(window.initialData.startPeriod).format("DD.MM.YYYY HH:mm"), window.initialData.startPeriod);
+                        //$log.log("endPeriod = ", moment.unix(window.initialData.endPeriod).format("DD.MM.YYYY HH:mm"), window.initialData.endPeriod);
+                        //$log.log("testError = ", window.initialData.testError);
 
                         if (window.initialData.startPeriod !== undefined) {
                             startControlPeriod = window.initialData.startPeriod;
@@ -45,16 +41,11 @@ angular.module("violations")
                         if (window.initialData.endPeriod !== undefined) {
                             endControlPeriod = window.initialData.endPeriod;
                         }
-                        $log.log("startControlPeriod = ", startControlPeriod);
-                        $log.log("endControlPeriod = ", endControlPeriod);
-
-
 
                         if (window.initialData.violations !== undefined) {
 
                             if (window.initialData.total !== undefined) {
                                 violationsTotal = window.initialData.total;
-                                $log.log("total = ", violationsTotal);
                             }
 
                             var length = window.initialData.violations.length;
@@ -87,9 +78,9 @@ angular.module("violations")
 
 
                 loading: function (flag) {
-                        if (flag !== undefined)
-                            isLoading = flag;
-                        return isLoading;
+                    if (flag !== undefined)
+                        isLoading = flag;
+                    return isLoading;
                 },
 
                 startControlPeriod: function () {
@@ -108,32 +99,12 @@ angular.module("violations")
                 clear: function () {
                     violations = [];
                     violationsTotal = 0;
+                    //attachmentsTotal = 0;
+                    totalAttachments = 0;
                     violationsLoaded = 0;
                     return true;
                 },
 
-                getNewByDivisionId: function (divisionId) {
-                    var length = violations.length;
-                    var result = {
-                        violations: 0,
-                        attachments: 0
-                    };
-                    for (var i = 0; i < length; i++) {
-                        if (violations[i].divisionId.value === divisionId && violations[i].happened.value > this.getLastFriday()) {
-                            result.violations++;
-                            var al = violations[i].attachments.length;
-                            for (var x = 0; x < al; x++) {
-                                if (violations[i].attachments[x].added.value > this.getLastFriday())
-                                    result.attachments++;
-                            }
-                        }
-                    }
-                    return result;
-                },
-
-                setStart: function (value) {
-                    start = value;
-                },
 
                 getTotalViolations: function () {
                     return totalViolations;
@@ -183,27 +154,17 @@ angular.module("violations")
                     return $http.post("/serverside/api.php", params).then(
                         function success(response) {
                             isLoading = false;
-                            //$log.info("promise success");
-                            var violation = $factory({
-                                classes: ["Violation", "Model", "Backup", "States"],
-                                base_class: "Violation"
-                            });
+                            var violation = $factory({ classes: ["Violation", "Model", "Backup", "States"], base_class: "Violation" });
                             violation._model_.fromJSON(response.data.violation);
                             violation._backup_.setup();
 
-                            var user = $factory({
-                                classes: ["AppUser", "Model", "Backup", "States"],
-                                base_class: "AppUser"
-                            });
+                            var user = $factory({ classes: ["AppUser", "Model", "Backup", "States"], base_class: "AppUser" });
                             user._model_.fromJSON(response.data.user);
                             violation.user = user;
 
                             var length = response.data.attachments.length;
                             for (var i = 0; i < length; i++) {
-                                var attachment = $factory({
-                                    classes: ["Attachment", "Model", "Backup", "States"],
-                                    base_class: "Attachment"
-                                });
+                                var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
                                 attachment._model_.fromJSON(response.data.attachments[i]);
                                 violation.attachments.push(attachment);
                             }
@@ -235,7 +196,7 @@ angular.module("violations")
                     violations = [];
                     $http.post("/serverside/api.php", params).then(
                         function success(response) {
-                            $log.info(response);
+                            //$log.info(response);
                             isLoading = false;
                             api.filter.isIdSent(true);
                             if (response.data !== "" && response.data !== "false") {
@@ -330,7 +291,6 @@ angular.module("violations")
                             endDate: api.filter.getByCode('violation-date').endValue.value,
                             eskGroupId: api.filter.getByCode('violation-esk-group').startValue.value,
                             limit: $settings.getByCode("violations-on-page").value.value,
-                            //start: start
                             start: violations.length
                         }
                     };
@@ -339,37 +299,23 @@ angular.module("violations")
                     $http.post("serverside/api.php", params)
                         .success(function (data) {
                             isLoading = false;
-                            //if (start === 0)
-                            //    violations = [];
                             if (data !== undefined && data.length > 0) {
                                 violationsTotal = data[0].total;
                                 var length = data.length;
                                 for (var i = 0; i < length; i++) {
-                                    //start++;
-                                    //totalViolations++;
-                                    var violation = $factory({
-                                        classes: ["Violation", "Model", "Backup", "States"],
-                                        base_class: "Violation"
-                                    });
+                                    var violation = $factory({ classes: ["Violation", "Model", "Backup", "States"], base_class: "Violation" });
                                     violation._model_.fromJSON(data[i].violation);
                                     violation.isNew = violation.happened.value >= startControlPeriod && violation.happened.value <= endControlPeriod ? true : false;
                                     violation._backup_.setup();
-                                    var user = $factory({
-                                        classes: ["AppUser", "Model", "Backup", "States"],
-                                        base_class: "AppUser"
-                                    });
+                                    var user = $factory({ classes: ["AppUser", "Model", "Backup", "States"],  base_class: "AppUser" });
                                     user._model_.fromJSON(data[i].user);
                                     violation.user = user;
-                                    //violation.attachments = [];
 
                                     if (data[i].attachments !== undefined && data[i].attachments.length > 0) {
                                         var l = data[i].attachments.length;
                                         for (var x = 0; x < l; x++) {
                                             totalAttachments++;
-                                            var attachment = $factory({
-                                                classes: ["Attachment", "Model", "Backup", "States"],
-                                                base_class: "Attachment"
-                                            });
+                                            var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
                                             attachment._model_.fromJSON(data[i].attachments[x]);
                                             violation.newAttachments += attachment.added.value >= startControlPeriod && attachment.added.value <= endControlPeriod ? 1 : 0;
                                             violation.attachments.push(attachment);
@@ -412,7 +358,7 @@ angular.module("violations")
                                     base_class: "Violation"
                                 });
                                 violation._model_.fromJSON(data.violation);
-                                violation.isNew = violation.happened.value > moment.unix(thursday).hours(23).minutes(59).seconds(59).unix() ? true : false;
+                                violation.isNew = violation.happened.value >= startControlPeriod && violation.happened.value <= endControlPeriod ? true : false;
                                 violation._backup_.setup();
                                 var user = $factory({
                                     classes: ["AppUser", "Model", "Backup", "States"],
@@ -430,7 +376,7 @@ angular.module("violations")
                                         base_class: "Attachment"
                                     });
                                     attachment._model_.fromJSON(data.attachments[i]);
-                                    violation.newAttachments += attachment.added.value > moment.unix(thursday).hours(23).minutes(59).seconds(59).unix() ? 1 : 0;
+                                    violation.newAttachments += attachment.added.value >= startControlPeriod && attachment.added.value <= endControlPeriod ? 1 : 0;
                                     violation.attachments.push(attachment);
                                 }
 
@@ -528,10 +474,10 @@ angular.module("violations")
 
 
                 filter: {
-                    violationId: "",
-                    startDate: 0,
-                    endDate: 0,
-                    eskGroupId: 0,
+                    //violationId: "",
+                    //startDate: 0,
+                    //endDate: 0,
+                    //eskGroupId: 0,
 
 
                     /**
@@ -588,40 +534,75 @@ angular.module("violations")
                     },
 
 
-
+                    /**
+                     *
+                     * @param flag
+                     * @returns {boolean}
+                     */
                     enabled: function (flag) {
                         if (flag !== undefined)
                             isFilterEnabled = flag;
                         return isFilterEnabled;
                     },
 
+
+                    /**
+                     *
+                     * @param flag
+                     * @returns {boolean}
+                     */
                     isIdSent: function (flag) {
                         if (flag !== undefined)
                             isViolationIdSent = flag;
                         return isViolationIdSent;
                     },
 
+
+                    /**
+                     *
+                     * @returns {boolean}
+                     */
                     cancelViolationId: function () {
-                        this.violationId = "";
+                        api.filter.getByCode("violation-id").startValue.value = 0;
+                        api.filter.getByCode("violation-id")._backup_.setup();
                         return true;
                     },
 
+
+                    /**
+                     *
+                     * @param callback
+                     * @returns {boolean}
+                     */
                     cancelStartDate: function (callback) {
-                        this.startDate = 0;
+                        api.filter.getByCode("violation-date").startValue.value = 0;
                         if (callback !== undefined && typeof callback === "function")
                             callback();
                         return true;
                     },
 
+
+                    /**
+                     *
+                     * @param callback
+                     * @returns {boolean}
+                     */
                     cancelEndDate: function (callback) {
-                        this.endDate = 0;
+                        api.filter.getByCode("violation-date").endValue.value = 0;
                         if (callback !== undefined && typeof callback === "function")
                             callback();
                         return true;
                     },
 
+
+                    /**
+                     *
+                     * @param callback
+                     * @returns {boolean}
+                     */
                     cancelEskGroup: function (callback) {
                         this.eskGroupId = 0;
+                        api.filter.getByCode("violation-esk-group").startValue.value = 0;
                         if (callback !== undefined && typeof callback === "function")
                             callback();
                         return true;
@@ -660,6 +641,13 @@ angular.module("violations")
                         }
                     },
 
+
+                    /**
+                     *
+                     * @param attachment
+                     * @param callback
+                     * @returns {boolean}
+                     */
                     add: function (attachment, callback) {
                         if (attachment === undefined) {
                             $errors.add(ERROR_TYPE_DEFAULT, "$violations -> attachments: Не задан параметр - добавляемое вложение");

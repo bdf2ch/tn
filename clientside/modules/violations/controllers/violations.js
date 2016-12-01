@@ -9,8 +9,9 @@ angular
 
 
         $scope.selectStartDate = function (value) {
-            $log.log("onSelect called", value);
             $dateTimePicker.getById("violations-end-date").scope.settings.minDate = $violations.filter.getByCode("violation-date").startValue.value;
+            if ($violations.filter.getByCode("violation-id").startValue.value !== 0)
+                $violations.filter.cancelViolationId();
             var division = $tree.getById("session-divisions-tree").selectedItem;
             if (division !== undefined) {
                 $violations.clear();
@@ -35,6 +36,8 @@ angular
         $scope.selectEndDate = function () {
             $violations.filter.endDate = moment.unix($violations.filter.getByCode("violation-date").endValue.value).hours(23).minutes(59).seconds(59).unix();
             $dateTimePicker.getById("violations-start-date").scope.settings.maxDate = $violations.filter.endDate;
+            if ($violations.filter.getByCode("violation-id").startValue.value !== 0)
+                $violations.filter.cancelViolationId();
             var division = $tree.getById("session-divisions-tree").selectedItem;
             if (division !== undefined) {
                 $violations.clear();
@@ -106,28 +109,13 @@ angular
         };
 
 
-
-        $scope.onChangeViolationId = function () {
-            $log.log("violationId changed");
-            if ($violations.filter.getByCode("violation-id").startValue.value !== "") {
-                if (isNaN($violations.filter.getByCode("violation-id").startValue.value))
-                    $violations.filter.getByCode("violation-id").startValue.value = 0;
-                else
-                    $violations.filter.getByCode('violation-id').startValue.value = Math.floor($violations.filter.getByCode("violation-id").startValue.value);
-            }
-        };
-
-
-
         $scope.searchViolationById = function () {
-            $log.log("search pressed");
             $violations.filter.isIdSent(true);
             $violations.filter.cancelStartDate();
             $violations.filter.cancelEndDate();
             $violations.filter.cancelEskGroup();
             $violations.filter.getByCode('violation-id')._backup_.setup();
             $violations.searchById($violations.filter.getByCode('violation-id').startValue.value, function (violation) {
-                $log.log("violation # " + $violations.filter.violationId + " found");
                 $violations.clear();
                 $violations.getAll().push(violation);
             });
@@ -149,6 +137,8 @@ angular
 
         $scope.selectEskGroup = function () {
             var division = $tree.getById("session-divisions-tree").selectedItem;
+            if ($violations.filter.getByCode("violation-id").startValue.value !== 0)
+                $violations.filter.cancelViolationId();
             if (division !== undefined) {
                 $violations.clear();
                 $violations.getByDivisionId(division.key);

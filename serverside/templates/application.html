@@ -20,6 +20,7 @@
         <div id="app-header-wrapper">
             <span class="caption">Технологические нарушения</span>
 
+            <!--
             <a ng-href="{{'#' + menu.url}}"
                ng-cloak
                ng-show="menu.isVisible === true"
@@ -28,17 +29,70 @@
                 <span class="fa {{ menu.icon }}" ng-show="menu.icon !== ''"></span>
                 {{ menu.title }}
             </a>
+            -->
 
-            <a ng-href="#"
-               ng-cloak
-               ng-show="session.getCurrentUser().isAdministrator.value === true"
-               ng-class="{ active: menu.isActive === true }"
-               ng-click="openSettingsModal()">
-                <span class="fa fa-gears"></span>
-                Настройки
-            </a>
 
-            <div class="user-info" ng-cloak>
+            <div class="menu-item">
+                <a href="#/">
+                    <span class="fa fa-bolt"></span>&nbsp; Нарушения
+                </a>
+            </div>
+
+            <div class="menu-item">
+                <a href="#/help">
+                    <span class="fa fa-question"></span>&nbsp; Помощь
+                </a>
+            </div>
+
+            <div class="menu-item" ng-cloak ng-show="session.getCurrentUser().isAdministrator.value === true">
+                <div>
+                    <a href>
+                        <span class="fa fa-building"></span>&nbsp; Инструменты
+                        <span class="fa fa-caret-down"></span>
+                    </a>
+                </div>
+                <div class="container">
+                    <div class="menu-item">
+                        <a href="#/divisions">
+                            <span class="fa fa-building"></span>&nbsp; Стр. подразделения
+                        </a>
+                    </div>
+                    <div class="menu-item">
+                        <a href="#/users">
+                            <span class="fa fa-user"></span>&nbsp; Пользователи
+                        </a>
+                    </div>
+                    <div class="menu-item">
+                        <a ng-href="#"
+                           ng-class="{ active: menu.isActive === true }"
+                           ng-click="openSettingsModal()">
+                            <span class="fa fa-gears"></span>&nbsp; Настройки
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-item right" ng-cloak>
+                <div>
+                    <a href>
+                        {{ session.getCurrentUser().name.value + " " + session.getCurrentUser().surname.value }}&nbsp;
+                        <span class="fa fa-caret-down"></span>
+                    </a>
+                </div>
+                <div class="container">
+                    <div class="menu-item">
+                        <a href ng-click="logout()">
+                            <span class="fa fa-sign-out"></span>&nbsp;Выход
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <!--
+            <div class="dropdown-menu right" ng-cloak>
                 <div class="user-name">
                     <span class="fa fa-user"></span>&nbsp;
                     {{ session.getCurrentUser().name.value + " " + session.getCurrentUser().surname.value }}
@@ -50,6 +104,8 @@
                     </a>
                 </div>
             </div>
+            -->
+
         </div>
     </div>
     <div id="app-content">
