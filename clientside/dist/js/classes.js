@@ -384,17 +384,17 @@ $classesInjector.add("File", {
     url: new Field({ source: "url", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true })
 });
 $classesInjector
-    .add("MenuItem", {
-        id: "",
-        parentId: "",
+    .add("Route", {
+        id: undefined,
+        parentId: undefined,
         order: 0,
-        url: "",
-        icon: "",
-        title: "",
-        description: "",
+        url: undefined,
+        icon: undefined,
+        title: undefined,
+        description: undefined,
         isActive: false,
-        isParentActive: false,
-        isVisible: true
+        isVisible: true,
+        onSelect: undefined
     });
 
 /********************

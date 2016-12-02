@@ -82,7 +82,7 @@ table tfoot td {
 table tfoot td {
   padding-top: 10px !important;
   padding-bottom: 10px !important;
-  background: #E0F2F1;
+  background: #B2DFDB;
   font-weight: bold;
 }
 table tfoot td.buttoned {
@@ -1269,17 +1269,15 @@ body {
   position: relative;
   display: inline-block;
   float: left;
-  margin-right: -10px !important;
-  padding-left: 10px;
-  padding-right: 10px;
-  border-bottom: 3px solid transparent;
+  height: 70px;
   box-sizing: border-box;
 }
-.menu-item.active {
-  border-bottom: 3px solid #90CAF9;
+.menu-item.active a {
+  border-bottom: 3px solid #90CAF9 !important;
 }
 .menu-item:hover a {
   background: #00796B;
+  border-bottom: 3px solid transparent !important;
 }
 .menu-item:hover .container {
   display: inline-block;
@@ -1289,8 +1287,11 @@ body {
 }
 .menu-item a {
   display: block;
+  height: 70px;
   padding-left: 20px !important;
   padding-right: 20px   !important;
+  box-sizing: border-box;
+  border-bottom: 3px solid transparent !important;
 }
 .menu-item a:hover {
   background: #00796B;
@@ -1299,7 +1300,7 @@ body {
   position: relative;
   display: none;
   overflow: visible;
-  min-width: 95%;
+  min-width: 100%;
   background: #00695C;
   box-sizing: border-box;
   -webkit-box-shadow: 5px 5px 15px 1px rgba(0, 1, 0, 0.2);
@@ -1312,14 +1313,15 @@ body {
   height: 50px;
   box-sizing: border-box;
 }
+.menu-item .container .menu-item.active a {
+  color: #90CAF9 !important;
+}
 .menu-item .container .menu-item a {
   position: relative;
   display: block !important;
   float: none !important;
   min-width: 100% !important;
   height: 50px !important;
-  margin-left: -10px;
-  margin-right: -10px;
   padding-left: 20px !important;
   padding-right: 20px !important;
   line-height: 50px !important;
@@ -4218,7 +4220,7 @@ table tfoot td {
 table tfoot td {
   padding-top: 10px !important;
   padding-bottom: 10px !important;
-  background: #E0F2F1;
+  background: #B2DFDB;
   font-weight: bold;
 }
 table tfoot td.buttoned {

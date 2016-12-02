@@ -457,49 +457,30 @@ var factory = injector.get('$factory');
 angular
     .module("homunculus")
     .factory("$navigation", ["$log", "$rootScope", "$factory", "$errors", function ($log, $rootScope, $factory, $errors) {
-        var menu = [];
+        var routes = [];
         var breadcrumb = [];
-        var currentMenuItem = undefined;
+        var currentRoute = undefined;
 
-        var getById = function (id) {
-            if (id === undefined && id === "") {
-                $errors.add(ERROR_TYPE_DEFAULT, "$navigation -> GetById: Не задан парметр - идентификатор раздела");
-                return false;
-            }
 
-            var length = menu.length;
-            for (var i = 0; i < length; i++) {
-                if (menu[i].id === id) {
-                    return menu[i];
-                }
-            }
-            return false;
-        };
 
         $rootScope.$on("$routeChangeStart", function (event, next, current) {
             //$log.log("current = ", current);
             //$log.log("next = ", next);
 
             breadcrumb = [];
-            var length = menu.length;
+            var length = routes.length;
+
             for (var i = 0; i < length; i++) {
-                var parent = getById(menu[i].parentId);
-                if (menu[i].url === next.$$route.originalPath) {
-                    breadcrumb.push(menu[i]);
-                    for (var y = 0; y < length; y++) {
-                        if (menu[y].parentId === menu[i].id)
-                            menu[y].isParentActive = true;
-                        else
-                            menu[y].isParentActive = false;
-                    }
-                    if (menu[i].parentId !== "") {
-                        var parentId = menu[i].parentId;
-                        //$log.log("parentId = ", parentId);
-                        while (parentId !== "") {
+                var parent = api.getById(routes[i].parentId);
+                if (routes[i].url === next.$$route.originalPath) {
+                    breadcrumb.push(routes[i]);
+                    if (routes[i].parentId !== undefined && routes[i].parentId !== "") {
+                        var parentId = routes[i].parentId;
+                        while (parentId !== undefined && parentId !== "") {
                             for (var x = 0; x < length; x++) {
-                                if (menu[x].id === parentId) {
-                                    breadcrumb.unshift(menu[x]);
-                                    parentId = menu[x].parentId;
+                                if (routes[x].id === parentId) {
+                                    breadcrumb.unshift(routes[x]);
+                                    parentId = routes[x].parentId;
                                 }
                             }
                         }
@@ -513,20 +494,47 @@ angular
                     //    else
                     //        breadcrumb[z].isActive = false;
                     //}
-                    menu[i].isActive = true;
-                    currentMenuItem = menu[i];
+                    routes[i].isActive = true;
+                    currentRoute = routes[i];
                 } else
-                    menu[i].isActive = false;
+                    routes[i].isActive = false;
             }
+            if (currentRoute !== undefined && currentRoute.onSelect !== undefined && typeof currentRoute.onSelect === "function")
+                currentRoute.onSelect();
 
             //$log.log("breadcrumb = ", breadcrumb);
         });
 
-        return {
+        var api =  {
 
+
+            /**
+             *
+             * @returns {Array}
+             */
             getAll: function () {
-                return menu;
+                return routes;
             },
+
+
+
+            getById: function (id) {
+                if (id === undefined && id === "") {
+                    $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$navigation -> GetById: Не задан параметр - идентификатор раздела");
+                    return false;
+                }
+
+                var length = routes.length;
+                for (var i = 0; i < length; i++) {
+                    if (routes[i].id === id) {
+                        return routes[i];
+                    }
+                }
+
+                return false;
+            },
+
+
 
             add: function (parameters) {
                 if (parameters === undefined) {
@@ -534,12 +542,12 @@ angular
                     return false;
                 }
 
-                if (parameters.id === undefined) {
+                if (parameters.id === undefined || parameters.id === "") {
                     $errors.add(ERROR_TYPE_DEFAULT, "$navigation -> add: Не задан параметр - идентификатор раздела");
                     return false;
                 }
 
-                if (parameters.url === undefined) {
+                if (parameters.url === undefined || parameters.url === "") {
                     $errors.add(ERROR_TYPE_DEFAULT, "$navigation -> add: Не задан параметр - url раздела");
                     return false;
                 }
@@ -553,33 +561,36 @@ angular
                 item.title = parameters.title !== undefined ? parameters.title : "";
                 item.description = parameters.description !== undefined ? parameters.description : "";
                 item.isVisible = parameters.isVisible !== undefined ? parameters.isVisible : true;
+                item.onSelect = parameters.onSelect !== undefined && typeof parameters.onSelect === "function" ? parameters.onSelect : undefined;
 
-                menu.push(item);
+                routes.push(item);
                 //$log.info("menus = ", menu);
             },
 
-            select: function (menuId, callback) {
-                if (menuId === undefined) {
-                    $errors.add(ERROR_TYPE_DEFAULT, "$navigation -> select: Не задан параметр - идентификатор раздела");
+            select: function (routeId, callback) {
+                if (routeId === undefined) {
+                    $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$navigation -> select: Не задан параметр - идентификатор пути");
                     return false;
                 }
 
-                var length = menu.length;
+                var length = routes.length;
                 var found = false;
                 for (var i = 0; i < length; i++) {
-                    if (menu[i].id === menuId) {
-                        menu[i].isActive = true;
+                    if (routes[i].id === routeId) {
+                        routes[i].isActive = true;
                         found = true;
-                        currentMenuItem = menu[i];
+                        currentMenuItem = routes[i];
                         if (callback !== undefined && typeof callback === "function")
                             callback(currentMenuItem);
                     } else
-                        menu[i].isActive = false;
+                        routes[i].isActive = false;
                     return found;
                 }
             }
 
-        }
+        };
+
+        return api;
     }]);
 angular
     .module("homunculus")

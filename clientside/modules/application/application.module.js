@@ -23,8 +23,8 @@ angular
                 templateUrl: "clientside/modules/violations/templates/violation.html",
                 controller: "ViolationController",
                 resolve: {
-                    violation: ["$log", "$http", "$route", "$violations", function ($log, $http, $route, $violations) {
-                        $violations.getById(parseInt($route.current.params.violationId));
+                    violation: ["$log", "$route", "$violations", function ($log, $route, $violations) {
+                        return $violations.getById(parseInt($route.current.params.violationId));
                     }]
                 }
             })

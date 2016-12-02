@@ -21,36 +21,68 @@ angular.module("violations", [])
                 order: 1
             });
 
-            /*
+            $navigation.add({
+                id: "violation",
+                parentId: "violations",
+                url: "/violations/:violationId",
+                title: "",
+                onSelect: function () {
+                    $navigation.getById("violations").isActive = true;
+                }
+            });
+
+            $navigation.add({
+                id: "tools",
+                url: "tools",
+                icon: "fa fa-bolt",
+                title: "Инструменты"
+            });
+
             $navigation.add({
                 id: "users",
                 url: "/users/",
                 icon: "fa fa-user",
                 title: "Пользователи",
                 order: 3,
-                isVisible: $session.getCurrentUser().isAdministrator.value === true ? true : false
+                onSelect: function () {
+                    $navigation.getById("tools").isActive = true;
+                }
             });
-            */
+
 
             $navigation.add({
                 id: "user",
                 parentId: "users",
-                url: "/user/",
+                url: "/user/:userId",
                 icon: "fa fa-user",
                 title: "",
-                isVisible: false
+                onSelect: function () {
+                    $navigation.getById("tools").isActive = true;
+                    $navigation.getById("users").isActive = true;
+                }
             });
 
-            /*
+            $navigation.add({
+                id: "new-user",
+                parentId: "users",
+                url: "/new-user/",
+                title: "",
+                onSelect: function () {
+                    $navigation.getById("tools").isActive = true;
+                }
+            });
+
             $navigation.add({
                 id: "divisions",
                 url: "/divisions/",
                 icon: "fa fa-building",
                 title: "Стр. подразделения",
                 order: 2,
-                isVisible: $session.getCurrentUser().isAdministrator.value === true ? true : false
+                onSelect: function () {
+                    $navigation.getById("tools").isActive = true;
+                }
             });
-            */
+
 
             $navigation.add({
                 id: "help",
@@ -820,12 +852,11 @@ angular
     }]);
 angular
     .module("violations")
-    .controller("ViolationController", ["$log", "$scope", "$routeParams", "$location", "$violations", "$divisions", "$misc", "$factory", "$tree", "$session", function ($log, $scope, $routeParams, $location, $violations, $divisions, $misc, $factory, $tree, $session) {
+    .controller("ViolationController", ["$log", "$scope", "$routeParams", "$location", "$violations", "$divisions", "$misc", "$factory", "$tree", "$session", "violation", function ($log, $scope, $routeParams, $location, $violations, $divisions, $misc, $factory, $tree, $session, violation) {
         $scope.violations = $violations;
         $scope.divisions = $divisions;
         $scope.misc = $misc;
         $scope.session = $session;
-        $scope.violation = undefined;
         $scope.uploaderData = {
             serviceId: "violations",
             violationId: 0,
@@ -839,8 +870,8 @@ angular
         };
         $scope.isUploadInProgress = false;
         $scope.uploaderLink = "test";
-        $scope.endHours = moment.unix($violations.getCurrent().ended.value).hours();
-        $scope.endMinutes = moment.unix($violations.getCurrent().ended.value).minutes();
+        $scope.endHours = moment.unix(violation.ended.value).hours();
+        $scope.endMinutes = moment.unix(violation.ended.value).minutes();
 
 
 
@@ -2096,9 +2127,10 @@ angular.module("violations")
                                 attachment._model_.fromJSON(response.data.attachments[i]);
                                 violation.attachments.push(attachment);
                             }
-
                             currentViolation = violation;
-                            return currentViolation;
+                            if (callback !== undefined && typeof callback === "function")
+                                callback();
+                            return violation;
                         },
                         function error() {
                             isLoading = false;
@@ -2663,8 +2695,8 @@ angular
                 templateUrl: "clientside/modules/violations/templates/violation.html",
                 controller: "ViolationController",
                 resolve: {
-                    violation: ["$log", "$http", "$route", "$violations", function ($log, $http, $route, $violations) {
-                        $violations.getById(parseInt($route.current.params.violationId));
+                    violation: ["$log", "$route", "$violations", function ($log, $route, $violations) {
+                        return $violations.getById(parseInt($route.current.params.violationId));
                     }]
                 }
             })

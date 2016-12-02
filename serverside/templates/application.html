@@ -32,32 +32,35 @@
             -->
 
 
-            <div class="menu-item">
+            <div class="menu-item" ng-class="{ active: navigation.getById('violations').isActive === true }">
                 <a href="#/">
                     <span class="fa fa-bolt"></span>&nbsp; Нарушения
                 </a>
             </div>
 
-            <div class="menu-item">
+            <div class="menu-item" ng-class="{ active: navigation.getById('help').isActive === true }">
                 <a href="#/help">
                     <span class="fa fa-question"></span>&nbsp; Помощь
                 </a>
             </div>
 
-            <div class="menu-item" ng-cloak ng-show="session.getCurrentUser().isAdministrator.value === true">
+            <div class="menu-item"
+                 ng-cloak
+                 ng-class="{ active: navigation.getById('tools').isActive === true }"
+                 ng-show="session.getCurrentUser().isAdministrator.value === true">
                 <div>
                     <a href>
-                        <span class="fa fa-building"></span>&nbsp; Инструменты
+                        <span class="fa fa-building"></span>&nbsp; Инструменты &nbsp;
                         <span class="fa fa-caret-down"></span>
                     </a>
                 </div>
                 <div class="container">
-                    <div class="menu-item">
+                    <div class="menu-item" ng-class="{ active: navigation.getById('divisions').isActive === true }">
                         <a href="#/divisions">
                             <span class="fa fa-building"></span>&nbsp; Стр. подразделения
                         </a>
                     </div>
-                    <div class="menu-item">
+                    <div class="menu-item" ng-class="{ active: navigation.getById('users').isActive === true }">
                         <a href="#/users">
                             <span class="fa fa-user"></span>&nbsp; Пользователи
                         </a>
@@ -75,6 +78,7 @@
             <div class="menu-item right" ng-cloak>
                 <div>
                     <a href>
+                        <span class="fa fa-user"></span>&nbsp;
                         {{ session.getCurrentUser().name.value + " " + session.getCurrentUser().surname.value }}&nbsp;
                         <span class="fa fa-caret-down"></span>
                     </a>

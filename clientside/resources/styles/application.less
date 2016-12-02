@@ -182,20 +182,25 @@ html, body {
   position: relative;
   display: inline-block;
   float: left;
-  margin-right: -10px !important;
+  height: @app-header-height;
+  //margin-right: -10px !important;
  // margin-left: -10px !important;
-  padding-left: 10px;
-  padding-right: 10px;
-  border-bottom: 3px solid transparent;
+  //padding-left: 10px;
+  //padding-right: 10px;
+  //border-bottom: 3px solid transparent;
   box-sizing: border-box;
 
   &.active {
-    border-bottom: 3px solid #90CAF9;
+    //border-bottom: 3px solid #90CAF9;
+    a {
+      border-bottom: 3px solid #90CAF9 !important;
+    }
   }
 
   &:hover {
     a {
       background: #00796B;
+      border-bottom: 3px solid transparent !important;
     }
 
     .container {
@@ -208,8 +213,11 @@ html, body {
 
   a {
     display: block;
+    height: @app-header-height;
     padding-left: 20px !important;
     padding-right: 20px   !important;
+    box-sizing: border-box;
+    border-bottom: 3px solid transparent !important;
     &:hover {
       background: #00796B;
     }
@@ -220,7 +228,7 @@ html, body {
     display: none;
     overflow: visible;
     //clear: right;
-    min-width: 95%;
+    min-width: 100%;
     //margin-right: -20px;
     background: #00695C;
     box-sizing: border-box;
@@ -232,18 +240,26 @@ html, body {
       height: 50px;
       box-sizing: border-box;
 
+      &.active {
+        a {
+          color: #90CAF9 !important;
+        }
+      }
+
       a {
         position: relative;
         display: block !important;
         float: none !important;
         min-width: 100% !important;
         height: 50px !important;
-        margin-left: -10px;
-        margin-right: -10px;
+        //margin-left: -10px;
+        //margin-right: -10px;
         padding-left: 20px !important;
         padding-right: 20px !important;
         line-height: 50px !important;
         box-sizing: border-box;
+
+
 
         &:hover {
           background: #004D40;

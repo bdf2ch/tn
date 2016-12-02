@@ -1,11 +1,10 @@
 angular
     .module("violations")
-    .controller("ViolationController", ["$log", "$scope", "$routeParams", "$location", "$violations", "$divisions", "$misc", "$factory", "$tree", "$session", function ($log, $scope, $routeParams, $location, $violations, $divisions, $misc, $factory, $tree, $session) {
+    .controller("ViolationController", ["$log", "$scope", "$routeParams", "$location", "$violations", "$divisions", "$misc", "$factory", "$tree", "$session", "violation", function ($log, $scope, $routeParams, $location, $violations, $divisions, $misc, $factory, $tree, $session, violation) {
         $scope.violations = $violations;
         $scope.divisions = $divisions;
         $scope.misc = $misc;
         $scope.session = $session;
-        $scope.violation = undefined;
         $scope.uploaderData = {
             serviceId: "violations",
             violationId: 0,
@@ -19,8 +18,8 @@ angular
         };
         $scope.isUploadInProgress = false;
         $scope.uploaderLink = "test";
-        $scope.endHours = moment.unix($violations.getCurrent().ended.value).hours();
-        $scope.endMinutes = moment.unix($violations.getCurrent().ended.value).minutes();
+        $scope.endHours = moment.unix(violation.ended.value).hours();
+        $scope.endMinutes = moment.unix(violation.ended.value).minutes();
 
 
 

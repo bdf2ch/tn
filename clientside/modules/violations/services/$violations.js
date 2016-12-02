@@ -168,9 +168,10 @@ angular.module("violations")
                                 attachment._model_.fromJSON(response.data.attachments[i]);
                                 violation.attachments.push(attachment);
                             }
-
                             currentViolation = violation;
-                            return currentViolation;
+                            if (callback !== undefined && typeof callback === "function")
+                                callback();
+                            return violation;
                         },
                         function error() {
                             isLoading = false;

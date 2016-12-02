@@ -21,36 +21,68 @@ angular.module("violations", [])
                 order: 1
             });
 
-            /*
+            $navigation.add({
+                id: "violation",
+                parentId: "violations",
+                url: "/violations/:violationId",
+                title: "",
+                onSelect: function () {
+                    $navigation.getById("violations").isActive = true;
+                }
+            });
+
+            $navigation.add({
+                id: "tools",
+                url: "tools",
+                icon: "fa fa-bolt",
+                title: "Инструменты"
+            });
+
             $navigation.add({
                 id: "users",
                 url: "/users/",
                 icon: "fa fa-user",
                 title: "Пользователи",
                 order: 3,
-                isVisible: $session.getCurrentUser().isAdministrator.value === true ? true : false
+                onSelect: function () {
+                    $navigation.getById("tools").isActive = true;
+                }
             });
-            */
+
 
             $navigation.add({
                 id: "user",
                 parentId: "users",
-                url: "/user/",
+                url: "/user/:userId",
                 icon: "fa fa-user",
                 title: "",
-                isVisible: false
+                onSelect: function () {
+                    $navigation.getById("tools").isActive = true;
+                    $navigation.getById("users").isActive = true;
+                }
             });
 
-            /*
+            $navigation.add({
+                id: "new-user",
+                parentId: "users",
+                url: "/new-user/",
+                title: "",
+                onSelect: function () {
+                    $navigation.getById("tools").isActive = true;
+                }
+            });
+
             $navigation.add({
                 id: "divisions",
                 url: "/divisions/",
                 icon: "fa fa-building",
                 title: "Стр. подразделения",
                 order: 2,
-                isVisible: $session.getCurrentUser().isAdministrator.value === true ? true : false
+                onSelect: function () {
+                    $navigation.getById("tools").isActive = true;
+                }
             });
-            */
+
 
             $navigation.add({
                 id: "help",
