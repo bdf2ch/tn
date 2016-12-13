@@ -7,7 +7,7 @@ angular
 
             register: function (tab) {
                 if (tab === undefined) {
-                    $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$tabs -> register: Не задан параметр - параметры регистрируемого компонента");
+                    $errors.push($errors.type.ERROR_TYPE_DEFAULT, "$tabs -> register: Не задан параметр - параметры регистрируемого компонента");
                     return false;
                 }
 
@@ -18,7 +18,7 @@ angular
 
             getById: function (id) {
                 if (id === undefined) {
-                    $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$tabs -> getById: Не задан параметр - идентификатор компонента");
+                    $errors.push($errors.type.ERROR_TYPE_DEFAULT, "$tabs -> getById: Не задан параметр - идентификатор компонента");
                     return false;
                 }
 
@@ -32,12 +32,12 @@ angular
 
             select: function (tabsId, tabId) {
                 if (tabsId === undefined) {
-                    $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$tabs -> select: Не задан параметр - идентификатор компонента");
+                    $errors.push($errors.type.ERROR_TYPE_DEFAULT, "$tabs -> select: Не задан параметр - идентификатор компонента");
                     return false;
                 }
 
                 if (tabId === undefined) {
-                    $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$tabs -> select: Не задан параметр - идентификатор вкладки");
+                    $errors.push($errors.type.ERROR_TYPE_DEFAULT, "$tabs -> select: Не задан параметр - идентификатор вкладки");
                     return false;
                 }
             }

@@ -277,8 +277,8 @@ table tfoot td.buttoned:hover {
 #new-violation_ .time-separator {
   height: 35px;
   line-height: 30px;
-  border-top: 1px solid lightgrey;
-  border-bottom: 1px solid lightgrey;
+  border-top: 1px solid lightgrey !important;
+  border-bottom: 1px solid lightgrey !important;
 }
 #current-violation_ {
   width: 1200px;

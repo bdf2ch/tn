@@ -377,7 +377,7 @@ angular
 
             register: function (tab) {
                 if (tab === undefined) {
-                    $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$tabs -> register: Не задан параметр - параметры регистрируемого компонента");
+                    $errors.push($errors.type.ERROR_TYPE_DEFAULT, "$tabs -> register: Не задан параметр - параметры регистрируемого компонента");
                     return false;
                 }
 
@@ -388,7 +388,7 @@ angular
 
             getById: function (id) {
                 if (id === undefined) {
-                    $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$tabs -> getById: Не задан параметр - идентификатор компонента");
+                    $errors.push($errors.type.ERROR_TYPE_DEFAULT, "$tabs -> getById: Не задан параметр - идентификатор компонента");
                     return false;
                 }
 
@@ -402,12 +402,12 @@ angular
 
             select: function (tabsId, tabId) {
                 if (tabsId === undefined) {
-                    $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$tabs -> select: Не задан параметр - идентификатор компонента");
+                    $errors.push($errors.type.ERROR_TYPE_DEFAULT, "$tabs -> select: Не задан параметр - идентификатор компонента");
                     return false;
                 }
 
                 if (tabId === undefined) {
-                    $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$tabs -> select: Не задан параметр - идентификатор вкладки");
+                    $errors.push($errors.type.ERROR_TYPE_DEFAULT, "$tabs -> select: Не задан параметр - идентификатор вкладки");
                     return false;
                 }
             }
@@ -1387,7 +1387,7 @@ angular
                 $log.log("tab directive");
 
                 if (attrs.id === undefined || attrs.id === "") {
-                    $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "ui-tab -> Не задан аттрибут - идентификатор вкладки");
+                    $errors.push($errors.type.ERROR_TYPE_DEFAULT, "ui-tab -> Не задан аттрибут - идентификатор вкладки");
                     return false;
                 }
 
@@ -1430,7 +1430,7 @@ angular
                       "</div>",
             controller: function ($scope, $element, $attrs) {
                 if ($attrs.id === undefined || $attrs.id === "") {
-                    $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "ui-tabs -> Не задан аттрибут - идентификатор компонента");
+                    $errors.push($errors.type.ERROR_TYPE_DEFAULT, "ui-tabs -> Не задан аттрибут - идентификатор компонента");
                     return false;
                 }
 
@@ -1458,14 +1458,14 @@ angular
 
                 this.registerTab = function (tab) {
                     if (tab === undefined) {
-                        $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "ui-tabs -> registerTab: Не задан параметр - объект с настройками вкладки");
+                        $errors.push($errors.type.ERROR_TYPE_DEFAULT, "ui-tabs -> registerTab: Не задан параметр - объект с настройками вкладки");
                         return false;
                     }
 
                     var length = settings.tabs.length;
                     for (var i = 0; i < length; i++) {
                         if (settings.tabs[i].id === tab.id) {
-                            $errors.throw($errors.type.ERROR_TYPE_ENGINE, "ui-tabs -> registerTab: Вкладка с идентификатором '" + tab.id + "' уже существует");
+                            $errors.push($errors.type.ERROR_TYPE_ENGINE, "ui-tabs -> registerTab: Вкладка с идентификатором '" + tab.id + "' уже существует");
                             return false;
                         } else
                             settings.tabs[i].isActive = false;
@@ -1481,7 +1481,7 @@ angular
 
                 this.selectTab = $scope.selectTab = function (id) {
                     if (id === undefined) {
-                        $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "ui-tabs -> selectTab: Не задан параметр - идентифкатор вкладки");
+                        $errors.push($errors.type.ERROR_TYPE_DEFAULT, "ui-tabs -> selectTab: Не задан параметр - идентифкатор вкладки");
                         return false;
                     }
 

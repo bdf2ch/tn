@@ -8,7 +8,7 @@ angular
                 $log.log("tab directive");
 
                 if (attrs.id === undefined || attrs.id === "") {
-                    $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "ui-tab -> Не задан аттрибут - идентификатор вкладки");
+                    $errors.push($errors.type.ERROR_TYPE_DEFAULT, "ui-tab -> Не задан аттрибут - идентификатор вкладки");
                     return false;
                 }
 

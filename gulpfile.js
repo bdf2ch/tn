@@ -67,7 +67,7 @@ gulp.task("js", ["app"], function () {
 });
 
 gulp.task("auth", function () {
-    return gulp.src(["clientside/modules/authorization/*.js", "clientside/modules/authorization/**/*.js"])
+    return gulp.src([ "clientside/modules/authorization/*.js", "clientside/modules/authorization/**/*.js"])
         .pipe(plumber())
         .pipe(concat("auth.min.js"))
         .pipe(uglify())

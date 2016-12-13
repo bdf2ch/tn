@@ -64,7 +64,7 @@ angular
 
             getById: function (id) {
                 if (id === undefined && id === "") {
-                    $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$navigation -> GetById: Не задан параметр - идентификатор раздела");
+                    $errors.push($errors.type.ERROR_TYPE_DEFAULT, "$navigation -> GetById: Не задан параметр - идентификатор раздела");
                     return false;
                 }
 
@@ -113,7 +113,7 @@ angular
 
             select: function (routeId, callback) {
                 if (routeId === undefined) {
-                    $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$navigation -> select: Не задан параметр - идентификатор пути");
+                    $errors.push($errors.type.ERROR_TYPE_DEFAULT, "$navigation -> select: Не задан параметр - идентификатор пути");
                     return false;
                 }
 

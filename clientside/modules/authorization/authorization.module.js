@@ -1,2 +1,2 @@
 angular
-    .module("authorization", ["ngRoute", "krypton", "krypton.ui"]);
+    .module("authorization", ["ngRoute", "homunculus", "homunculus.ui"]);

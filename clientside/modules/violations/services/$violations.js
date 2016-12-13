@@ -183,7 +183,7 @@ angular.module("violations")
 
                 searchById: function (id, onSuccess, onFail) {
                     if (id === undefined) {
-                        $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$violations -> violations -> searchById: Не задан параметр - идентификатор технологического нарушения");
+                        $errors.push($errors.type.ERROR_TYPE_DEFAULT, "$violations -> violations -> searchById: Не задан параметр - идентификатор технологического нарушения");
                         return false;
                     }
 
@@ -234,7 +234,7 @@ angular.module("violations")
                         },
                         function error() {
                             isLoading = false;
-                            $errors.throw($errors.type.ERROR_TYPE_ENGINE, "$violations -> violations -> searchById: В процессе поиска ТН возникла ошибка");
+                            $errors.push($errors.type.ERROR_TYPE_ENGINE, "$violations -> violations -> searchById: В процессе поиска ТН возникла ошибка");
                             return false;
                         }
                     );
@@ -498,7 +498,7 @@ angular.module("violations")
                      */
                     getByCode: function (code) {
                         if (code === undefined) {
-                            $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$violations -> filter -> getByCode: Не задан параметр - код фильтра");
+                            $errors.push($errors.type.ERROR_TYPE_DEFAULT, "$violations -> filter -> getByCode: Не задан параметр - код фильтра");
                             return false;
                         }
 
@@ -519,7 +519,7 @@ angular.module("violations")
                      */
                     selectByCode: function (code) {
                         if (code === undefined) {
-                            $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$violations -> filter -> selectByCode: Не задан параметр - код фильтра");
+                            $errors.push($errors.type.ERROR_TYPE_DEFAULT, "$violations -> filter -> selectByCode: Не задан параметр - код фильтра");
                             return false;
                         }
 

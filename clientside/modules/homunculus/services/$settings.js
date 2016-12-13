@@ -13,7 +13,7 @@ angular
              */
             init: function (source) {
                 if (source === undefined) {
-                    $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$settings -> init: Не задан параметр - источник данных");
+                    $errors.push($errors.type.ERROR_TYPE_DEFAULT, "$settings -> init: Не задан параметр - источник данных");
                     return false;
                 }
 
@@ -44,7 +44,7 @@ angular
              */
             getByCode: function (code) {
                 if (code === undefined) {
-                    $errors.throw($errors.type.ERROR_TYPE_DEFAULT, "$settings -> getByCode: Не задан параметр - код настройки");
+                    $errors.push($errors.type.ERROR_TYPE_DEFAULT, "$settings -> getByCode: Не задан параметр - код настройки");
                     return false;
                 }
 
@@ -74,7 +74,7 @@ angular
                         }
                     },
                     function () {
-                        $errors.throw($errors.type.ERROR_TYPE_ENGINE, "$settings -> save: Не удалось сохранить значение настроек");
+                        $errors.push($errors.type.ERROR_TYPE_ENGINE, "$settings -> save: Не удалось сохранить значение настроек");
                         return false;
                     }
                 );

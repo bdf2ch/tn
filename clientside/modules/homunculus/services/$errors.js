@@ -10,7 +10,7 @@ angular
             ERROR_TYPE_DATABASE: 3
         };
 
-        return {
+        var api = {
             /**
              * Добавляет ошибку в стек
              * @param errorType - Тип ошибки
@@ -116,6 +116,42 @@ angular
              */
             type: types,
 
+            /**
+             * Генерирует ошибку
+             * @param type {number} - тип ошибки
+             * @param message {string} - содержание ошибки
+             * @returns {boolean} - возвращает true в случае успешного завершения, false - в противном случае
+             */
+            push: function (errorType, message) {
+                if (errorType === undefined) {
+                    $log.error("$errors -> push: Не задан параметр - тип ошибки");
+                    return false;
+                }
+
+                var errorTypeFound = false;
+                for (var i in api.type) {
+                    if (api.type[i] === errorType)
+                        errorTypeFound = true;
+                }
+                if (errorTypeFound === false) {
+                    $log.error("$errors -> push: Неверно задан тип ошибки");
+                    return false;
+                }
+
+                if (message === undefined || message === "") {
+                    $log.error("$errors -> push: Не задан параметр - содержание ошибки");
+                    return false;
+                }
+
+                var now = new moment();
+                var error = $factory({ classes: ["Error", "Model"], base_class: "Error" });
+                error.timestamp = now.unix();
+                error.type = errorType;
+                error.message = message;
+                errors.push(error);
+                $log.error(now.format("DD.MM.YYYY HH:mm") + " " + message);
+                return true;
+            },
 
 
             /**
@@ -125,7 +161,7 @@ angular
              */
             init: function (source) {
                 if (source === undefined) {
-                    this.throw(types.ERROR_TYPE_DEFAULT, "$errors -> init: Не задан параметр - источник данных");
+                    api.push(api.types.ERROR_TYPE_DEFAULT, "$errors -> init: Не задан параметр - источник данных");
                     return false;
                 }
 
@@ -149,42 +185,7 @@ angular
 
 
 
-            /**
-             * Генерирует ошибку
-             * @param type {number} - тип ошибки
-             * @param message {string} - содержание ошибки
-             * @returns {boolean} - возвращает true в случае успешного завершения, false - в противном случае
-             */
-            throw: function (type, message) {
-                if (type === undefined) {
-                    $log.error("$errors -> throw: Не задан параметр - тип ошибки");
-                    return false;
-                }
 
-                var errorTypeFound = false;
-                for (var i in types) {
-                    if (types[i] === type)
-                        errorTypeFound = true;
-                }
-                if (errorTypeFound === false) {
-                    $log.error("$errors -> throw: Неверно задан тип ошибки");
-                    return false;
-                }
-
-                if (message === undefined || message === "") {
-                    $log.error("$errors -> throw: Не задан параметр - содержание ошибки");
-                    return false;
-                }
-
-                var now = new moment();
-                var error = $factory({ classes: ["Error", "Model"], base_class: "Error" });
-                error.timestamp = now.unix();
-                error.type = type;
-                error.message = message;
-                errors.push(error);
-                $log.error(now.format("DD.MM.YYYY HH:mm") + " " + message);
-                return true;
-            },
 
 
 
@@ -195,7 +196,7 @@ angular
              */
             check: function (data) {
                 if (data === undefined) {
-                    this.throw(ERROR_TYPE_DEFAULT, "$errors -> check: Не задан параметр - данные для проверки");
+                    api.push(ERROR_TYPE_DEFAULT, "$errors -> check: Не задан параметр - данные для проверки");
                     return false;
                 }
 
@@ -205,11 +206,13 @@ angular
                             var error = $factory({ classes: ["Error", "Model"], base_class: "Error" });
                             error._model_.fromJSON(data.errors[i]);
                             errors.push(error);
-                            this.throw(error.type, error.message);
+                            api.push(error.type, error.message);
                         }
                     }
                     return true;
                 }
             }
-        }
+        };
+
+        return api;
     }]);
