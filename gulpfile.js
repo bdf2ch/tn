@@ -81,7 +81,7 @@ watcher.on('change', function(event) {
 
 var auth = gulp.watch(["clientside/modules/authorization/**/*.js"], ["auth"]);
 watcher.on('change', function(event) {
-    console.log('File ' + event.path + ' was ' + event.type);
+    console.log('auth: File ' + event.path + ' was ' + event.type);
 });
 
 

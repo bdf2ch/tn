@@ -2,7 +2,7 @@
 
     <div id="violation-info" class="block" ng-init="user = session.getCurrentUser()">
         <div class="header">
-            Нарушение #{{ violations.getCurrent().id.value }} от {{ violations.getCurrent().happened.value | dateFilter }}
+            Нарушение №{{ violations.getCurrent().id.value }} от {{ violations.getCurrent().happened.value | dateFilter }}
             <button class="blue right" ng-click="gotoMain()">
                 <span class="fa fa-arrow-left"></span>&nbsp;
                 Вернуться

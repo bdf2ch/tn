@@ -1076,7 +1076,7 @@ angular
                 scope.upload = function () {
 
                     $log.info("upload, link = ", url);
-                    if (fd.has("file")) {
+                    //if (fd.has("file")) {
                         element.prop("disabled", "disabled");
                         $http.post(url, fd,
                             {
@@ -1090,10 +1090,10 @@ angular
                             element.prop("disabled", "");
                             if (scope.uploaderOnCompleteUpload !== undefined && typeof scope.uploaderOnCompleteUpload === "function")
                                 scope.uploaderOnCompleteUpload(data);
-                            fd.delete("file");
+                            //fd.delete("file");
                             fd = new FormData();
                         });
-                    }
+                    //}
                 };
 
             }

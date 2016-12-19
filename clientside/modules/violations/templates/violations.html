@@ -88,7 +88,7 @@
                 <span class="fa fa-filter"></span>
             </button>&nbsp;
             <span class="filter-label" ng-show=" violations.filter.getByCode('violation-id').startValue.value !== 0 && violations.filter.isIdSent() === true">
-                # {{ violations.filter.getByCode("violation-id")._backup_.data.startValue }} &nbsp;
+                № {{ violations.filter.getByCode("violation-id")._backup_.data.startValue }} &nbsp;
                 <span class="fa fa-times"
                       title="Отменить фильтр"
                       ng-click="cancelViolationId()">
@@ -151,7 +151,7 @@
                            class="width-95"
                            violation-id
                            ng-class="{ 'width-100': violations.filter.getByCode('violation-id').startValue.value === 0 && violations.filter.isIdSent() === false }"
-                           placeholder="Введите # технологического нарушения"
+                           placeholder="Введите № технологического нарушения"
                            ng-model="violations.filter.getByCode('violation-id').startValue.value">
                     <button class="green width-5"
                             title="Начать поиск"
@@ -163,7 +163,7 @@
                 </form>
 
                 <button class="blue width-5"
-                        title="Очистить # ТН"
+                        title="Очистить № ТН"
                         ng-show="violations.filter.isIdSent() === true"
                         ng-click="cancelViolationId()"
                         ng-disabled="violations.loading() === true">
@@ -244,7 +244,7 @@
         <table class="selectable stripped">
             <thead>
             <tr>
-                <th class="width-10 text-center">#</th>
+                <th class="width-10 text-center">№</th>
                 <th class="width-20 text-center">
                     <span class="fa fa-clock-o"></span>&nbsp;
                     Дата и время
@@ -324,7 +324,7 @@
         </div>
 
         <div class="row text-center result-message" ng-show="violations.filter.isIdSent() === true && violations.getAll().length === 0 && violations.loading() === false">
-            <span>Технологическое нарушение #{{ violations.filter.getByCode('violation-id')._backup_.data.startValue }} не найдено</span>
+            <span>Технологическое нарушение №{{ violations.filter.getByCode('violation-id')._backup_.data.startValue }} не найдено</span>
         </div>
 
         <div class="row text-center result-message" ng-show="violations.loading() === true">

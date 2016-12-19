@@ -51,9 +51,10 @@ angular
                     .success(function (data) {
                         if (data !== undefined) {
                             if (data !== "false") {
-                                var temp_user = $factory({ classes: ["AppUser", "Model", "Backup", "States"], base_class: "AppUser" });
-                                temp_user._model_.fromJSON(data);
+                                var user = $factory({ classes: ["AppUser", "Model", "Backup", "States"], base_class: "AppUser" });
+                                //$log.log("usr = ", user);
                                 user._model_.fromJSON(data);
+                                //user._model_.fromJSON(data);
                                 if (callback !== undefined && typeof callback === "function")
                                     callback(user);
                                 return true;

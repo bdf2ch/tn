@@ -699,7 +699,7 @@
         }
         */
         $query = mysqli_query($mysqli, "SELECT * FROM users WHERE LOGIN = '$login'");
-        var_dump($query);
+        //var_dump($query);
         if (!$query) {
             //echo("no local user found");
             echo(json_encode(false));

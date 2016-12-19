@@ -15,11 +15,11 @@ angular.module("violations")
             var isLoading = false;
 
             var filters = [
-                $factory({ classes: ["ViolationFilter", "Backup"], base_class: "ViolationFilter", init: { code: "violation-id", title: "Поиск по # ТН", startValue: 0, isActive: true } }),
+                $factory({ classes: ["ViolationFilter", "Backup"], base_class: "ViolationFilter", init: { code: "violation-id", title: "Поиск по № ТН", startValue: 0, isActive: true } }),
                 $factory({ classes: ["ViolationFilter", "Backup"], base_class: "ViolationFilter", init: { code: "violation-date", title: "Фильтр по дате нарушения"}, startValue: 0, endValue: 0 }),
                 $factory({ classes: ["ViolationFilter", "Backup"], base_class: "ViolationFilter", init: { code: "violation-esk-group", title: "Поиск по группе ЭСК"} })
             ];
-            var isFilterEnabled = false;
+            var isFilterEnabled = true;
             var isViolationIdSent = false;
             var startControlPeriod = 0;
             var endControlPeriod = 0;
