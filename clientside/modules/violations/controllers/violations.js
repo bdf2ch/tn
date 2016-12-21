@@ -114,6 +114,7 @@ angular
             $violations.filter.cancelStartDate();
             $violations.filter.cancelEndDate();
             $violations.filter.cancelEskGroup();
+            $violations.filter.cancelConfirmed();
             $violations.filter.getByCode('violation-id')._backup_.setup();
             $violations.searchById($violations.filter.getByCode('violation-id').startValue.value, function (violation) {
                 $violations.clear();
@@ -150,6 +151,26 @@ angular
             var division = $tree.getById("session-divisions-tree").selectedItem;
             if (division !== undefined) {
                 $violations.filter.getByCode("violation-esk-group").resetStartValue();
+                $violations.clear();
+                $violations.getByDivisionId(division.key);
+            }
+        };
+
+
+        $scope.selectConfirmed = function () {
+            var division = $tree.getById("session-divisions-tree").selectedItem;
+            if ($violations.filter.getByCode("violation-id").startValue.value !== 0)
+                $violations.filter.cancelViolationId();
+            if (division !== undefined) {
+                $violations.clear();
+                $violations.getByDivisionId(division.key);
+            }
+        };
+
+        $scope.cancelConfirmed = function () {
+            var division = $tree.getById("session-divisions-tree").selectedItem;
+            if (division !== undefined) {
+                $violations.filter.getByCode("violation-confirmed").startValue.value = false;
                 $violations.clear();
                 $violations.getByDivisionId(division.key);
             }

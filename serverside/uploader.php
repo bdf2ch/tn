@@ -18,7 +18,7 @@
         }
 
         if (!file_exists($_SERVER["DOCUMENT_ROOT"].$DS."uploads".$DS.$serviceId.$DS.$departmentId)) {
-            if (!mkdir($_SERVER["DOCUMENT_ROOT"].$DS."uploads".$DS.$serviceId.$DS.$departmentId)) {
+            if (!mkdir($_SERVER["DOCUMENT_ROOT"].$DS."uploads".$DS.$serviceId.$DS.$departmentId, 0777)) {
                 echo("Не удалось создать папку для филиала");
                 return false;
             }
@@ -34,11 +34,11 @@
             echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
         }
 
-        copy($_SERVER["DOCUMENT_ROOT"].$DS."serverside".$DS."attachments".$DS);
+        //copy($_SERVER["DOCUMENT_ROOT"].$DS."serverside".$DS."attachments".$DS);
 
         $divisionId = $_POST["divisionId"];
-        $violationId = 0;
-        if ($_POST["violationId"] == 0) {
+        $violationId = $_POST["violationId"];
+        if ($violationId == 0) {
             $query = mysqli_query($mysqli, "INSERT INTO violations (DIVISION_ID, USER_ID, ESK_GROUP_ID, ESK_OBJECT, DESCRIPTION, DATE_HAPPENED, DATE_ENDED, DURATION, DATE_ADDED) VALUES (0, 0, 0, '', '', 0, 0, 0, 0)");
             if (!$query) {
                 echo "Не удалось выполнить запрос: (".$mysqli -> errno.") ".$mysqli -> error;
@@ -48,7 +48,7 @@
             $violationId = $_POST["violationId"];
 
         if (!file_exists($_SERVER["DOCUMENT_ROOT"].$DS."uploads".$DS.$serviceId.$DS.$departmentId.$DS.$violationId)) {
-            if (!mkdir($_SERVER["DOCUMENT_ROOT"].$DS."uploads".$DS.$serviceId.$DS.$departmentId.$DS.$violationId)) {
+            if (!mkdir($_SERVER["DOCUMENT_ROOT"].$DS."uploads".$DS.$serviceId.$DS.$departmentId.$DS.$violationId, 0777)) {
                 echo("Не удалось создать папку '".$violationId."'");
                 return false;
             }
@@ -65,7 +65,7 @@
         $added = time();
 
         if (!move_uploaded_file($tmpName, $_SERVER["DOCUMENT_ROOT"].$DS."uploads".$DS.$serviceId.$DS.$departmentId.$DS.$violationId.$DS.$name1251)) {
-            echo("Не удалось переместить загруженный файл");
+            echo("Не удалось переместить загруженный файл ".$_SERVER["DOCUMENT_ROOT"].$DS."uploads".$DS.$serviceId.$DS.$departmentId.$DS.$violationId.$DS.$name1251);
             return false;
         }
 

@@ -17,7 +17,8 @@ angular.module("violations")
             var filters = [
                 $factory({ classes: ["ViolationFilter", "Backup"], base_class: "ViolationFilter", init: { code: "violation-id", title: "Поиск по № ТН", startValue: 0, isActive: true } }),
                 $factory({ classes: ["ViolationFilter", "Backup"], base_class: "ViolationFilter", init: { code: "violation-date", title: "Фильтр по дате нарушения"}, startValue: 0, endValue: 0 }),
-                $factory({ classes: ["ViolationFilter", "Backup"], base_class: "ViolationFilter", init: { code: "violation-esk-group", title: "Поиск по группе ЭСК"} })
+                $factory({ classes: ["ViolationFilter", "Backup"], base_class: "ViolationFilter", init: { code: "violation-esk-group", title: "Фильтр по группе ЭСК"} }),
+                $factory({ classes: ["ViolationFilter", "Backup"], base_class: "ViolationFilter", init: { code: "violation-confirmed", title: "Фильтр по подтвержденным", startValue: false} })
             ];
             var isFilterEnabled = true;
             var isViolationIdSent = false;
@@ -291,6 +292,7 @@ angular.module("violations")
                             startDate: api.filter.getByCode('violation-date').startValue.value,
                             endDate: api.filter.getByCode('violation-date').endValue.value,
                             eskGroupId: api.filter.getByCode('violation-esk-group').startValue.value,
+                            confirmed: api.filter.getByCode("violation-confirmed").startValue.value === true ? 1 : 0,
                             limit: $settings.getByCode("violations-on-page").value.value,
                             start: violations.length
                         }
@@ -604,6 +606,19 @@ angular.module("violations")
                     cancelEskGroup: function (callback) {
                         this.eskGroupId = 0;
                         api.filter.getByCode("violation-esk-group").startValue.value = 0;
+                        if (callback !== undefined && typeof callback === "function")
+                            callback();
+                        return true;
+                    },
+
+
+                    /**
+                     *
+                     * @param callback
+                     * @returns {boolean}
+                     */
+                    cancelConfirmed: function (callback) {
+                        api.filter.getByCode("violation-confirmed").startValue.value = false;
                         if (callback !== undefined && typeof callback === "function")
                             callback();
                         return true;

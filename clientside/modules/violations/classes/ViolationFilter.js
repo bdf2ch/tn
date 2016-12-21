@@ -8,10 +8,10 @@ $classesInjector
         isActive: false,
 
         resetStartValue: function () {
-            this.startValue.value = 0;
+            this.startValue.value = this.startValue.default_value;
         },
 
         resetEndValue: function () {
-            this.endValue.value = 0;
+            this.endValue.value = this.endValue.default_value;
         }
     });

@@ -12,13 +12,11 @@
   color: gray;
 }
 #divisions {
-  float: left;
   width: 420px;
   box-sizing: border-box;
 }
 #violations {
-  float: right;
-  width: 770px;
+  margin-left: 430px;
   box-sizing: border-box;
   border-left: 1px solid lightgray;
 }
@@ -69,8 +67,8 @@ table tr:hover {
   background: #E0F2F1 !important;
 }
 table td {
-  padding-top: 20px !important;
-  padding-bottom: 20px !important;
+  padding-top: 15px !important;
+  padding-bottom: 15px !important;
 }
 table thead th {
   background: #B2DFDB !important;
@@ -133,6 +131,16 @@ table tfoot td.buttoned:hover {
   background: #009688;
   color: white;
 }
+.violation-confirmed-mark {
+  height: 18px;
+  padding-right: 5px;
+  padding-left: 5px;
+  font-size: 11px;
+  line-height: 18px;
+  text-align: center;
+  color: forestgreen;
+  background: transparent;
+}
 .mdash {
   height: 30px;
   line-height: 30px;
@@ -162,6 +170,7 @@ table tfoot td.buttoned:hover {
   overflow: hidden;
   height: 85px;
   border: none;
+  z-index: 1;
 }
 .filter-tabs {
   position: absolute;
@@ -217,6 +226,11 @@ table tfoot td.buttoned:hover {
   padding-top: 10px;
   padding-bottom: 10px;
   border-top: 1px solid lightgrey;
+}
+.filter-content input[type="checkbox"] {
+  display: inline;
+  width: 15px;
+  height: 15px;
 }
 #new-violation_ {
   width: 1200px;
@@ -1153,35 +1167,54 @@ a.blue:hover {
   font-family: "PT Sans Italic";
   src: url("/clientside/resources/fonts/PT_Sans-Web-Italic.ttf");
 }
-html,
-body {
+@media all {
+  html,
+  body {
+    mheight: 100%;
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    font-family: "PT Sans";
+  }
+}
+/*
+html, body {
+  //width: 100%;
+  height: 100%;
   margin: 0px;
   padding: 0px;
+  box-sizing: border-box;
+  //overflow: hidden;
+  //background: #eeeeee;
   font-family: "PT Sans";
 }
+*/
 #app-header {
-  z-index: 1;
+  z-index: 5;
   position: absolute;
   left: 0px;
   right: 0px;
   top: 0px;
   overflow: visible;
+  min-width: 1200px;
   height: 70px;
   box-sizing: border-box;
   background: #006064;
 }
 #app-header #app-header-wrapper {
-  width: 1215px;
+  width: 100%;
   height: 70px;
   margin-left: auto;
   margin-right: auto;
+  padding-left: 10px;
+  padding-right: 20px;
   box-sizing: border-box;
 }
 #app-header #app-header-wrapper .caption {
   display: inline-block;
   float: left;
   height: 70px;
-  margin-right: 43px;
+  margin-right: 20px;
   line-height: 65px;
   font-family: "PT Sans Bold";
   font-size: 22px;
@@ -1300,6 +1333,7 @@ body {
   position: relative;
   display: none;
   overflow: visible;
+  z-index: 5;
   min-width: 100%;
   background: #00695C;
   box-sizing: border-box;
@@ -1337,17 +1371,20 @@ body {
   top: 70px;
   right: 0px;
   bottom: 0px;
+  min-width: 1200px;
   box-sizing: border-box;
   background: #EEEEEE;
 }
 #app-content #app-content-wrapper {
   overflow: visible;
-  width: 1200px;
+  width: 100%;
   height: 100%;
   margin-left: auto;
   margin-right: auto;
   padding-top: 10px;
   padding-bottom: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
   box-sizing: border-box;
 }
 .form-error {
@@ -4150,13 +4187,11 @@ a.blue:hover {
   color: gray;
 }
 #divisions {
-  float: left;
   width: 420px;
   box-sizing: border-box;
 }
 #violations {
-  float: right;
-  width: 770px;
+  margin-left: 430px;
   box-sizing: border-box;
   border-left: 1px solid lightgray;
 }
@@ -4207,8 +4242,8 @@ table tr:hover {
   background: #E0F2F1 !important;
 }
 table td {
-  padding-top: 20px !important;
-  padding-bottom: 20px !important;
+  padding-top: 15px !important;
+  padding-bottom: 15px !important;
 }
 table thead th {
   background: #B2DFDB !important;
@@ -4271,6 +4306,16 @@ table tfoot td.buttoned:hover {
   background: #009688;
   color: white;
 }
+.violation-confirmed-mark {
+  height: 18px;
+  padding-right: 5px;
+  padding-left: 5px;
+  font-size: 11px;
+  line-height: 18px;
+  text-align: center;
+  color: forestgreen;
+  background: transparent;
+}
 .mdash {
   height: 30px;
   line-height: 30px;
@@ -4300,6 +4345,7 @@ table tfoot td.buttoned:hover {
   overflow: hidden;
   height: 85px;
   border: none;
+  z-index: 1;
 }
 .filter-tabs {
   position: absolute;
@@ -4355,4 +4401,9 @@ table tfoot td.buttoned:hover {
   padding-top: 10px;
   padding-bottom: 10px;
   border-top: 1px solid lightgrey;
+}
+.filter-content input[type="checkbox"] {
+  display: inline;
+  width: 15px;
+  height: 15px;
 }
