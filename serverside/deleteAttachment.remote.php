@@ -13,6 +13,11 @@
         return false;
     }
 
+    $encoding = mysqli_query($link, "SET NAMES utf8");
+    if (!$encoding) {
+        echo "Не удалось выполнить запрос: (" . $link -> errno . ") " . $link -> error;
+    }
+
     $selectAttachmentQuery = mysqli_query($link, "SELECT * FROM attachments WHERE ID = $attachmentId");
     if (!$selectAttachmentQuery) {
         echo "Не удалось выполнить запрос1: (".$link -> errno.") ".$link -> error;

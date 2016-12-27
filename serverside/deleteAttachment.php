@@ -14,6 +14,11 @@
         return false;
     }
 
+    $encoding = mysqli_query($link, "SET NAMES utf8");
+    if (!$encoding) {
+        echo "Не удалось выполнить запрос: (" . $link -> errno . ") " . $link -> error;
+    }
+
     $selectAttachmentQuery = mysqli_query($link, "SELECT * FROM attachments WHERE ID = $attachmentId");
     if (!$selectAttachmentQuery) {
         echo "Не удалось выполнить запрос1: (".$link -> errno.") ".$link -> error;
@@ -22,6 +27,8 @@
     $attachment = mysqli_fetch_assoc($selectAttachmentQuery);
     $violationId = $attachment["VIOLATION_ID"];
     $attachmentTitle = $attachment["TITLE"];
+    //$encoding = mb_detect_encoding($attachmentTitle);
+    //$title1251 = mb_convert_encoding($attachmentTitle, "WINDOWS-1251", $encoding);
 
 
     if (mysqli_num_rows($selectAttachmentQuery) > 0) {
@@ -40,7 +47,7 @@
                 return true;
             }
         } else {
-            echo("Файлик ".$attachmentTitle." не найден");
+            echo("Файлик ".$title1251." не найден");
             return false;
         }
     } else {

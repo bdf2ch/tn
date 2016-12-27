@@ -13,6 +13,8 @@ angular.module("violations")
             var totalViolations = 0;
             var totalAttachments = 0;
             var isLoading = false;
+            var showDivisions = true;
+            var isMobileMenuOpened = false;
 
             var filters = [
                 $factory({ classes: ["ViolationFilter", "Backup"], base_class: "ViolationFilter", init: { code: "violation-id", title: "Поиск по № ТН", startValue: 0, isActive: true } }),
@@ -32,8 +34,8 @@ angular.module("violations")
             var api = {
                 init: function () {
                     if (window.initialData !== undefined) {
-                        //$log.log("startPeriod = ", moment.unix(window.initialData.startPeriod).format("DD.MM.YYYY HH:mm"), window.initialData.startPeriod);
-                        //$log.log("endPeriod = ", moment.unix(window.initialData.endPeriod).format("DD.MM.YYYY HH:mm"), window.initialData.endPeriod);
+                        $log.log("startPeriod = ", moment.unix(window.initialData.startPeriod).format("DD.MM.YYYY HH:mm"), window.initialData.startPeriod);
+                        $log.log("endPeriod = ", moment.unix(window.initialData.endPeriod).format("DD.MM.YYYY HH:mm"), window.initialData.endPeriod);
                         //$log.log("testError = ", window.initialData.testError);
 
                         if (window.initialData.startPeriod !== undefined) {
@@ -75,6 +77,20 @@ angular.module("violations")
                             }
                         }
                     }
+                },
+
+
+                mobileMenu: function (flag) {
+                    if (flag !== undefined)
+                        isMobileMenuOpened = flag;
+                    return isMobileMenuOpened;
+                },
+
+
+                showDivisions: function (flag) {
+                    if (flag !== undefined)
+                        showDivisions = flag;
+                    return showDivisions;
                 },
 
 

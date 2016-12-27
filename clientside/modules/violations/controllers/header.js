@@ -1,12 +1,17 @@
 angular
     .module("violations")
-    .controller("HeaderController", ["$log", "$scope", "$session", "$navigation", "$window", "$modals", "$misc", "$settings", function ($log, $scope, $session, $navigation, $window, $modals, $misc, $settings) {
+    .controller("HeaderController", ["$log", "$scope", "$session", "$navigation", "$window", "$modals", "$misc", "$settings", "$violations", function ($log, $scope, $session, $navigation, $window, $modals, $misc, $settings, $violations) {
         $scope.misc = $misc;
         $scope.session = $session;
         $scope.settings = $settings;
         $scope.navigation = $navigation;
+        $scope.violations = $violations;
         $scope.modals = $modals;
 
+
+        $scope.openMobileMenu = function () {
+            $violations.mobileMenu(!$violations.mobileMenu());
+        };
 
         $scope.openSettingsModal = function () {
             $modals.open("settings-modal");

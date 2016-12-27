@@ -176,4 +176,13 @@ angular
             }
         };
 
+        $scope.showDivisions = function () {
+            $violations.showDivisions(true);
+        };
+
+
+        $scope.hideDivisions = function () {
+            $violations.showDivisions(false);
+        };
+
     }]);

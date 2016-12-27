@@ -20,6 +20,9 @@
   box-sizing: border-box;
   border-left: 1px solid lightgray;
 }
+#violations.stretched {
+  margin-left: 0px !important;
+}
 #violations .content {
   padding: 0px;
 }
@@ -60,6 +63,7 @@
   border-right: 1px solid #FAFAFA;
 }
 table {
+  width: 100%;
   font-size: 14px;
   color: black;
 }

@@ -1,0 +1,176 @@
+<div id="divisions" class="block">
+    <div class="header">
+        Структурные подразделения
+        <button class="collapse right" ng-click="hideDivisions()">
+            <span class="fa fa-angle-left"></span><span ng-show="violations.showDivisions() === true">&nbsp;</span>
+        </button>
+    </div>
+    <div class="content padding-10">
+        <ui-tree id="session-divisions-tree"
+                 class="stacked"
+                 root-key="0"
+                 root-key-data-type="DATA_TYPE_INTEGER"
+                 expand-on-select="1">
+        </ui-tree>
+    </div>
+</div>
+</div>
+
+<div id="violations" class="block">
+    <div class="row">
+        <div class="width-10 padding-10 block-caption-title">
+            <button class="extend" ng-show="violations.showDivisions() === false" ng-click="showDivisions()">
+                <span class="fa fa-angle-right"></span><span ng-show="violations.showDivisions() === false">&nbsp;</span>
+            </button>
+            Нарушения
+            <span id="current-division-title">{{ divisions.getCurrent().shortTitle.value }}</span>
+            <button id="select-division-button" class="right" ng-click="showDivisions()">
+                <span class="fa fa-building"></span>
+            </button>
+        </div>
+
+        <div class="width-60 padding-10">
+            <button class="blue"
+                    ng-class="{ 'pressed': violations.filter.enabled() === true }"
+                    ng-click="violations.filter.enabled(!violations.filter.enabled())"
+                    title="Поиск и фильтры">
+                <span class="fa fa-filter"></span>
+            </button>&nbsp;
+            <span class="filter-label" ng-show=" violations.filter.getByCode('violation-id').startValue.value !== 0 && violations.filter.isIdSent() === true">
+                № {{ violations.filter.getByCode("violation-id")._backup_.data.startValue }} &nbsp;
+                <span class="fa fa-times"
+                      title="Отменить фильтр"
+                      ng-click="cancelViolationId()">
+                </span>
+            </span>
+            <span class="filter-label" ng-show="violations.filter.getByCode('violation-date').startValue.value !== 0 && violations.filter.getByCode('violation-date').endValue.value === 0">
+                с {{ violations.filter.getByCode("violation-date").startValue.value | dateShort }} &nbsp;
+                <span class="fa fa-times"
+                      title="Отменить фильтр"
+                      ng-click="cancelStartDate()">
+                </span>
+            </span>
+            <span class="filter-label" ng-show="violations.filter.getByCode('violation-date').startValue.value === 0 && violations.filter.getByCode('violation-date').endValue.value !== 0">
+                по {{ violations.filter.getByCode('violation-date').endValue.value | dateShort }} &nbsp;
+                <span class="fa fa-times"
+                      title="Отменить фильтр"
+                      ng-click="cancelEndDate()">
+                </span>
+            </span>
+            <span class="filter-label" ng-show="violations.filter.getByCode('violation-date').startValue.value !== 0 && violations.filter.getByCode('violation-date').endValue.value !== 0">
+                с {{ violations.filter.getByCode('violation-date').startValue.value | dateShort }} по {{ violations.filter.getByCode('violation-date').endValue.value | dateShort }} &nbsp;
+                <span class="fa fa-times"
+                      title="Отменить фильтр"
+                      ng-click="cancelBothDates()"></span>
+            </span>
+            <span class="filter-label" ng-show="violations.filter.getByCode('violation-esk-group').startValue.value !== 0">
+                {{ misc.eskGroups.getById(violations.filter.getByCode('violation-esk-group').startValue.value).title.value }} &nbsp;
+                <span class="fa fa-times" title="Отменить фильтр" ng-click="cancelEskGroup()"></span>
+            </span>
+            <span class="filter-label" ng-show="violations.filter.getByCode('violation-confirmed').startValue.value !== false">
+                только подтвержденные&nbsp;
+                <span class="fa fa-times" title="Отменить фильтр" ng-click="cancelConfirmed()"></span>
+            </span>
+        </div>
+
+        <div class="width-30 padding-10">
+            <button id="add-violation-button" class="blue right" ng-click="gotoNewViolation()">
+                <span class="fa fa-plus"></span> Добавить нарушение
+            </button>
+        </div>
+    </div>
+
+    <div class="content">
+        <table class="selectable stripped">
+            <thead>
+            <tr>
+                <th class="width-5 text-center">№</th>
+                <th class="width-5 text-center">
+                    <span class="fa fa-check"></span>
+                </th>
+                <th class="width-15 text-left">
+                    <span class="fa fa-clock-o"></span>&nbsp;
+                    Дата
+                </th>
+                <th class="width-35 text-left">
+                    <span class="fa fa-plug"></span>&nbsp;
+                    Объект ЭСК
+                </th>
+                <th class="width-20 text-left">
+                    <span class="fa fa-file"></span>&nbsp;
+                    Документы
+                </th>
+                <th class="width-20 text-left">
+                    <span class="fa fa-user"></span>&nbsp;
+                    Автор
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="violation in violations.getAll() | orderBy:'-happened.value' track by $index" ng-click="selectViolation(violation.id.value)" title="{{ violation.description.value }}">
+                <td class="width-5 text-center">
+                    {{ violation.id.value }}&nbsp;
+                    <span class="new-violation-mark"
+                          ng-show="violation.isNew === true">
+                        новое
+                    </span>
+                </td>
+                <td class="width-5 text-center">
+                    <span class="fa fa-check violation-confirmed-mark" ng-show="violation.isConfirmed.value === true"></span>
+                </td>
+                <td class="width-15 text-left">
+                    {{ violation.happened.value | day }}, {{ violation.happened.value | time }}
+                </td>
+                <td class="width-35 text-left">
+                    {{ violation.eskObject.value }}
+                </td>
+                <td class="width-20 text-left">
+                    <span ng-show="violation.attachments.length > 0">
+                        {{ violation.attachments.length }}&nbsp;
+                         <span class="new-attachment-mark" ng-show="violation.newAttachments > 0">
+                             новых: {{ violation.newAttachments }}
+                         </span>
+                    </span>
+                    <span ng-show="violation.attachments.length === 0">-</span>
+                </td>
+                <td class="width-20 text-left">
+                    {{ violation.user.surname.value + " " + violation.user.name.value + " " + violation.user.fname.value }}
+                </td>
+            </tr>
+            </tbody>
+            <tfoot ng-show="violations.getAll().length !== 0" >
+            <tr>
+                <td colspan="5">
+                    <span class="width-50 left text-center">
+                        <span class="fa fa-bolt"></span>&nbsp; Нарушений: {{ violations.getLoaded() }}
+                    </span>
+                    <span class="width-50 right text-center">
+                        <span class="fa fa-file"></span>&nbsp; Документов: {{ violations.getTotalAttachments() }}
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="buttoned text-center"
+                    colspan="5"
+                    ng-show="violations.getAll().length < violations.getTotal() && violations.loading() === false"
+                    ng-click="violations.getByDivisionId(divisions.getCurrent().id.value)">
+                    Загрузить еще
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+
+        <div class="row text-center result-message" ng-show="violations.loading() === false && violations.getAll().length === 0 && violations.filter.isIdSent() === false">
+            Технологические нарушения отсутствуют
+        </div>
+
+        <div class="row text-center result-message" ng-show="violations.filter.isIdSent() === true && violations.getAll().length === 0 && violations.loading() === false">
+            <span>Технологическое нарушение №{{ violations.filter.getByCode('violation-id')._backup_.data.startValue }} не найдено</span>
+        </div>
+
+        <div class="row text-center result-message" ng-show="violations.loading() === true">
+            <span class="fa fa-spinner fa-pulse fa-fw"></span>
+            &nbsp; Загрузка данных...
+        </div>
+    </div>
+</div>

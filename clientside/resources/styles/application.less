@@ -25,6 +25,13 @@
 }
 
 
+
+
+
+
+
+
+
 @media all {
   html, body {
     mheight: 100%;
@@ -63,21 +70,23 @@ html, body {
   overflow: visible;
   min-width: 1200px;
   height: @app-header-height;
-  //padding: 20px;
+  padding-left: 10px;
+  padding-right: 20px;
   box-sizing: border-box;
   background: #006064;
   //border-bottom: 1px solid lightgray;
 
-  #app-header-wrapper {
+  //#app-header-wrapper {
     //width: @app-header-wrapper-width + 15px;
-    width: 100%;
-    height: @app-header-height;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 10px;
-    padding-right: 20px;
-    box-sizing: border-box;
+    //width: 100%;
+    //height: @app-header-height;
+    //margin-left: auto;
+    //margin-right: auto;
+    //padding-left: 10px;
+    //padding-right: 20px;
+    //box-sizing: border-box;
     //border: 1px solid red;
+
 
     .caption {
       display: inline-block;
@@ -192,7 +201,7 @@ html, body {
       }
 
     }
-  }
+  //}
 
   //border: 1px solid black;
 }
@@ -308,6 +317,7 @@ html, body {
   background: #EEEEEE;
   //padding: 20px;
 
+
   //border: 1px solid green;
 
   #app-content-wrapper {
@@ -349,6 +359,10 @@ html, body {
     color: #4f6173;
     font-weight: bold;
     line-height: 35px;
+
+    .extend {
+      margin-left: -10px;
+    }
   }
 
   .header {
@@ -359,6 +373,10 @@ html, body {
     font-weight: bold;
     line-height: 35px;
     border-bottom: 1px solid #eceeef;
+
+    .collapse {
+      margin-right: -10px;
+    }
 
     label {
       font-weight: normal !important;

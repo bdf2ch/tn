@@ -1,0 +1,147 @@
+@divisions-block-width: 420px;
+#divisions {
+  display: block;
+  float: left;
+  width: @divisions-block-width;
+  //height: 450px;
+  background: white;
+}
+
+@violation-height: 60px;
+#violations {
+  display: block;
+  //height: 900px;
+  margin-left: @divisions-block-width + 10px;
+  background: white;
+
+  #current-division-title {
+    display: none;
+  }
+
+  #select-division-button {
+    display: none;
+  }
+
+  table {
+    width: 100%;
+
+    thead tr {height: 40px;}
+
+    thead tr th {
+      height: 40px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+      font-family: "PT Sans Bold";
+      font-size: 14px;
+      background: #B2DFDB !important;
+      cursor: default;
+      box-sizing: border-box;
+    }
+
+    .violation-number {
+      display: block;
+      float: left;
+      width: 5%;
+      height: 100%;
+      text-align: center;
+      line-height: 100%;
+      border: 1px solid black;
+      box-sizing: border-box;
+    }
+
+    .violation-is-confirmed {
+      display: block;
+      float: left;
+      width: 5%;
+      height: 100%;
+      text-align: center;
+      border: 1px solid black;
+      box-sizing: border-box;
+    }
+
+    .violation-date {
+      display: block;
+      float: left;
+      width: 15%;
+      height: 100%;
+      border: 1px solid black;
+      box-sizing: border-box;
+    }
+
+    .violation-object {
+      display: block;
+      float: left;
+      width: 35%;
+      height: 100%;
+      border: 1px solid black;
+      box-sizing: border-box;
+    }
+
+    .violation-docs {
+      display: block;
+      float: left;
+      width: 20%;
+      height: 100%;
+      border: 1px solid black;
+      box-sizing: border-box;
+    }
+
+    .violation-author {
+      display: block;
+      float: left;
+      width: 20%;
+      height: 100%;
+      border: 1px solid black;
+      box-sizing: border-box;
+    }
+  }
+
+}
+
+
+/* Смартфоны */
+@media screen and (min-width:320px) and (max-width:800px) {
+  #divisions {
+    display: none;
+  }
+
+  #violations {
+    margin-left: 0px;
+
+    #add-violation-button {
+      display: none;
+    }
+
+    #current-division-title {
+      display: inline-block;
+    }
+
+    #select-division-button {
+      display: inline-block;
+    }
+  }
+}
+
+
+/* Планшеты */
+@media screen and (min-width:800px) and (max-width:1400px) {
+  #divisions {
+    display: none;
+  }
+
+  #violations {
+    margin-left: 0px;
+
+    #add-violation-button {
+      display: none;
+    }
+
+    #current-division-title {
+      display: inline-block;
+    }
+
+    #select-division-button {
+      display: inline-block;
+    }
+  }
+}

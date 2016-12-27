@@ -1,0 +1,305 @@
+/**********
+** FONTS
+*********/
+
+@font-face {
+  font-family: "PT Sans";
+  src: url("/clientside/resources/fonts/PT_Sans-Web-Regular.ttf");
+}
+
+@font-face {
+  font-family: "PT Sans Bold";
+  src: url("/clientside/resources/fonts/PT_Sans-Web-Bold.ttf");
+}
+
+@font-face {
+  font-family: "PT Sans Italic";
+  src: url("/clientside/resources/fonts/PT_Sans-Web-Italic.ttf");
+}
+
+
+@app-header-height: 70px;
+@app-header-color: #006064;
+@divisions-width: 420px;
+@filter-width: 420px;
+@violations-width: 770px;
+
+html, body {
+  max-height: 100%;
+  padding: 0px;
+  margin: 0px;
+  overflow: hidden;
+}
+
+
+#app-header {
+  position: fixed;
+  z-index: 6;
+  width: 100%;
+  padding-left: 10px;
+  padding-right: 25px;
+  background: @app-header-color;
+  box-sizing: border-box;
+
+  #menu-button {
+    display: none;
+    width: 50px;
+    height: 50px;
+    text-align: center;
+
+    .fa {
+      font-size: 25px;
+      line-height: 50px;
+      color: white;
+    }
+  }
+
+  .caption {
+    display: inline-block;
+    float: left;
+    height: @app-header-height;
+    margin-right: 20px;
+    line-height: @app-header-height - 5px;
+    font-family: "PT Sans Bold";
+    font-size: 22px;
+    font-weight: bold;
+    color: white;
+  }
+
+  a {
+    display: inline-block;
+    float: left;
+    height: @app-header-height;
+    line-height: @app-header-height;
+    font-size: 13px;
+    padding-left: 10px;
+    padding-right: 10px;
+    text-decoration: none;
+    text-transform: uppercase;
+    color: #E3F2FD;
+    border-bottom: 3px solid transparent;
+    box-sizing: border-box;
+
+    &:hover {
+      color: #E3F2FD;
+    }
+
+    &.active {
+      color: #90CAF9;
+      border-bottom: 3px solid #90CAF9;
+    }
+
+    .fa {
+      margin-right: 3px;
+    }
+  }
+
+  .menu-item {
+    overflow: visible;
+    position: relative;
+    display: inline-block;
+    float: left;
+    height: @app-header-height;
+    box-sizing: border-box;
+
+    &.active {
+      a {
+        border-bottom: 3px solid #90CAF9 !important;
+      }
+    }
+
+    &:hover {
+      a {
+        background: #00796B;
+        border-bottom: 3px solid transparent !important;
+      }
+
+      .container {
+        display: inline-block;
+        a {
+          background: #00695C;
+        }
+      }
+    }
+
+    a {
+      display: block;
+      height: @app-header-height;
+      padding-left: 20px !important;
+      padding-right: 20px !important;
+      line-height: @app-header-height;
+      box-sizing: border-box;
+      border-bottom: 3px solid transparent !important;
+      &:hover {
+        background: #00796B;
+      }
+    }
+
+    .container {
+      position: relative;
+      display: none;
+      overflow: visible;
+      z-index: 5;
+      min-width: 100%;
+      background: #00695C;
+      box-sizing: border-box;
+      //.box-shadow(5px, 5px, 15px, 1px, rgba(0, 1, 0, 0.2));
+
+      .menu-item {
+        display: block;
+        float: none !important;
+        height: 50px;
+        box-sizing: border-box;
+
+        &.active {
+          a {
+            color: #90CAF9 !important;
+          }
+        }
+
+        a {
+          position: relative;
+          display: block !important;
+          float: none !important;
+          min-width: 100% !important;
+          height: 50px !important;
+          padding-left: 20px !important;
+          padding-right: 20px !important;
+          line-height: 50px !important;
+          box-sizing: border-box;
+
+          &:hover {
+            background: #004D40;
+          }
+        }
+      }
+    }
+
+  }
+}
+
+
+#app-content {
+  overflow: auto;
+  position: absolute;
+  left: 0px;
+  top: @app-header-height;
+  right: 0px;
+  bottom: 0px;
+  min-width: 1400px;
+  box-sizing: border-box;
+  background: #EEEEEE;
+  border: 1px solid green;
+
+  /*
+  #app-content-wrapper {
+    overflow: visible;
+    width: 100%;
+    height: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    box-sizing: border-box;
+    //border: 1px solid blue;
+  }
+  */
+
+
+
+  /* VIOLATIONS */
+  #divisions {
+    width: @divisions-width;
+    box-sizing: border-box;
+
+  }
+
+  #violations {
+    margin-left: @divisions-width + 10px;
+    box-sizing: border-box;
+    border-left: 1px solid lightgray;
+
+    &.stretched {
+      margin-left: 0px !important;
+    }
+
+    .content {
+      padding: 0px;
+    }
+
+    &.stretched {
+      margin-left: 0px !important;
+    }
+
+    .content {
+      padding: 0px;
+    }
+  }
+}
+
+
+/* Target landscape smartphones, portrait tablets, narrow desktops */
+@media screen and (min-width:320px) and (max-width:800px) {
+  #app-header {
+    height: 50px;
+    padding-left: 0px;
+    padding-right: 0px;
+
+    #menu-button {
+      display: block;
+      float: left;
+    }
+
+    .menu-item {
+      display: none;
+    }
+  }
+
+  #app-content {
+    #divisions {
+      display: none;
+    }
+
+    #violations {
+      margin-left: 0px;
+    }
+  }
+}
+
+
+
+
+@media screen and (min-width:800px) and (max-width:1400px) {
+  #app-header {
+    height: 50px;
+    padding-left: 0px;
+    padding-right: 0px;
+
+    #menu-button {
+      display: block;
+    }
+
+    .menu-item {
+      display: none;
+    }
+  }
+
+  #app-content {
+    #divisions {
+      display: none;
+    }
+
+    #violations {
+      margin-left: 0px;
+    }
+  }
+
+
+  /* VIOLATIONS */
+
+}
+
+
+

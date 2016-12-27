@@ -64,32 +64,15 @@
         $url = "/uploads/".$serviceId."/".$departmentId."/".$violationId."/".$name;
         $added = time();
 
-        if (!move_uploaded_file($tmpName, $_SERVER["DOCUMENT_ROOT"].$DS."uploads".$DS.$serviceId.$DS.$departmentId.$DS.$violationId.$DS.$name1251)) {
-            echo("Не удалось переместить загруженный файл ".$_SERVER["DOCUMENT_ROOT"].$DS."uploads".$DS.$serviceId.$DS.$departmentId.$DS.$violationId.$DS.$name1251);
+        if (!move_uploaded_file($tmpName, $_SERVER["DOCUMENT_ROOT"].$DS."uploads".$DS.$serviceId.$DS.$departmentId.$DS.$violationId.$DS.$name)) {
+            echo("Не удалось переместить загруженный файл ".$_SERVER["DOCUMENT_ROOT"].$DS."uploads".$DS.$serviceId.$DS.$departmentId.$DS.$violationId.$DS.$name);
             return false;
         }
-
-        /*
-        $query = mysql_query("INSERT INTO attachments (VIOLATION_ID, DIVISION_ID, TITLE, SIZE, MIME_TYPE, URL, DATE_ADDED) VALUES ($violationId, $divisionId, '$name', $size, '$type', '$url', $added)", $link);
-        if (!$query) {
-            echo("Не удалось выполнить запрос");
-            return false;
-        }
-        */
 
         $query = mysqli_query($mysqli, "INSERT INTO attachments (VIOLATION_ID, DIVISION_ID, TITLE, SIZE, MIME_TYPE, URL, DATE_ADDED) VALUES ($violationId, $divisionId, '$name', $size, '$type', '$url', $added)");
         if (!$query) {
             echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
         }
-
-        /*
-        $id = mysql_insert_id();
-        $query = mysql_query("SELECT * FROM attachments WHERE ID = $id", $link);
-        if (!$query) {
-            echo("Не удалось выполнить запрос - выбрать информацию о загруженном файле");
-            return false;
-        }
-        */
 
         $id = mysqli_insert_id($mysqli);
         $query = mysqli_query($mysqli, "SELECT * FROM attachments WHERE ID = $id");

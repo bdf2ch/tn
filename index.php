@@ -6,7 +6,8 @@
     require_once $_SERVER["DOCUMENT_ROOT"].$ds."serverside".$ds."api.php";
 
     if (isset($_COOKIE["tn_user_id"])) {
-        $template = new XTemplate($_SERVER["DOCUMENT_ROOT"].$ds."serverside".$ds."templates".$ds."application.html");
+        //$template = new XTemplate($_SERVER["DOCUMENT_ROOT"].$ds."serverside".$ds."templates".$ds."application.html");
+        $template = new XTemplate($_SERVER["DOCUMENT_ROOT"].$ds."responsive.html");
         $template -> assign("INITIAL_DATA", json_encode(init()));
     } else {
         $template = new XTemplate($_SERVER["DOCUMENT_ROOT"].$ds."serverside".$ds."templates".$ds."authorization.html");

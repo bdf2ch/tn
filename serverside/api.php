@@ -204,6 +204,10 @@
             $result -> startPeriod = strtotime("-1 week", $result -> startPeriod);
         }
 
+        if ($todayWeekDay > $controlPeriodStartWeekDay) {
+            $result -> startPeriod = strtotime("last ".$controlPeriodStartWeekDayTitle." ".$controlPeriodStartHours." hours ".$controlPeriodStartMinutes." minutes");
+        }
+
         $divisions = mysqli_query($mysqli, "SELECT ID, PARENT_ID, TITLE_FULL, SORT_ID, TITLE_SHORT, IS_DEPARTMENT, PATH, FILE_STORAGE_HOST, (SELECT COUNT(*) FROM violations WHERE DIVISION_ID = divisions.ID AND DATE_HAPPENED >= ".$result -> startPeriod." AND DATE_HAPPENED <= ".$result -> endPeriod.") AS VIOLATIONS_ADDED, (SELECT COUNT(*) FROM attachments WHERE DIVISION_ID = divisions.ID AND DATE_ADDED > ".$result -> startPeriod." AND DATE_ADDED < ".$result -> endPeriod.") AS ATTACHMENTS_ADDED FROM divisions ORDER BY PARENT_ID ASC");
         if (!$divisions) {
             echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
@@ -677,42 +681,11 @@
         $fname = $fio[2];
         $email = $result[0]["mail"][0];
 
-        /*
-        $link = mysql_connect($db_host, $db_user, $db_password);
-        if (!$link) {
-            echo("Error connecting DB: ".mysql_error());
-            return false;
-        }
-
-        $db = mysql_select_db($db_name, $link);
-        if (!$db) {
-            echo("Error selecting DB: ".mysql_error());
-            return false;
-        }
-
-        $encoding = mysql_query("SET NAMES utf8");
-        if (!$encoding) {
-            echo("Error setting encoding: ".mysql_error());
-            return false;
-        }
-        */
-        /*
-        $query = mysql_query("SELECT * FROM users WHERE LOGIN = '$login' LIMIT 1", $link);
-        if (!$query) {
-            //echo("Ошибка при выполнении запроса");
-            echo(json_encode(false));
-            return false;
-        }
-        */
         $query = mysqli_query($mysqli, "SELECT * FROM users WHERE LOGIN = '$login'");
-        //var_dump($query);
         if (!$query) {
-            //echo("no local user found");
             echo(json_encode(false));
             return false;
         }
-
-        //echo("num rows = ".mysqli_num_rows($query));
 
         if (mysqli_num_rows($query) > 0) {
             $result = mysqli_fetch_assoc($query);
@@ -724,8 +697,6 @@
 
 
 
-
-
     function logout ($data) {
         if (isset($_COOKIE["tn_user_id"])) {
             unset($_COOKIE["tn_user_id"]);
@@ -734,8 +705,6 @@
         }
         return true;
     }
-
-
 
 
 
@@ -759,34 +728,6 @@
         $allowConfirm = $data -> allowConfirm;
 
 
-        /*
-        $link = mysql_connect($db_host, $db_user, $db_password);
-        if (!$link) {
-            echo("Error connecting DB: ".mysql_error());
-            return false;
-        }
-
-        $db = mysql_select_db($db_name, $link);
-        if (!$db) {
-            echo("Error selecting DB: ".mysql_error());
-            return false;
-        }
-
-        $encoding = mysql_query("SET NAMES utf8");
-        if (!$encoding) {
-            echo("Error setting encoding: ".mysql_error());
-            return false;
-        }
-        */
-
-        /*
-        $user = mysql_query("INSERT INTO users (DIVISION_ID, SURNAME, NAME, FNAME, EMAIL, LOGIN, PASSWORD, IS_ADMINISTRATOR, ALLOW_EDIT, ALLOW_CONFIRM) VALUES ($divisionId, '$surname', '$name', '$fname', '$email', '$login', '$password', $isAdministrator, $allowEdit, $allowConfirm)", $link);
-        if (!$user) {
-            echo("Error executing query: ".mysql_error());
-            return false;
-        }
-        */
-
         $user = mysqli_query($mysqli, "INSERT INTO users (DIVISION_ID, SURNAME, NAME, FNAME, EMAIL, LOGIN, PASSWORD, IS_ADMINISTRATOR, ALLOW_EDIT, ALLOW_CONFIRM) VALUES ($divisionId, '$surname', '$name', '$fname', '$email', '$login', '$password', $isAdministrator, $allowEdit, $allowConfirm)");
         if (!$user) {
             echo(json_encode(false));
@@ -795,15 +736,6 @@
 
 
         $id = mysqli_insert_id($mysqli);
-        /*
-        $user = mysql_query("SELECT ID, DIVISION_ID, SURNAME, NAME, FNAME, EMAIL, LOGIN, PASSWORD, IS_ADMINISTRATOR, ALLOW_EDIT, ALLOW_CONFIRM FROM users WHERE ID = $id", $link);
-        if (!$user) {
-            echo("Error executing query: ".mysql_error());
-            return false;
-        }
-        */
-
-
         $user = mysqli_query($mysqli, "SELECT ID, DIVISION_ID, SURNAME, NAME, FNAME, EMAIL, LOGIN, PASSWORD, IS_ADMINISTRATOR, ALLOW_EDIT, ALLOW_CONFIRM FROM users WHERE ID = $id");
         if (!$user) {
             echo(json_encode(false));
@@ -872,34 +804,8 @@
         $isDepartment = $data -> isDepartment;
         $path = "";
 
-        /*
-        $link = mysql_connect($db_host, $db_user, $db_password);
-        if (!$link) {
-            echo("Error connecting DB: ".mysql_error());
-            return false;
-        }
-
-        $db = mysql_select_db($db_name, $link);
-        if (!$db) {
-            echo("Error selecting DB: ".mysql_error());
-            return false;
-        }
-
-        $encoding = mysql_query("SET NAMES utf8");
-        if (!$encoding) {
-            echo("Error setting encoding: ".mysql_error());
-            return false;
-        }
-        */
-
         if ($parentId != 0) {
-            /*
-            $parent = mysql_query("SELECT * FROM divisions WHERE id = $parentId", $link);
-            if (!$parent) {
-                echo("Error executing query: ".mysql_error());
-                return false;
-            }
-            */
+
             $parent = mysqli_query($mysqli, "SELECT * FROM divisions WHERE id = $parentId");
             if (!$parent) {
                 echo(json_encode(false));
@@ -910,13 +816,7 @@
                 $path = $par["PATH"];
             }
         }
-        /*
-        $division = mysql_query("INSERT INTO divisions (PARENT_ID, TITLE_SHORT, TITLE_FULL, FILE_STORAGE_HOST, IS_DEPARTMENT, PATH) VALUES ($parentId, '$shortTitle', '$fullTitle', '$storage', $isDepartment, '')", $link);
-        if (!$division) {
-            echo("Error executing query: ".mysql_error());
-            return false;
-        }
-        */
+
         $division = mysqli_query($mysqli, "INSERT INTO divisions (PARENT_ID, TITLE_SHORT, TITLE_FULL, FILE_STORAGE_HOST, IS_DEPARTMENT, PATH) VALUES ($parentId, '$shortTitle', '$fullTitle', '$storage', $isDepartment, '')");
         if (!$division) {
             echo(json_encode(false));
@@ -925,25 +825,13 @@
 
         $id = mysqli_insert_id($mysqli);
         $path .= $id."/";
-        /*
-        $divUpd = mysql_query("UPDATE divisions SET PATH = '$path' WHERE ID = $id", $link);
-        if (!$divUpd) {
-            echo("Error executing query: ".mysql_error());
-            return false;
-        }
-        */
+
         $divUpd = mysqli_query($mysqli, "UPDATE divisions SET PATH = '$path' WHERE ID = $id");
         if (!$divUpd) {
             echo(json_encode(false));
             return false;
         }
-        /*
-        $division  = mysql_query("SELECT * FROM divisions WHERE ID = $id", $link);
-        if (!$division) {
-            echo("Error executing query: ".mysql_error());
-            return false;
-        }
-        */
+
         $division = mysqli_query($mysqli, "SELECT * FROM divisions WHERE ID = $id");
         if (!$division) {
             echo(json_encode(false));

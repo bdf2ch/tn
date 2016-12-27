@@ -1,8 +1,11 @@
 <div id="left-column">
 
-    <div id="divisions" class="block">
+    <div id="divisions" class="block" ng-show="violations.showDivisions() === true">
         <div class="header">
             Структурные подразделения
+            <button class="collapse right" ng-click="hideDivisions()">
+                <span class="fa fa-angle-left"></span><span ng-show="violations.showDivisions() === true">&nbsp;</span>
+            </button>
         </div>
         <div class="content padding-10">
             <ui-tree id="session-divisions-tree"
@@ -74,11 +77,16 @@
 
 
 
-<div id="violations" class="block">
+<div id="violations" class="block" ng-class="{ stretched:violations.showDivisions() === false }">
 
     <div class="row">
 
-        <div class="width-10 padding-10 block-caption-title">Нарушения</div>
+        <div class="width-10 padding-10 block-caption-title">
+            <button class="extend" ng-show="violations.showDivisions() === false" ng-click="showDivisions()">
+                <span class="fa fa-angle-right"></span><span ng-show="violations.showDivisions() === false">&nbsp;</span>
+            </button>
+            Нарушения
+        </div>
 
         <div class="width-60 padding-10">
             <button class="blue"

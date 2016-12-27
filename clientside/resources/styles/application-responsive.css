@@ -1,0 +1,266 @@
+/**********
+** FONTS
+*********/
+@font-face {
+  font-family: "PT Sans";
+  src: url("/clientside/resources/fonts/PT_Sans-Web-Regular.ttf");
+}
+@font-face {
+  font-family: "PT Sans Bold";
+  src: url("/clientside/resources/fonts/PT_Sans-Web-Bold.ttf");
+}
+@font-face {
+  font-family: "PT Sans Italic";
+  src: url("/clientside/resources/fonts/PT_Sans-Web-Italic.ttf");
+}
+html,
+body {
+  padding: 0px;
+  margin: 0px;
+  height: 100%;
+  font-family: "PT Sans";
+  background: #EEEEEE;
+}
+#app-mobile-menu {
+  z-index: 6;
+  display: none;
+  position: fixed;
+  top: 50px;
+  left: -200px;
+  bottom: 0px;
+  width: 200px;
+  background: #00695C;
+  transition: left 0.2s linear;
+}
+#app-mobile-menu.opened {
+  left: 0px;
+}
+#app-mobile-menu .user {
+  height: 100px;
+  margin-bottom: 30px;
+  font-size: 20px;
+  text-align: center;
+  line-height: 100px;
+  font-family: "PT Sans Bold";
+  color: white;
+  background: rgba(0, 0, 0, 0.2);
+}
+#app-mobile-menu .menu-item {
+  display: block;
+  height: 20px;
+  padding-left: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-left: 3px solid transparent;
+}
+#app-mobile-menu .menu-item:hover {
+  background: #00796B;
+}
+#app-mobile-menu .menu-item.active {
+  background: #004D40;
+  border-left: 3px solid #90CAF9;
+}
+#app-mobile-menu .menu-item a {
+  text-decoration: none;
+  color: white;
+}
+#app-header {
+  z-index: 5;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  width: 100%;
+  height: 80px;
+  padding-right: 10px;
+  background: #006064;
+}
+#app-header #menu-button {
+  display: none;
+  float: left;
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  cursor: pointer;
+}
+#app-header #menu-button .fa {
+  font-size: 25px;
+  line-height: 50px;
+  color: white;
+}
+#app-header .caption {
+  display: inline-block;
+  float: left;
+  height: 80px;
+  margin-right: 20px;
+  padding-left: 10px;
+  line-height: 75px;
+  font-family: "PT Sans Bold";
+  font-size: 22px;
+  font-weight: bold;
+  color: white;
+}
+#app-header .menu-item {
+  overflow: visible;
+  position: relative;
+  display: inline-block;
+  float: left;
+  height: 80px;
+  line-height: 80px;
+  color: white;
+  box-sizing: border-box;
+}
+#app-header .menu-item.active a {
+  border-bottom: 3px solid #90CAF9 !important;
+}
+#app-header .menu-item:hover a {
+  background: #00796B;
+  border-bottom: 3px solid transparent !important;
+}
+#app-header .menu-item:hover .container {
+  display: inline-block;
+}
+#app-header .menu-item:hover .container a {
+  background: #00695C;
+}
+#app-header .menu-item a {
+  display: block;
+  height: 80px;
+  padding-left: 20px !important;
+  padding-right: 20px   !important;
+  font-size: 13px;
+  text-decoration: none;
+  text-transform: uppercase;
+  color: #E3F2FD;
+  box-sizing: border-box;
+  border-bottom: 3px solid transparent !important;
+}
+#app-header .menu-item a:hover {
+  background: #00796B;
+}
+#app-header .menu-item .container {
+  position: relative;
+  display: none;
+  overflow: visible;
+  z-index: 5;
+  min-width: 100%;
+  background: #00695C;
+  box-sizing: border-box;
+}
+#app-header .menu-item .container .menu-item {
+  display: block;
+  float: none !important;
+  height: 50px;
+  box-sizing: border-box;
+}
+#app-header .menu-item .container .menu-item.active a {
+  color: #90CAF9 !important;
+}
+#app-header .menu-item .container .menu-item a {
+  position: relative;
+  display: block !important;
+  float: none !important;
+  min-width: 100% !important;
+  height: 50px !important;
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+  line-height: 50px !important;
+  box-sizing: border-box;
+}
+#app-header .menu-item .container .menu-item a:hover {
+  background: #004D40;
+}
+#app-content {
+  z-index: 4;
+  overflow-x: hidden;
+  position: relative;
+  width: 100%;
+  margin-top: 80px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+#app-content .block {
+  background: white;
+  box-shadow: 0px 3px 5px 0 rgba(174, 174, 174, 0.5);
+}
+#app-content .block .block-caption-title {
+  display: inline-block;
+  height: 55px;
+  padding: 10px;
+  font-size: 17px;
+  color: #4f6173;
+  font-weight: bold;
+  line-height: 35px;
+}
+#app-content .block .block-caption-title .extend {
+  margin-left: -10px;
+}
+#app-content .block .header {
+  height: 35px;
+  padding: 10px;
+  font-size: 17px;
+  color: #4f6173;
+  font-weight: bold;
+  line-height: 35px;
+  border-bottom: 1px solid #eceeef;
+}
+#app-content .block .header .collapse {
+  margin-right: -10px;
+}
+#app-content .block .header label {
+  font-weight: normal !important;
+}
+#app-content .block .header .upload-progress {
+  font-weight: normal;
+  float: right;
+  line-height: 35px;
+  font-size: 15px;
+}
+/* Смартфоны */
+@media screen and (min-width: 320px) and (max-width: 800px) {
+  #app-header {
+    height: 50px;
+  }
+  #app-header #menu-button {
+    display: block;
+  }
+  #app-header .caption {
+    font-size: 18px;
+    height: 50px;
+    line-height: 50px;
+  }
+  #app-header .menu-item {
+    display: none;
+  }
+  #app-mobile-menu {
+    display: block;
+  }
+  #app-content {
+    margin-top: 50px;
+    padding: 0px;
+  }
+}
+/* Планшеты */
+@media screen and (min-width: 800px) and (max-width: 1400px) {
+  #app-header {
+    height: 50px;
+  }
+  #app-header #menu-button {
+    display: block;
+  }
+  #app-header .caption {
+    font-size: 18px;
+    height: 50px;
+    line-height: 50px;
+  }
+  #app-header .menu-item {
+    display: none;
+  }
+  #app-mobile-menu {
+    display: block;
+  }
+  #app-content {
+    margin-top: 50px;
+    padding: 10px;
+  }
+}

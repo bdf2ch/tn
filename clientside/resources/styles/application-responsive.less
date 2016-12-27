@@ -1,0 +1,345 @@
+/**********
+** FONTS
+*********/
+
+@font-face {
+  font-family: "PT Sans";
+  src: url("/clientside/resources/fonts/PT_Sans-Web-Regular.ttf");
+}
+
+@font-face {
+  font-family: "PT Sans Bold";
+  src: url("/clientside/resources/fonts/PT_Sans-Web-Bold.ttf");
+}
+
+@font-face {
+  font-family: "PT Sans Italic";
+  src: url("/clientside/resources/fonts/PT_Sans-Web-Italic.ttf");
+}
+
+
+
+
+@app-content-background-color: #EEEEEE;
+html, body {
+  padding: 0px;
+  margin: 0px;
+  height: 100%;
+  font-family: "PT Sans";
+  background: @app-content-background-color;
+}
+
+
+
+@app-mobile-menu-width: 200px;
+@app-mobile-menu-background-color: #00695C;
+@app-mobile-menu-item-height: 20px;
+#app-mobile-menu {
+  z-index: 6;
+  display: none;
+  position: fixed;
+  top: @app-header-mobile-height;
+  left: @app-mobile-menu-width * -1;
+  bottom: 0px;
+  width: @app-mobile-menu-width;
+  background: @app-mobile-menu-background-color;
+  transition: left 0.2s linear;
+
+  &.opened {
+    left: 0px;
+  }
+
+  .user {
+    height: 100px;
+    margin-bottom: 30px;
+    font-size: 20px;
+    text-align: center;
+    line-height: 100px;
+    font-family: "PT Sans Bold";
+    color: white;
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  .menu-item {
+    display: block;
+    height: @app-mobile-menu-item-height;
+    padding-left: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-left: 3px solid transparent;
+
+    &:hover {
+      background: #00796B;
+    }
+
+    &.active {
+      background: #004D40;
+      border-left: 3px solid #90CAF9;
+    }
+
+    a {
+      text-decoration: none;
+      color: white;
+    }
+  }
+}
+
+
+
+@app-header-height: 80px;
+@app-header-mobile-height: 50px;
+@app-header-background-color: #006064;
+#app-header {
+  z-index: 5;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  width: 100%;
+  height: @app-header-height;
+  //padding-left: 10px;
+  padding-right: 10px;
+  background: @app-header-background-color;
+
+  #menu-button {
+    display: none;
+    float: left;
+    width: @app-header-mobile-height;
+    height: @app-header-mobile-height;
+    text-align: center;
+    cursor: pointer;
+
+    .fa {
+      font-size: 25px;
+      line-height: @app-header-mobile-height;
+      color: white;
+    }
+  }
+
+  .caption {
+    display: inline-block;
+    float: left;
+    height: @app-header-height;
+    margin-right: 20px;
+    padding-left: 10px;
+    line-height: @app-header-height - 5px;
+    font-family: "PT Sans Bold";
+    font-size: 22px;
+    font-weight: bold;
+    color: white;
+  }
+
+  .menu-item {
+    overflow: visible;
+    position: relative;
+    display: inline-block;
+    float: left;
+    height: @app-header-height;
+    line-height: @app-header-height;
+    color: white;
+    box-sizing: border-box;
+
+    &.active {
+      a {
+        border-bottom: 3px solid #90CAF9 !important;
+      }
+    }
+
+    &:hover {
+      a {
+        background: #00796B;
+        border-bottom: 3px solid transparent !important;
+      }
+
+      .container {
+        display: inline-block;
+        a {
+          background: #00695C;
+        }
+      }
+    }
+
+    a {
+      display: block;
+      height: @app-header-height;
+      padding-left: 20px !important;
+      padding-right: 20px   !important;
+      font-size: 13px;
+      text-decoration: none;
+      text-transform: uppercase;
+      color: #E3F2FD;
+      //color: white;
+      box-sizing: border-box;
+      border-bottom: 3px solid transparent !important;
+      &:hover {
+        background: #00796B;
+      }
+    }
+
+    .container {
+      position: relative;
+      display: none;
+      overflow: visible;
+      z-index: 5;
+      //clear: right;
+      min-width: 100%;
+      //margin-right: -20px;
+      background: #00695C;
+      box-sizing: border-box;
+      //.box-shadow(5px, 5px, 15px, 1px, rgba(0, 1, 0, 0.2));
+
+      .menu-item {
+        display: block;
+        float: none !important;
+        height: 50px;
+        box-sizing: border-box;
+
+        &.active {
+          a {
+            color: #90CAF9 !important;
+          }
+        }
+
+        a {
+          position: relative;
+          display: block !important;
+          float: none !important;
+          min-width: 100% !important;
+          height: 50px !important;
+          padding-left: 20px !important;
+          padding-right: 20px !important;
+          line-height: 50px !important;
+          box-sizing: border-box;
+
+          &:hover {
+            background: #004D40;
+          }
+        }
+      }
+    }
+
+  }
+}
+
+#app-content {
+  z-index: 4;
+  overflow-x: hidden;
+  position: relative;
+  width: 100%;
+  //height: 600px;
+  //min-height: 500px;
+  margin-top: @app-header-height;
+  padding: 10px;
+  box-sizing: border-box;
+
+  .block {
+    //margin-bottom: 20px;
+    background: white;
+    box-shadow: 0px 3px 5px 0 rgba(174,174,174,0.5);
+
+    .block-caption-title {
+      display: inline-block;
+      height: 55px;
+      padding: 10px;
+      font-size: 17px;
+      color: #4f6173;
+      font-weight: bold;
+      line-height: 35px;
+
+      .extend {
+        margin-left: -10px;
+      }
+    }
+
+    .header {
+      height: 35px;
+      padding: 10px;
+      font-size: 17px;
+      color: #4f6173;
+      font-weight: bold;
+      line-height: 35px;
+      border-bottom: 1px solid #eceeef;
+
+      .collapse {
+        margin-right: -10px;
+      }
+
+      label {
+        font-weight: normal !important;
+      }
+
+      .upload-progress {
+        font-weight: normal;
+        float: right;
+        line-height: 35px;
+        font-size: 15px;
+      }
+    }
+
+    .content {
+      //padding: 10px;
+    }
+  }
+}
+
+
+/* Смартфоны */
+@media screen and (min-width:320px) and (max-width:800px) {
+  #app-header {
+    height: @app-header-mobile-height;
+
+    #menu-button {
+      display: block;
+    }
+
+    .caption {
+      font-size: 18px;
+      height: @app-header-mobile-height;
+      line-height: @app-header-mobile-height;
+    }
+
+    .menu-item {
+      display: none;
+    }
+  }
+
+  #app-mobile-menu {
+    display: block;
+  }
+
+  #app-content {
+    margin-top: @app-header-mobile-height;
+    padding: 0px;
+  }
+}
+
+
+/* Планшеты */
+@media screen and (min-width:800px) and (max-width:1400px) {
+  #app-header {
+    height: @app-header-mobile-height;
+
+    #menu-button {
+      display: block;
+    }
+
+    .caption {
+      font-size: 18px;
+      height: @app-header-mobile-height;
+      line-height: @app-header-mobile-height;
+    }
+
+    .menu-item {
+      display: none;
+    }
+  }
+
+  #app-mobile-menu {
+    display: block;
+  }
+
+  #app-content {
+    margin-top: @app-header-mobile-height;
+    padding: 10px;
+  }
+}

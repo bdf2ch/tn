@@ -7,9 +7,10 @@
     <title>Технологические нарушения</title>
     <!--<link rel="stylesheet" href="/clientside/resources/styles/application.css">-->
     <link rel="stylesheet" href="/clientside/resources/styles/utils.css">
-    <!--<link rel="stylesheet" href="/clientside/resources/styles/ui.css">-->
+    <link rel="stylesheet" href="/clientside/resources/styles/ui.css">
     <link type="text/css" rel="stylesheet" href="/clientside/resources/fonts/Font Awesome/css/font-awesome.min.css">
-    <link type="text/css" rel="stylesheet" href="/clientside/dist/css/styles.min.css">
+    <!--<link type="text/css" rel="stylesheet" href="/clientside/dist/css/styles.min.css">-->
+    <link rel="stylesheet" href="/clientside/resources/styles/application.responsive.css">
 </head>
 <body>
     <script>
@@ -18,20 +19,12 @@
     <script src="/clientside/libs/angularjs/angular.min.js"></script>
 
     <div id="app-header" ng-controller="HeaderController">
-        <div id="app-header-wrapper">
+        <!--<div id="app-header-wrapper">-->
+            <div id="menu-button">
+                <span class="fa fa-bars"></span>
+            </div>
+
             <span class="caption">Технологические нарушения</span>
-
-            <!--
-            <a ng-href="{{'#' + menu.url}}"
-               ng-cloak
-               ng-show="menu.isVisible === true"
-               ng-class="{ active: menu.isActive === true }"
-               ng-repeat="menu in navigation.getAll() | orderBy:'order' track by $index">
-                <span class="fa {{ menu.icon }}" ng-show="menu.icon !== ''"></span>
-                {{ menu.title }}
-            </a>
-            -->
-
 
             <div class="menu-item" ng-class="{ active: navigation.getById('violations').isActive === true }">
                 <a href="#/">
@@ -94,26 +87,9 @@
             </div>
 
 
-
-
-            <!--
-            <div class="dropdown-menu right" ng-cloak>
-                <div class="user-name">
-                    <span class="fa fa-user"></span>&nbsp;
-                    {{ session.getCurrentUser().name.value + " " + session.getCurrentUser().surname.value }}
-                    &nbsp;<span class="fa fa-caret-down"></span>
-                </div>
-                <div class="dropdown-menu">
-                    <a href ng-click="logout()">
-                        <span class="fa fa-sign-out"></span>Выход
-                    </a>
-                </div>
-            </div>
-            -->
-
-        </div>
+        <!--</div>-->
     </div>
-    <div id="app-content">
+    <div id="app-content" ng-class="{ stretched: violations.showDivisions() === false}">
 
         <div id="app-content-wrapper" ng-view>
 
@@ -123,7 +99,7 @@
 
 
 
-    <div ng-controller="HeaderController" ui-modal modal-id="settings-modal" modal-caption="Настройки" modal-width="450" modal-on-close="">
+    <div ng-controller="HeaderController" ui-modal modal-id="settings-modal" modal-caption="Настройки" modal-width="450" modal-on-close="" ng-cloak>
         <div class="row modal-block-separator margin-top-10">
             Начало периода учета новых ТН и документов
         </div>

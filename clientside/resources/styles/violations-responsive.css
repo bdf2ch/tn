@@ -1,0 +1,120 @@
+#divisions {
+  display: block;
+  float: left;
+  width: 420px;
+  background: white;
+}
+#violations {
+  display: block;
+  margin-left: 430px;
+  background: white;
+}
+#violations #current-division-title {
+  display: none;
+}
+#violations #select-division-button {
+  display: none;
+}
+#violations table {
+  width: 100%;
+}
+#violations table thead tr {
+  height: 40px;
+}
+#violations table thead tr th {
+  height: 40px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-family: "PT Sans Bold";
+  font-size: 14px;
+  background: #B2DFDB !important;
+  cursor: default;
+  box-sizing: border-box;
+}
+#violations table .violation-number {
+  display: block;
+  float: left;
+  width: 5%;
+  height: 100%;
+  text-align: center;
+  line-height: 100%;
+  border: 1px solid black;
+  box-sizing: border-box;
+}
+#violations table .violation-is-confirmed {
+  display: block;
+  float: left;
+  width: 5%;
+  height: 100%;
+  text-align: center;
+  border: 1px solid black;
+  box-sizing: border-box;
+}
+#violations table .violation-date {
+  display: block;
+  float: left;
+  width: 15%;
+  height: 100%;
+  border: 1px solid black;
+  box-sizing: border-box;
+}
+#violations table .violation-object {
+  display: block;
+  float: left;
+  width: 35%;
+  height: 100%;
+  border: 1px solid black;
+  box-sizing: border-box;
+}
+#violations table .violation-docs {
+  display: block;
+  float: left;
+  width: 20%;
+  height: 100%;
+  border: 1px solid black;
+  box-sizing: border-box;
+}
+#violations table .violation-author {
+  display: block;
+  float: left;
+  width: 20%;
+  height: 100%;
+  border: 1px solid black;
+  box-sizing: border-box;
+}
+/* Смартфоны */
+@media screen and (min-width: 320px) and (max-width: 800px) {
+  #divisions {
+    display: none;
+  }
+  #violations {
+    margin-left: 0px;
+  }
+  #violations #add-violation-button {
+    display: none;
+  }
+  #violations #current-division-title {
+    display: inline-block;
+  }
+  #violations #select-division-button {
+    display: inline-block;
+  }
+}
+/* Планшеты */
+@media screen and (min-width: 800px) and (max-width: 1400px) {
+  #divisions {
+    display: none;
+  }
+  #violations {
+    margin-left: 0px;
+  }
+  #violations #add-violation-button {
+    display: none;
+  }
+  #violations #current-division-title {
+    display: inline-block;
+  }
+  #violations #select-division-button {
+    display: inline-block;
+  }
+}

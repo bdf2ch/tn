@@ -13,7 +13,7 @@ angular
         //$locationProvider.html5Mode(true);
         $routeProvider
             .when("/", {
-                templateUrl: "clientside/modules/violations/templates/violations.html",
+                templateUrl: "clientside/modules/violations/templates/violations/violations.html",
                 controller: "ViolationsController"
             })
             .when("/new", {
