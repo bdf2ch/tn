@@ -21,6 +21,10 @@
 #violations table thead tr {
   height: 40px;
 }
+#violations table table tr td {
+  float: left;
+  box-sizing: border-box;
+}
 #violations table thead tr th {
   height: 40px;
   padding-top: 10px;
@@ -32,55 +36,28 @@
   box-sizing: border-box;
 }
 #violations table .violation-number {
-  display: block;
-  float: left;
   width: 5%;
-  height: 100%;
   text-align: center;
-  line-height: 100%;
-  border: 1px solid black;
   box-sizing: border-box;
 }
 #violations table .violation-is-confirmed {
-  display: block;
-  float: left;
   width: 5%;
-  height: 100%;
   text-align: center;
-  border: 1px solid black;
-  box-sizing: border-box;
 }
 #violations table .violation-date {
-  display: block;
-  float: left;
   width: 15%;
-  height: 100%;
-  border: 1px solid black;
-  box-sizing: border-box;
 }
 #violations table .violation-object {
-  display: block;
-  float: left;
   width: 35%;
-  height: 100%;
-  border: 1px solid black;
-  box-sizing: border-box;
 }
 #violations table .violation-docs {
-  display: block;
-  float: left;
   width: 20%;
-  height: 100%;
-  border: 1px solid black;
-  box-sizing: border-box;
 }
 #violations table .violation-author {
-  display: block;
-  float: left;
   width: 20%;
-  height: 100%;
-  border: 1px solid black;
-  box-sizing: border-box;
+}
+#violations table #documents-title {
+  display: inline-block;
 }
 /* Смартфоны */
 @media screen and (min-width: 320px) and (max-width: 800px) {
@@ -99,6 +76,9 @@
   #violations #select-division-button {
     display: inline-block;
   }
+  .documents-title {
+    display: none;
+  }
 }
 /* Планшеты */
 @media screen and (min-width: 800px) and (max-width: 1400px) {
@@ -116,5 +96,15 @@
   }
   #violations #select-division-button {
     display: inline-block;
+  }
+  .documents-title {
+    display: none;
+  }
+  .violation-object {
+    width: 50% !important;
+  }
+  .violation-docs {
+    width: 5% !important;
+    text-align: center !important;
   }
 }

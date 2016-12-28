@@ -84,23 +84,23 @@
         <table class="selectable stripped">
             <thead>
             <tr>
-                <th class="width-5 text-center">№</th>
-                <th class="width-5 text-center">
+                <th class="violation-number text-center">№</th>
+                <th class="violation-is-confirmed text-center">
                     <span class="fa fa-check"></span>
                 </th>
-                <th class="width-15 text-left">
+                <th class="violation-date text-left">
                     <span class="fa fa-clock-o"></span>&nbsp;
                     Дата
                 </th>
-                <th class="width-35 text-left">
+                <th class="violation-object text-left">
                     <span class="fa fa-plug"></span>&nbsp;
                     Объект ЭСК
                 </th>
-                <th class="width-20 text-left">
+                <th class="violation-docs text-left">
                     <span class="fa fa-file"></span>&nbsp;
-                    Документы
+                    <span class="documents-title">Документы</span>
                 </th>
-                <th class="width-20 text-left">
+                <th class="violation-author text-left">
                     <span class="fa fa-user"></span>&nbsp;
                     Автор
                 </th>
@@ -108,23 +108,23 @@
             </thead>
             <tbody>
             <tr ng-repeat="violation in violations.getAll() | orderBy:'-happened.value' track by $index" ng-click="selectViolation(violation.id.value)" title="{{ violation.description.value }}">
-                <td class="width-5 text-center">
+                <td class="violation-number text-center">
                     {{ violation.id.value }}&nbsp;
                     <span class="new-violation-mark"
                           ng-show="violation.isNew === true">
                         новое
                     </span>
                 </td>
-                <td class="width-5 text-center">
+                <td class="violation-is-confirmed text-center">
                     <span class="fa fa-check violation-confirmed-mark" ng-show="violation.isConfirmed.value === true"></span>
                 </td>
-                <td class="width-15 text-left">
+                <td class="violation-date text-left">
                     {{ violation.happened.value | day }}, {{ violation.happened.value | time }}
                 </td>
-                <td class="width-35 text-left">
+                <td class="violation-object text-left">
                     {{ violation.eskObject.value }}
                 </td>
-                <td class="width-20 text-left">
+                <td class="violation-docs text-left">
                     <span ng-show="violation.attachments.length > 0">
                         {{ violation.attachments.length }}&nbsp;
                          <span class="new-attachment-mark" ng-show="violation.newAttachments > 0">
@@ -133,7 +133,7 @@
                     </span>
                     <span ng-show="violation.attachments.length === 0">-</span>
                 </td>
-                <td class="width-20 text-left">
+                <td class="violation-author text-left">
                     {{ violation.user.surname.value + " " + violation.user.name.value + " " + violation.user.fname.value }}
                 </td>
             </tr>

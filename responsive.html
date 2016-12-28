@@ -88,7 +88,7 @@
 
     <div id="app-mobile-menu" ng-controller="HeaderController" ng-class="{ opened: violations.mobileMenu() === true }">
         <div class="user">
-            {{ session.getCurrentUser().name.value + " " + session.getCurrentUser().surname.value }}>
+            {{ session.getCurrentUser().name.value + " " + session.getCurrentUser().surname.value }}
         </div>
 
         <div class="menu-item" ng-class="{ active: navigation.getById('violations').isActive === true }">
