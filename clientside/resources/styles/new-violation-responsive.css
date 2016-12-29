@@ -1,0 +1,74 @@
+#new-violation_ {
+  width: 1200px;
+  height: 400px;
+}
+#new-violation_ #violation-info {
+  float: left;
+  width: 700px;
+  margin-right: 10px;
+  box-sizing: border-box;
+}
+#new-violation_ #violation-documents {
+  float: left;
+  width: 490px;
+  box-sizing: border-box;
+}
+#new-violation_ #violation-documents .content {
+  padding: 0px;
+}
+#new-violation_ #violation-documents #new-violation-files .attachment {
+  transition: 0.7s ease all;
+  -webkit-transition: 0.7s linear all;
+}
+#new-violation_ #violation-documents #new-violation-files .attachment .attachment-message {
+  display: none;
+  font-size: 20px;
+  line-height: 14px;
+  text-align: center;
+  color: #1B5E20;
+}
+#new-violation_ #violation-documents #new-violation-files .attachment .attachment-message .fa {
+  font-size: 25px;
+  line-height: 14px;
+}
+#new-violation_ #violation-documents #new-violation-files .attachment .attachment-loaded {
+  display: table-cell;
+}
+#new-violation_ #violation-documents #new-violation-files .attachment.ng-enter {
+  background: #81C784;
+}
+#new-violation_ #violation-documents #new-violation-files .attachment.ng-enter .attachment-message {
+  display: table-cell;
+}
+#new-violation_ #violation-documents #new-violation-files .attachment.ng-enter .attachment-loaded {
+  display: none;
+}
+#new-violation_ #violation-documents #new-violation-files .attachment.ng-enter.ng-enter-active {
+  background: #C8E6C9;
+}
+#new-violation_ #new-violation-hours,
+#new-violation_ #new-violation-end-hours {
+  border-right: none;
+}
+#new-violation_ #new-violation-minutes,
+#new-violation_ #new-violation-end-minutes {
+  border-left: none;
+}
+#new-violation_ .time-separator {
+  height: 35px;
+  line-height: 30px;
+  border-top: 1px solid lightgrey !important;
+  border-bottom: 1px solid lightgrey !important;
+}
+/* Смартфоны */
+@media screen and (min-width: 320px) and (max-width: 800px) {
+  #new-violation_ {
+    width: 100% !important;
+  }
+}
+/* Планшеты */
+@media screen and (min-width: 800px) and (max-width: 1400px) {
+  #new-violation_ {
+    width: 100% !important;
+  }
+}

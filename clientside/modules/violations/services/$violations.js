@@ -13,7 +13,7 @@ angular.module("violations")
             var totalViolations = 0;
             var totalAttachments = 0;
             var isLoading = false;
-            var showDivisions = true;
+            var showDivisions = false;
             var isMobileMenuOpened = false;
 
             var filters = [

@@ -265,7 +265,7 @@ angular
                 }
 
                 modals.push(modal);
-                //$log.log("modals = ", items);
+                $log.log("modals = ", modals);
 
                 return true;
             },

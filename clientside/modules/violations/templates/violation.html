@@ -3,11 +3,11 @@
     <div id="violation-info" class="block" ng-init="user = session.getCurrentUser()">
         <div class="header">
             Нарушение №{{ violations.getCurrent().id.value }} от {{ violations.getCurrent().happened.value | dateFilter }}
-            <button class="blue right" ng-click="gotoMain()">
+            <button id="back-to-violations-button" class="blue right" ng-click="gotoMain()">
                 <span class="fa fa-arrow-left"></span>&nbsp;
                 Вернуться
             </button>
-            <button class="green right margin-right-10"
+            <button id="save-violation-button" class="green right margin-right-10"
                     ng-click="save()"
                     ng-show="session.getCurrentUser().isAdministrator.value === true"
                     ng-disabled="violations.getCurrent()._states_.changed() === false || violations.getCurrent()._states_.loading() === true">
@@ -152,7 +152,7 @@
     <div id="violation-documents" class="block">
         <div class="header">
             Документы
-            <label for="userfile" class="button blue right" ng-show="isUploadInProgress === false">
+            <label for="userfile" class="button blue right" ng-show="isUploadInProgress === false" id="violation-upload-button">
                 <span class="fa fa-upload"></span>
                 <span>&nbsp; Загрузить файл</span>
                 <input

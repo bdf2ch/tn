@@ -1,0 +1,156 @@
+@info-width: 700px;
+@documents-width: 490px;
+
+#current-violation_ {
+  width: 1200px;
+  height: 400px;
+  box-sizing: border-box;
+
+  #violation-info {
+    float: left;
+    width: @info-width;
+    margin-right: 10px;
+    box-sizing: border-box;
+  }
+
+  #violation-documents {
+    float: left;
+    width: @documents-width;
+    box-sizing: border-box;
+
+
+    .content {
+      padding: 0px;
+    }
+
+    #current-violation-files {
+
+      .attachment {
+        transition: 0.7s ease all;
+        -webkit-transition: 0.7s linear all;
+
+        .attachment-message {
+          display: none;
+          font-size: 20px;
+          line-height: 14px;
+          text-align: center;
+          color: #1B5E20;
+
+          .fa {
+            font-size: 25px;
+            line-height: 14px;
+          }
+        }
+
+        .attachment-loaded {
+          display: table-cell;
+        }
+
+        &.ng-enter {
+          background: #81C784;
+
+          .attachment-message {
+            display: table-cell;
+          }
+
+          .attachment-loaded {
+            display: none;
+          }
+        }
+
+        &.ng-enter.ng-enter-active {
+          background: #C8E6C9;
+        }
+
+      }
+
+    }
+  }
+
+
+  .is-violation-confirmed {
+    padding: 10px;
+    font-size: 18px;
+    background: #FFFDE7;
+    border: 2px solid #FFF9C4;
+
+    &.yes {
+      background: #E8F5E9;
+      border: 2px solid #C8E6C9;
+    }
+
+    input[type='checkbox'] {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+}
+
+
+
+/* Смартфоны */
+@media screen and (min-width:320px) and (max-width:800px) {
+  #current-violation_ {
+    width: 100% !important;
+  }
+
+  #violation-info {
+    float: left;
+    width: 100% !important;
+    //margin-right: 10px;
+    //box-sizing: border-box;
+  }
+
+  #violation-documents {
+    //display: none !important;
+    width: 100% !important;
+    margin-top: 10px !important;
+  }
+
+  #back-to-violations-button {
+    display: none !important;
+  }
+
+  #save-violation-button {
+    display: none !important;
+  }
+
+  #violation-upload-button {
+    display: none !important;
+  }
+}
+
+
+/* Планшеты */
+@media screen and (min-width:800px) and (max-width:1400px) {
+  #current-violation_ {
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  #violation-info {
+    float: left;
+    width: 65% !important;
+    //margin-right: 10px;
+    //box-sizing: border-box;
+  }
+
+  #violation-documents {
+    //display: none !important;
+    float: left !important;
+    width: 34% !important;
+  }
+
+  #back-to-violations-button {
+    //display: none !important;
+  }
+
+  #save-violation-button {
+    display: none !important;
+  }
+
+  #violation-upload-button {
+    display: none !important;
+  }
+}

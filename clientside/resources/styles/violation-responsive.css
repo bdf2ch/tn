@@ -1,0 +1,107 @@
+#current-violation_ {
+  width: 1200px;
+  height: 400px;
+  box-sizing: border-box;
+}
+#current-violation_ #violation-info {
+  float: left;
+  width: 700px;
+  margin-right: 10px;
+  box-sizing: border-box;
+}
+#current-violation_ #violation-documents {
+  float: left;
+  width: 490px;
+  box-sizing: border-box;
+}
+#current-violation_ #violation-documents .content {
+  padding: 0px;
+}
+#current-violation_ #violation-documents #current-violation-files .attachment {
+  transition: 0.7s ease all;
+  -webkit-transition: 0.7s linear all;
+}
+#current-violation_ #violation-documents #current-violation-files .attachment .attachment-message {
+  display: none;
+  font-size: 20px;
+  line-height: 14px;
+  text-align: center;
+  color: #1B5E20;
+}
+#current-violation_ #violation-documents #current-violation-files .attachment .attachment-message .fa {
+  font-size: 25px;
+  line-height: 14px;
+}
+#current-violation_ #violation-documents #current-violation-files .attachment .attachment-loaded {
+  display: table-cell;
+}
+#current-violation_ #violation-documents #current-violation-files .attachment.ng-enter {
+  background: #81C784;
+}
+#current-violation_ #violation-documents #current-violation-files .attachment.ng-enter .attachment-message {
+  display: table-cell;
+}
+#current-violation_ #violation-documents #current-violation-files .attachment.ng-enter .attachment-loaded {
+  display: none;
+}
+#current-violation_ #violation-documents #current-violation-files .attachment.ng-enter.ng-enter-active {
+  background: #C8E6C9;
+}
+#current-violation_ .is-violation-confirmed {
+  padding: 10px;
+  font-size: 18px;
+  background: #FFFDE7;
+  border: 2px solid #FFF9C4;
+}
+#current-violation_ .is-violation-confirmed.yes {
+  background: #E8F5E9;
+  border: 2px solid #C8E6C9;
+}
+#current-violation_ .is-violation-confirmed input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+}
+/* Смартфоны */
+@media screen and (min-width: 320px) and (max-width: 800px) {
+  #current-violation_ {
+    width: 100% !important;
+  }
+  #violation-info {
+    float: left;
+    width: 100% !important;
+  }
+  #violation-documents {
+    width: 100% !important;
+    margin-top: 10px !important;
+  }
+  #back-to-violations-button {
+    display: none !important;
+  }
+  #save-violation-button {
+    display: none !important;
+  }
+  #violation-upload-button {
+    display: none !important;
+  }
+}
+/* Планшеты */
+@media screen and (min-width: 800px) and (max-width: 1400px) {
+  #current-violation_ {
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+  #violation-info {
+    float: left;
+    width: 65% !important;
+  }
+  #violation-documents {
+    float: left !important;
+    width: 34% !important;
+  }
+  #save-violation-button {
+    display: none !important;
+  }
+  #violation-upload-button {
+    display: none !important;
+  }
+}

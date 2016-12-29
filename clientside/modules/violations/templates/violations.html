@@ -3,7 +3,7 @@
     <div id="divisions" class="block" ng-show="violations.showDivisions() === true">
         <div class="header">
             Структурные подразделения
-            <button class="collapse right" ng-click="hideDivisions()">
+            <button id="show-divisions-button" class="collapse right" ng-click="hideDivisions()" ng-show="violations.showDivisions() === true">
                 <span class="fa fa-angle-left"></span><span ng-show="violations.showDivisions() === true">&nbsp;</span>
             </button>
         </div>
@@ -308,6 +308,7 @@
                 </td>
                 <td class="width-20 text-left">
                     <span ng-show="violation.attachments.length > 0">
+                        <span class="new-attachments-count"></span>
                         {{ violation.attachments.length }}&nbsp;
                          <span class="new-attachment-mark" ng-show="violation.newAttachments > 0">
                              новых: {{ violation.newAttachments }}

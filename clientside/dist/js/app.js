@@ -1483,6 +1483,13 @@ angular
     }]);
 
 angular.module("violations")
+    .filter("shortDay", ["$log", function ($log) {
+        return function (input) {
+            return moment.unix(input).format("DD.MM.YY");
+        }
+    }]);
+
+angular.module("violations")
     .filter("time", ["$log", function ($log) {
         return function (input) {
             return moment.unix(input).format("HH:mm");
@@ -2007,7 +2014,7 @@ angular.module("violations")
             var totalViolations = 0;
             var totalAttachments = 0;
             var isLoading = false;
-            var showDivisions = true;
+            var showDivisions = false;
             var isMobileMenuOpened = false;
 
             var filters = [

@@ -1,1 +1,58 @@
-(node:2980) fs: re-evaluating native module sources is not supported. If you are using the graceful-fs module, please update it to a more recent version.
+html,
+body {
+  overflow: hidden;
+  margin: 0px;
+  padding: 0px;
+  font-family: "PT Sans";
+}
+#auth-bg {
+  position: absolute;
+  z-index: 1;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: url("../images/bg.jpg");
+  background-size: cover;
+  filter: blur(5px);
+}
+#auth-container {
+  position: absolute;
+  overflow: visible;
+  z-index: 5;
+  width: 350px;
+  background: white;
+  border-radius: 2px;
+  box-shadow: 0px 3px 5px 0 rgba(174, 174, 174, 0.5);
+}
+#auth-container .form-caption {
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 16px;
+  color: gray;
+}
+#auth-container .auth-header {
+  overflow: visible;
+  text-align: center;
+}
+#auth-container .auth-header .fa {
+  width: 80px;
+  height: 80px;
+  margin-top: -40px;
+  font-size: 50px;
+  text-align: center;
+  line-height: 80px;
+  color: white;
+  background: #009688;
+  border-radius: 50%;
+}
+#auth-container .error {
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-size: 15px;
+  color: #D50000;
+  background: #FFCDD2;
+}

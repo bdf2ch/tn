@@ -1,0 +1,230 @@
+<!-- BEGIN: main -->
+<!DOCTYPE html>
+<html lang="en" ng-app="application">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Title</title>
+    <link rel="stylesheet" href="/clientside/resources/styles/application-responsive.css">
+    <link rel="stylesheet" href="/clientside/resources/styles/violations-responsive.css">
+    <link rel="stylesheet" href="/clientside/resources/styles/violation-responsive.css">
+    <link rel="stylesheet" href="/clientside/resources/styles/new-violation-responsive.css">
+    <link rel="stylesheet" href="/clientside/resources/styles/utils.css">
+    <link rel="stylesheet" href="/clientside/resources/styles/ui.css">
+    <link type="text/css" rel="stylesheet" href="/clientside/resources/fonts/Font%20Awesome/css/font-awesome.min.css">
+</head>
+<body>
+    <script>
+        var initialData = {INITIAL_DATA};
+    </script>
+    <script src="/clientside/libs/angularjs/angular.min.js"></script>
+
+    <div id="app-header" ng-controller="HeaderController" ng-cloak>
+        <div id="menu-button" ng-click="openMobileMenu()">
+            <span class="fa fa-bars"></span>
+        </div>
+
+        <span class="caption">Технологические нарушения</span>
+
+        <div class="menu-item" ng-class="{ active: navigation.getById('violations').isActive === true }">
+            <a href="#/">
+                <span class="fa fa-bolt"></span>&nbsp; Нарушения
+            </a>
+        </div>
+
+        <div class="menu-item" ng-class="{ active: navigation.getById('help').isActive === true }">
+            <a href="#/help">
+                <span class="fa fa-question"></span>&nbsp; Помощь
+            </a>
+        </div>
+
+        <div class="menu-item"
+             ng-cloak
+             ng-class="{ active: navigation.getById('tools').isActive === true }"
+             ng-show="session.getCurrentUser().isAdministrator.value === true">
+            <div>
+                <a href>
+                    <span class="fa fa-building"></span>&nbsp; Инструменты &nbsp;
+                    <span class="fa fa-caret-down"></span>
+                </a>
+            </div>
+            <div class="container">
+                <div class="menu-item" ng-class="{ active: navigation.getById('divisions').isActive === true }">
+                    <a href="#/divisions">
+                        <span class="fa fa-building"></span>&nbsp; Стр. подразделения
+                    </a>
+                </div>
+                <div class="menu-item" ng-class="{ active: navigation.getById('users').isActive === true }">
+                    <a href="#/users">
+                        <span class="fa fa-user"></span>&nbsp; Пользователи
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a ng-href="#"
+                       ng-class="{ active: menu.isActive === true }"
+                       ng-click="openSettingsModal()">
+                        <span class="fa fa-gears"></span>&nbsp; Настройки
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-item right" ng-cloak>
+            <div>
+                <a href>
+                    <span class="fa fa-user"></span>&nbsp;
+                    {{ session.getCurrentUser().name.value + " " + session.getCurrentUser().surname.value }}&nbsp;
+                    <span class="fa fa-caret-down"></span>
+                </a>
+            </div>
+            <div class="container">
+                <div class="menu-item">
+                    <a href ng-click="logout()">
+                        <span class="fa fa-sign-out"></span>&nbsp;Выход
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="app-mobile-menu" ng-controller="HeaderController" ng-class="{ opened: violations.mobileMenu() === true }">
+        <div class="user">
+            {{ session.getCurrentUser().name.value + " " + session.getCurrentUser().surname.value }}
+        </div>
+
+        <div class="menu-item" ng-class="{ active: navigation.getById('violations').isActive === true }">
+            <a href="#/">
+                <span class="fa fa-bolt"></span>&nbsp; Нарушения
+            </a>
+        </div>
+        <div class="menu-item" ng-class="{ active: navigation.getById('divisions').isActive === true }" ng-show="session.getCurrentUser().isAdministrator.value === true">
+            <a href="#/divisions">
+                <span class="fa fa-building"></span>&nbsp; Стр. подразделения
+            </a>
+        </div>
+        <div class="menu-item" ng-class="{ active: navigation.getById('users').isActive === true }" ng-show="session.getCurrentUser().isAdministrator.value === true">
+            <a href="#/users">
+                <span class="fa fa-user"></span>&nbsp; Пользователи
+            </a>
+        </div>
+        <div class="menu-item" ng-show="session.getCurrentUser().isAdministrator.value === true">
+            <a ng-href="#"
+               ng-class="{ active: menu.isActive === true }"
+               ng-click="openSettingsModal()">
+                <span class="fa fa-gears"></span>&nbsp; Настройки
+            </a>
+        </div>
+        <div class="menu-item" ng-class="{ active: navigation.getById('help').isActive === true }">
+            <a href="#/help">
+                <span class="fa fa-question"></span>&nbsp; Помощь
+            </a>
+        </div>
+    </div>
+
+
+    <div id="app-content" ng-view></div>
+
+    <div ng-controller="HeaderController" ui-modal modal-id="settings-modal" modal-caption="Настройки" modal-width="450" modal-on-close="" ng-cloak>
+        <div class="row modal-block-separator margin-top-10">
+            Начало периода учета новых ТН и документов
+        </div>
+        <div class="row padding-10 margin-bottom-10">
+            <div class="width-60">
+                <label for="control-period-start-weekday" class="width-100">
+                    День недели
+                    <span class="right form-error" ng-show="errors.fullTitle !== undefined">{{ errors.fullTitle }}</span>
+                </label>
+                <select class="width-100"
+                        name="control_period_start_weekday"
+                        id="control-period-start-weekday"
+                        ng-options="weekday.id as weekday.title for weekday in misc.weekdays.getAll()"
+                        ng-model="settings.getByCode('control-period-start-weekday').value.value"
+                        ng-change="settings.changed(true)">
+                </select>
+            </div>
+
+            <div class="width-40">
+                <label for="control-period-start-hours" class="width-90 right">Время</label>
+                <div class="width-90 right">
+                    <input type="number"
+                           name="start_hours"
+                           id="control-period-start-hours"
+                           min="0"
+                           max="23"
+                           class="width-45 text-center"
+                           ng-model="settings.getByCode('control-period-start-hours').value.value"
+                           ng-change="settings.changed(true)">
+                    <span class="width-10 text-center time-separator">:</span>
+                    <input type="number"
+                           name="time_minutes"
+                           id="control-period-start-minutes"
+                           min="0"
+                           max="59"
+                           class="width-45 text-center"
+                           ng-model="settings.getByCode('control-period-start-minutes').value.value"
+                           ng-change="settings.changed(true)">
+                </div>
+            </div>
+        </div>
+
+        <div class="row modal-block-separator">
+            Окончание периода учета новых ТН и документов
+        </div>
+        <div class="row padding-10">
+            <div class="width-60">
+                <label for="control-period-end-weekday" class="width-100">
+                    День недели
+                </label>
+                <select class="width-100"
+                        name="econtrol_period_end_weekday"
+                        id="control-period-end-weekday"
+                        ng-options="weekday.id as weekday.title for weekday in misc.weekdays.getAll()"
+                        ng-model="settings.getByCode('control-period-end-weekday').value.value"
+                        ng-change="settings.changed(true)">
+                </select>
+            </div>
+
+            <div class="width-40">
+                <label for="control-period-end-hours" class="width-90 right">Время</label>
+                <div class="width-90 right">
+                    <input type="number"
+                           name="start_hours"
+                           id="control-period-end-hours"
+                           min="0"
+                           max="23"
+                           class="width-45 text-center"
+                           ng-model="settings.getByCode('control-period-end-hours').value.value"
+                           ng-change="settings.changed(true)">
+                    <span class="width-10 text-center time-separator">:</span>
+                    <input type="number"
+                           name="time_minutes"
+                           id="control-period-end-minutes"
+                           min="0"
+                           max="59"
+                           class="width-45 text-center"
+                           ng-model="settings.getByCode('control-period-end-minutes').value.value"
+                           ng-change="settings.changed(true)">
+                </div>
+            </div>
+        </div>
+        <div class="row padding-10">
+            <button class="green width-50" ng-disabled="settings.changed() === false" ng-click="saveSettings()">
+                Сохранить
+            </button>
+            <button class="red width-50" ng-click="closeSettingsModal()">
+                Закрыть
+            </button>
+        </div>
+    </div>
+
+
+
+    <script src="/clientside/libs/angularjs/angular-route.min.js"></script>
+    <script src="/clientside/libs/angularjs/angular-cookies.min.js"></script>
+    <script src="/clientside/libs/angularjs/angular-animate.min.js"></script>
+    <script src="/clientside/libs/momentjs/moment-with-locales.min.js"></script>
+    <script src="/clientside/dist/js/source.min.js"></script>
+</body>
+</html>
+<!-- END: main -->
