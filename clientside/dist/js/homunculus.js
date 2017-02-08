@@ -801,6 +801,7 @@ angular
                     for (var i = 0; i < length; i++) {
                         var user = $factory({ classes: ["AppUser", "Model", "Backup", "States"], base_class: "AppUser" });
                         user._model_.fromJSON(source[i]);
+                        user.fio = user.surname.value + " " + user.name.value + " " + user.fname.value;
                         user._backup_.setup();
                         users.push(user);
                     }

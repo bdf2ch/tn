@@ -7,6 +7,8 @@ angular
         $scope.today = new moment().hours(23).minutes(59).seconds(59).unix();
 
 
+        if ($violations.mobileMenu() === true)
+            $violations.mobileMenu(false);
 
         $scope.selectStartDate = function (value) {
             $dateTimePicker.getById("violations-end-date").scope.settings.minDate = $violations.filter.getByCode("violation-date").startValue.value;

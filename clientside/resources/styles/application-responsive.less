@@ -34,55 +34,89 @@ html, body {
 @app-mobile-menu-width: 200px;
 @app-mobile-menu-background-color: #00695C;
 @app-mobile-menu-item-height: 20px;
-#app-mobile-menu {
-  z-index: 6;
-  display: none;
+
+#app-mobile-menu-container {
+  overflow: hidden;
+  display: block;
   position: fixed;
-  top: @app-header-mobile-height;
   left: @app-mobile-menu-width * -1;
+  top: @app-header-mobile-height;
   bottom: 0px;
   width: @app-mobile-menu-width;
-  background: @app-mobile-menu-background-color;
-  transition: left 0.2s linear;
+  z-index: 7;
+  background: transparent;
+  transition: background 200ms 300ms linear;
+  transition: left 300ms linear;
 
   &.opened {
     left: 0px;
+    right: 0px;
+    width: auto;
+    //background: rgba(0, 0, 0, 0.6);
   }
 
-  .user {
-    height: 100px;
-    margin-bottom: 30px;
-    font-size: 20px;
-    text-align: center;
-    line-height: 100px;
-    font-family: "PT Sans Bold";
-    color: white;
-    background: rgba(0, 0, 0, 0.2);
-  }
 
-  .menu-item {
-    display: block;
-    height: @app-mobile-menu-item-height;
-    padding-left: 10px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    border-left: 3px solid transparent;
 
-    &:hover {
-      background: #00796B;
-    }
+  #app-mobile-menu {
+    z-index: 9;
+    //display: none;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    width: @app-mobile-menu-width;
+    background: @app-mobile-menu-background-color;
+    transition: left 0.2s linear;
 
-    &.active {
-      background: #004D40;
-      border-left: 3px solid #90CAF9;
-    }
+    //&.opened {
+    //  left: 0px;
+    //}
 
-    a {
-      text-decoration: none;
+    .user {
+      height: 100px;
+      margin-bottom: 30px;
+      font-size: 20px;
+      text-align: center;
+      line-height: 100px;
+      font-family: "PT Sans Bold";
       color: white;
+      background: rgba(0, 0, 0, 0.2);
     }
+
+    .menu-item {
+      display: block;
+      height: @app-mobile-menu-item-height;
+      padding-left: 10px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+      border-left: 3px solid transparent;
+
+      &:hover {
+        background: #00796B;
+      }
+
+      &.active {
+        background: #004D40;
+        border-left: 3px solid #90CAF9;
+      }
+
+      a {
+        text-decoration: none;
+        color: white;
+      }
+    }
+  }
+
+  .empty-space {
+    position: absolute;
+    left: @app-mobile-menu-width;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    background: rgba(0, 0, 0, 0.5);
   }
 }
+
 
 
 
@@ -101,7 +135,7 @@ html, body {
   padding-right: 10px;
   background: @app-header-background-color;
 
-  #menu-button {
+  .menu-button {
     display: none;
     float: left;
     width: @app-header-mobile-height;
@@ -447,12 +481,69 @@ html, body {
 }
 
 
+
+#users {
+  //float: left;
+  display: block;
+  margin-right: 310px;
+  .filter-label {
+    vertical-align: middle !important;
+  }
+}
+
+#users-filter {
+  display: block;
+  float: right;
+  width: 300px;
+}
+
+
+.filter-label {
+  //float: left;
+  display: inline-block;
+  //clear: left;
+  height: 17px;
+  margin-bottom: 2px;
+  padding-right: 5px;
+  padding-left: 5px;
+  line-height: 17px;
+  font-size: 11px;
+  vertical-align: top;
+  background: #FFE0B2;
+
+  .fa {
+    cursor: pointer;
+    color: #F57C00;
+    &:hover {
+      color: #E65100;
+    }
+  }
+}
+
+
+
+#help {
+  margin-right: 410px;
+}
+
+#help-navigation {
+  float: right;
+  width: 400px;
+
+  ol {
+    li {
+      padding-bottom: 8px;
+      line-height: 15px;
+    }
+  }
+}
+
 /* Смартфоны */
 @media screen and (min-width:320px) and (max-width:800px) {
   #app-header {
     height: @app-header-mobile-height;
 
-    #menu-button {
+    .menu-button {
       display: block;
     }
 
@@ -467,9 +558,13 @@ html, body {
     }
   }
 
-  #app-mobile-menu {
-    display: block;
+
+  #app-mobile-menu-container {
+    #app-mobile-menu {
+      display: block;
+    }
   }
+
 
   #app-content {
     margin-top: @app-header-mobile-height;
@@ -491,7 +586,7 @@ html, body {
   #app-header {
     height: @app-header-mobile-height;
 
-    #menu-button {
+    .menu-button {
       display: block;
     }
 

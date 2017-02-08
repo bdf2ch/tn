@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Title</title>
+    <title>Технологические нарушения</title>
     <link rel="stylesheet" href="/clientside/resources/styles/application-responsive.css">
     <link rel="stylesheet" href="/clientside/resources/styles/violations-responsive.css">
     <link rel="stylesheet" href="/clientside/resources/styles/violation-responsive.css">
@@ -12,16 +12,30 @@
     <link rel="stylesheet" href="/clientside/resources/styles/utils.css">
     <link rel="stylesheet" href="/clientside/resources/styles/ui.css">
     <link type="text/css" rel="stylesheet" href="/clientside/resources/fonts/Font%20Awesome/css/font-awesome.min.css">
+    <link rel="shortcut icon" href="/clientside/resources/images/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/png" href="/clientside/resources/images/site_ico_16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="/clientside/resources/images/MRSK_logo_32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/clientside/resources/images/MRSK_logo_72x72.png" sizes="72x72">
+    <link rel="icon" type="image/png" href="/clientside/resources/images/MRSK_logo_114x114.png" sizes="114x114">
+    <link rel="apple-touch-icon" href="/clientside/resources/images/MRSK_logo_32x32.png" sizes="32x32">
+    <link rel="apple-touch-icon" href="/clientside/resources/images/MRSK_logo_72x72.png" sizes="72x72">
+    <link rel="apple-touch-icon" href="/clientside/resources/images/MRSK_logo_114x114.png" sizes="114x114">
+    <script src="/clientside/libs/angularjs/angular.min.js"></script>
 </head>
 <body>
     <script>
         var initialData = {INITIAL_DATA};
     </script>
-    <script src="/clientside/libs/angularjs/angular.min.js"></script>
+
+
 
     <div id="app-header" ng-controller="HeaderController" ng-cloak>
-        <div id="menu-button" ng-click="openMobileMenu()">
+        <div class="menu-button" ng-show="violations.mobileMenu() === false" ng-click="openMobileMenu()">
             <span class="fa fa-bars"></span>
+        </div>
+
+        <div class="menu-button" ng-show="violations.mobileMenu() === true" ng-click="closeMobileMenu()">
+            <span class="fa fa-times"></span>
         </div>
 
         <span class="caption">Технологические нарушения</span>
@@ -88,42 +102,47 @@
     </div>
 
 
-    <div id="app-mobile-menu" ng-controller="HeaderController" ng-class="{ opened: violations.mobileMenu() === true }">
-        <div class="user">
-            {{ session.getCurrentUser().name.value + " " + session.getCurrentUser().surname.value }}
-        </div>
+    <div id="app-mobile-menu-container" ng-controller="HeaderController" ng-class="{ 'opened': violations.mobileMenu() === true }" ng-swipe-left="closeMobileMenu()">
+        <div id="app-mobile-menu">
+            <div class="user">
+                {{ session.getCurrentUser().name.value + " " + session.getCurrentUser().surname.value }}
+            </div>
 
-        <div class="menu-item" ng-class="{ active: navigation.getById('violations').isActive === true }">
-            <a href="#/">
-                <span class="fa fa-bolt"></span>&nbsp; Нарушения
-            </a>
+            <div class="menu-item" ng-class="{ active: navigation.getById('violations').isActive === true }">
+                <a href="#/">
+                    <span class="fa fa-bolt"></span>&nbsp; Нарушения
+                </a>
+            </div>
+            <div class="menu-item" ng-class="{ active: navigation.getById('divisions').isActive === true }" ng-show="session.getCurrentUser().isAdministrator.value === true">
+                <a href="#/divisions">
+                    <span class="fa fa-building"></span>&nbsp; Стр. подразделения
+                </a>
+            </div>
+            <div class="menu-item" ng-class="{ active: navigation.getById('users').isActive === true }" ng-show="session.getCurrentUser().isAdministrator.value === true">
+                <a href="#/users">
+                    <span class="fa fa-user"></span>&nbsp; Пользователи
+                </a>
+            </div>
+            <div class="menu-item" ng-show="session.getCurrentUser().isAdministrator.value === true">
+                <a ng-href="#"
+                   ng-class="{ active: menu.isActive === true }"
+                   ng-click="openSettingsModal()">
+                    <span class="fa fa-gears"></span>&nbsp; Настройки
+                </a>
+            </div>
+            <div class="menu-item" ng-class="{ active: navigation.getById('help').isActive === true }">
+                <a href="#/help">
+                    <span class="fa fa-question"></span>&nbsp; Помощь
+                </a>
+            </div>
         </div>
-        <div class="menu-item" ng-class="{ active: navigation.getById('divisions').isActive === true }" ng-show="session.getCurrentUser().isAdministrator.value === true">
-            <a href="#/divisions">
-                <span class="fa fa-building"></span>&nbsp; Стр. подразделения
-            </a>
-        </div>
-        <div class="menu-item" ng-class="{ active: navigation.getById('users').isActive === true }" ng-show="session.getCurrentUser().isAdministrator.value === true">
-            <a href="#/users">
-                <span class="fa fa-user"></span>&nbsp; Пользователи
-            </a>
-        </div>
-        <div class="menu-item" ng-show="session.getCurrentUser().isAdministrator.value === true">
-            <a ng-href="#"
-               ng-class="{ active: menu.isActive === true }"
-               ng-click="openSettingsModal()">
-                <span class="fa fa-gears"></span>&nbsp; Настройки
-            </a>
-        </div>
-        <div class="menu-item" ng-class="{ active: navigation.getById('help').isActive === true }">
-            <a href="#/help">
-                <span class="fa fa-question"></span>&nbsp; Помощь
-            </a>
-        </div>
+        <div class="empty-space" ng-click="closeMobileMenu()"></div>.
     </div>
 
 
-    <div id="app-content" ng-view></div>
+    <div id="app-content">
+        <div ng-view ng-swipe-left=""></div>
+    </div>
 
     <div ng-controller="HeaderController" ui-modal modal-id="settings-modal" modal-caption="Настройки" modal-width="450" modal-on-close="" ng-cloak>
         <div class="row modal-block-separator margin-top-10">
@@ -219,10 +238,11 @@
     </div>
 
 
-
     <script src="/clientside/libs/angularjs/angular-route.min.js"></script>
     <script src="/clientside/libs/angularjs/angular-cookies.min.js"></script>
     <script src="/clientside/libs/angularjs/angular-animate.min.js"></script>
+    <script src="/clientside/libs/angularjs/angular-touch.min.js"></script>
+
     <script src="/clientside/libs/momentjs/moment-with-locales.min.js"></script>
     <script src="/clientside/dist/js/source.min.js"></script>
 </body>

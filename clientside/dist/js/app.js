@@ -93,81 +93,6 @@ angular.module("violations", [])
                 isVisible: true
             });
     }]);
-$classesInjector
-    .add("Attachment", {
-        _dependencies__: [],
-        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        violationId: new Field({ source: "VIOLATION_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        title: new Field({ source: "TITLE", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
-        type: new Field({ source: "MIME_TYPE", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
-        size: new Field({ source: "SIZE", type: DATA_TYPE_INTEGER, default_value: 0, value: 0, backupable: true, displayable: true }),
-        url: new Field({ source: "URL", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
-        added: new Field({ source: "DATE_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        isInAddMode: false
-    });
-
-$classesInjector
-    .add("Division", {
-        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        parentId: new Field({ source: "PARENT_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, bacupable: true }),
-        sortId: new Field({ source: "SORT_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        shortTitle: new Field({ source: "TITLE_SHORT", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
-        fullTitle: new Field({ source: "TITLE_FULL", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
-        violationsAdded: new Field({ source: "VIOLATIONS_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        attachmentsAdded: new Field({ source: "ATTACHMENTS_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        storage: new Field({ source: "FILE_STORAGE_HOST", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
-        isDepartment: new Field({ source: "IS_DEPARTMENT", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
-        path: new Field({ source: "PATH", type: DATA_TYPE_STRING, value: "", default_value: "" })
-    });
-
-$classesInjector
-    .add("ESKGroup", {
-        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        title: new Field({ source: "TITLE", type: DATA_TYPE_STRING, value: "", default_value: "" }),
-        description: new Field({ source: "DESCRIPTION", type: DATA_TYPE_STRING, value: "", default_value: "" })
-    });
-$classesInjector
-    .add("Violation", {
-        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        userId: new Field({ source: "USER_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        divisionId: new Field({ source: "DIVISION_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
-        eskGroupId: new Field({ source: "ESK_GROUP_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
-        eskObject: new Field({ source: "ESK_OBJECT", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
-        happened: new Field({ source: "DATE_HAPPENED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        ended: new Field({ source: "DATE_ENDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
-        added: new Field({ source: "DATE_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        description: new Field({ source: "DESCRIPTION", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
-        isConfirmed: new Field({ source: "IS_CONFIRMED", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
-        user: 0,
-        attachments: [],
-        isNew: false,
-        newAttachments: 0
-    });
-$classesInjector
-    .add("ViolationFilter", {
-        code: new Field({ source: "", type: DATA_TYPE_STRING, value: "", default_value: "" }),
-        title: new Field({ source: "", type: DATA_TYPE_STRING, value: "", default_value: "" }),
-        startValue: new Field({ source: "", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
-        endValue: new Field({ source: "", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
-        isEnabled: false,
-        isActive: false,
-
-        resetStartValue: function () {
-            this.startValue.value = this.startValue.default_value;
-        },
-
-        resetEndValue: function () {
-            this.endValue.value = this.endValue.default_value;
-        }
-    });
-
-$classesInjector
-    .add("Weekday", {
-        id: 0,
-        title: "",
-        code: ""
-    });
-
 angular
     .module("violations")
     .controller("DivisionsController", ["$log", "$scope", "$divisions", "$violations", "$tree", "$modals", function ($log, $scope, $divisions, $violations, $tree, $modals) {
@@ -178,6 +103,10 @@ angular
             fullTitle: undefined,
             shortTitle: undefined
         };
+
+
+        if ($violations.mobileMenu() === true)
+            $violations.mobileMenu(false);
 
 
         $scope.openNewDivisionModal = function () {
@@ -299,7 +228,19 @@ angular
 
 
         $scope.openMobileMenu = function () {
-            $violations.mobileMenu(!$violations.mobileMenu());
+            $violations.mobileMenu(true);
+            $log.log("menu opened = ", $violations.mobileMenu());
+        };
+
+        $scope.closeMobileMenu = function () {
+            if ($violations.mobileMenu() === true)
+                $violations.mobileMenu(false);
+        };
+
+        $scope.swipeLeft = function () {
+            $log.log("swipe left");
+            $violations.mobileMenu(false);
+
         };
 
         $scope.openSettingsModal = function () {
@@ -336,8 +277,11 @@ angular
     }]);
 angular
     .module("violations")
-    .controller("HelpController", ["$scope", "$session", function ($scope, $session) {
+    .controller("HelpController", ["$scope", "$session", "$violations", function ($scope, $session, $violations) {
         $scope.session = $session;
+
+        if ($violations.mobileMenu() === true)
+            $violations.mobileMenu(false);
     }]);
 
 angular
@@ -838,10 +782,51 @@ angular
     }]);
 angular
     .module("violations")
-    .controller("UsersController", ["$log", "$scope", "$location", "$users", "$violations", "$divisions", function ($log, $scope, $location, $users, $violations, $divisions) {
+    .controller("UsersController", ["$log", "$scope", "$location", "$users", "$violations", "$divisions", "$modals", "$tree", function ($log, $scope, $location, $users, $violations, $divisions, $modals, $tree) {
         $scope.users = $users;
         $scope.violations = $violations;
         $scope.divisions = $divisions;
+        $scope.modals = $modals;
+        $scope.filters = {
+            divisionId: 0,
+            name: ""
+        };
+
+        if ($violations.mobileMenu() === true)
+            $violations.mobileMenu(false);
+
+
+        if (!$tree.getById("users-filter-tree")) {
+            var usersFilterTree = $tree.register({
+                id: "users-filter-tree",
+                rootKey: 0,
+                expandOnSelect: true,
+                collapseOnDeselect: true
+            });
+
+            usersFilterTree.onSelect = function (item) {
+                //$log.log("selected division = ", item);
+                $scope.filters.divisionId = item.key;
+                $modals.close();
+            };
+
+
+            var length = $divisions.getAll().length;
+            for (var i = 0; i < length; i++) {
+                var division = $divisions.getAll()[i];
+                var item = $tree.addItem({
+                    treeId: "users-filter-tree",
+                    key: division.id.value,
+                    parentKey: division.parentId.value,
+                    display: division.shortTitle.value,
+                    order: division.sortId.value
+                });
+                if (division.id.value === 1) {
+                    item.isExpanded = true;
+                }
+            }
+        }
+
 
 
         $scope.gotoNewUser = function () {
@@ -849,11 +834,25 @@ angular
         };
 
 
+
         $scope.selectUser = function (user) {
             $users.users.select(user.id.value, function () {
                 $location.url("/user/" + user.id.value);
             });
         };
+
+
+
+        $scope.openFilterDivisionModal = function () {
+            $modals.open("users-filter-division-modal");
+        };
+
+
+
+        $scope.cancelDivisionIdFilter = function () {
+            $scope.filters.divisionId = 0;
+        };
+
     }]);
 angular
     .module("violations")
@@ -1038,6 +1037,8 @@ angular
         $scope.today = new moment().hours(23).minutes(59).seconds(59).unix();
 
 
+        if ($violations.mobileMenu() === true)
+            $violations.mobileMenu(false);
 
         $scope.selectStartDate = function (value) {
             $dateTimePicker.getById("violations-end-date").scope.settings.minDate = $violations.filter.getByCode("violation-date").startValue.value;
@@ -1423,6 +1424,24 @@ angular
         }
     }]);
 
+angular
+    .module("violations")
+    .filter("byDivisionId", ["$log", function ($log) {
+        return function (input, divisionId) {
+            if (divisionId !== undefined && divisionId !== 0) {
+                var length = input.length;
+                var result = [];
+
+                for (var i = 0; i < length; i++) {
+                    if (input[i].divisionId.value === divisionId)
+                        result.push(input[i]);
+                }
+                return result;
+            } else
+                return input;
+
+        }
+    }]);
 angular
     .module("violations")
     .filter("byViolationId", ["$log", function ($log) {
@@ -2743,8 +2762,83 @@ angular.module("violations")
 
             return api;
         }]);
+$classesInjector
+    .add("Attachment", {
+        _dependencies__: [],
+        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        violationId: new Field({ source: "VIOLATION_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        title: new Field({ source: "TITLE", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
+        type: new Field({ source: "MIME_TYPE", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
+        size: new Field({ source: "SIZE", type: DATA_TYPE_INTEGER, default_value: 0, value: 0, backupable: true, displayable: true }),
+        url: new Field({ source: "URL", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
+        added: new Field({ source: "DATE_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        isInAddMode: false
+    });
+
+$classesInjector
+    .add("Division", {
+        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        parentId: new Field({ source: "PARENT_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, bacupable: true }),
+        sortId: new Field({ source: "SORT_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        shortTitle: new Field({ source: "TITLE_SHORT", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
+        fullTitle: new Field({ source: "TITLE_FULL", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
+        violationsAdded: new Field({ source: "VIOLATIONS_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        attachmentsAdded: new Field({ source: "ATTACHMENTS_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        storage: new Field({ source: "FILE_STORAGE_HOST", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
+        isDepartment: new Field({ source: "IS_DEPARTMENT", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
+        path: new Field({ source: "PATH", type: DATA_TYPE_STRING, value: "", default_value: "" })
+    });
+
+$classesInjector
+    .add("ESKGroup", {
+        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        title: new Field({ source: "TITLE", type: DATA_TYPE_STRING, value: "", default_value: "" }),
+        description: new Field({ source: "DESCRIPTION", type: DATA_TYPE_STRING, value: "", default_value: "" })
+    });
+$classesInjector
+    .add("Violation", {
+        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        userId: new Field({ source: "USER_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        divisionId: new Field({ source: "DIVISION_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
+        eskGroupId: new Field({ source: "ESK_GROUP_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
+        eskObject: new Field({ source: "ESK_OBJECT", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
+        happened: new Field({ source: "DATE_HAPPENED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        ended: new Field({ source: "DATE_ENDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
+        added: new Field({ source: "DATE_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        description: new Field({ source: "DESCRIPTION", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
+        isConfirmed: new Field({ source: "IS_CONFIRMED", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
+        user: 0,
+        attachments: [],
+        isNew: false,
+        newAttachments: 0
+    });
+$classesInjector
+    .add("ViolationFilter", {
+        code: new Field({ source: "", type: DATA_TYPE_STRING, value: "", default_value: "" }),
+        title: new Field({ source: "", type: DATA_TYPE_STRING, value: "", default_value: "" }),
+        startValue: new Field({ source: "", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
+        endValue: new Field({ source: "", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
+        isEnabled: false,
+        isActive: false,
+
+        resetStartValue: function () {
+            this.startValue.value = this.startValue.default_value;
+        },
+
+        resetEndValue: function () {
+            this.endValue.value = this.endValue.default_value;
+        }
+    });
+
+$classesInjector
+    .add("Weekday", {
+        id: 0,
+        title: "",
+        code: ""
+    });
+
 angular
-    .module("application", ["ngRoute", "ngCookies", "ngAnimate", "violations", "homunculus", "homunculus.ui"])
+    .module("application", ["ngRoute", "ngCookies", "ngAnimate", "ngTouch", "violations", "homunculus", "homunculus.ui"])
     .config(["$routeProvider", "$locationProvider", "$httpProvider", function ($routeProvider, $locationProvider, $httpProvider) {
 
         $httpProvider.defaults.useXDomain = true;

@@ -10,6 +10,10 @@ angular
         };
 
 
+        if ($violations.mobileMenu() === true)
+            $violations.mobileMenu(false);
+
+
         $scope.openNewDivisionModal = function () {
             $modals.open("new-division-modal");
         };

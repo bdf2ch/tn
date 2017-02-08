@@ -21,21 +21,35 @@ body {
   font-family: "PT Sans";
   background: #EEEEEE;
 }
-#app-mobile-menu {
-  z-index: 6;
-  display: none;
+#app-mobile-menu-container {
+  overflow: hidden;
+  display: block;
   position: fixed;
-  top: 50px;
   left: -200px;
+  top: 50px;
+  bottom: 0px;
+  width: 200px;
+  z-index: 7;
+  background: transparent;
+  transition: background 200ms 300ms linear;
+  transition: left 300ms linear;
+}
+#app-mobile-menu-container.opened {
+  left: 0px;
+  right: 0px;
+  width: auto;
+}
+#app-mobile-menu-container #app-mobile-menu {
+  z-index: 9;
+  position: absolute;
+  top: 0px;
+  left: 0px;
   bottom: 0px;
   width: 200px;
   background: #00695C;
   transition: left 0.2s linear;
 }
-#app-mobile-menu.opened {
-  left: 0px;
-}
-#app-mobile-menu .user {
+#app-mobile-menu-container #app-mobile-menu .user {
   height: 100px;
   margin-bottom: 30px;
   font-size: 20px;
@@ -45,7 +59,7 @@ body {
   color: white;
   background: rgba(0, 0, 0, 0.2);
 }
-#app-mobile-menu .menu-item {
+#app-mobile-menu-container #app-mobile-menu .menu-item {
   display: block;
   height: 20px;
   padding-left: 10px;
@@ -53,16 +67,24 @@ body {
   padding-bottom: 10px;
   border-left: 3px solid transparent;
 }
-#app-mobile-menu .menu-item:hover {
+#app-mobile-menu-container #app-mobile-menu .menu-item:hover {
   background: #00796B;
 }
-#app-mobile-menu .menu-item.active {
+#app-mobile-menu-container #app-mobile-menu .menu-item.active {
   background: #004D40;
   border-left: 3px solid #90CAF9;
 }
-#app-mobile-menu .menu-item a {
+#app-mobile-menu-container #app-mobile-menu .menu-item a {
   text-decoration: none;
   color: white;
+}
+#app-mobile-menu-container .empty-space {
+  position: absolute;
+  left: 200px;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  background: rgba(0, 0, 0, 0.5);
 }
 #app-header {
   z-index: 5;
@@ -75,7 +97,7 @@ body {
   padding-right: 10px;
   background: #006064;
 }
-#app-header #menu-button {
+#app-header .menu-button {
   display: none;
   float: left;
   width: 50px;
@@ -83,7 +105,7 @@ body {
   text-align: center;
   cursor: pointer;
 }
-#app-header #menu-button .fa {
+#app-header .menu-button .fa {
   font-size: 25px;
   line-height: 50px;
   color: white;
@@ -332,12 +354,42 @@ body {
 .form-error {
   color: red;
 }
+#users {
+  display: block;
+  margin-right: 310px;
+}
+#users .filter-label {
+  vertical-align: middle !important;
+}
+#users-filter {
+  display: block;
+  float: right;
+  width: 300px;
+}
+.filter-label {
+  display: inline-block;
+  height: 17px;
+  margin-bottom: 2px;
+  padding-right: 5px;
+  padding-left: 5px;
+  line-height: 17px;
+  font-size: 11px;
+  vertical-align: top;
+  background: #FFE0B2;
+}
+.filter-label .fa {
+  cursor: pointer;
+  color: #F57C00;
+}
+.filter-label .fa:hover {
+  color: #E65100;
+}
 /* Смартфоны */
 @media screen and (min-width: 320px) and (max-width: 800px) {
   #app-header {
     height: 50px;
   }
-  #app-header #menu-button {
+  #app-header .menu-button {
     display: block;
   }
   #app-header .caption {
@@ -348,7 +400,7 @@ body {
   #app-header .menu-item {
     display: none;
   }
-  #app-mobile-menu {
+  #app-mobile-menu-container #app-mobile-menu {
     display: block;
   }
   #app-content {
@@ -367,7 +419,7 @@ body {
   #app-header {
     height: 50px;
   }
-  #app-header #menu-button {
+  #app-header .menu-button {
     display: block;
   }
   #app-header .caption {
@@ -3640,7 +3692,15 @@ a.blue:hover {
   box-sizing: border-box;
 }
 
-(node:9148) fs: re-evaluating native module sources is not supported. If you are using the graceful-fs module, please update it to a more recent version.
+#users {
+  float: left;
+  width: 700px;
+  height: auto;
+}
+#users-filter {
+  float: left;
+  width: 300px;
+}
 
 /**
 *
@@ -4671,24 +4731,6 @@ a.blue:hover {
   text-overflow: ellipsis;
   white-space: nowrap;
   padding-right: 10px;
-}
-#violations .filter-label {
-  display: inline-block;
-  height: 17px;
-  margin-bottom: 2px;
-  padding-right: 5px;
-  padding-left: 5px;
-  line-height: 17px;
-  font-size: 11px;
-  vertical-align: top;
-  background: #FFE0B2;
-}
-#violations .filter-label .fa {
-  cursor: pointer;
-  color: #F57C00;
-}
-#violations .filter-label .fa:hover {
-  color: #E65100;
 }
 #violations #filters {
   position: relative;

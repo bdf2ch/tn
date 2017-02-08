@@ -115,32 +115,9 @@
 #violations .attachment-notification .fa {
   color: #009688;
 }
-#violations .new-violation-mark {
-  height: 18px;
-  padding-right: 5px;
-  padding-left: 5px;
-  font-size: 11px;
-  line-height: 18px;
-  text-align: center;
-  background: #FF9800;
-  color: white;
-}
 #violations .new-attachment-count {
   display: inline-block;
   float: left;
-}
-#violations .new-attachment-mark {
-  display: inline-block;
-  float: left;
-  visibility: visible;
-  height: 18px;
-  padding-right: 5px;
-  padding-left: 5px;
-  font-size: 11px;
-  line-height: 18px;
-  text-align: center;
-  background: #009688;
-  color: white;
 }
 #violations .new-attachment-mark-short {
   display: inline-block;
@@ -184,24 +161,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   padding-right: 10px;
-}
-#violations .filter-label {
-  display: inline-block;
-  height: 17px;
-  margin-bottom: 2px;
-  padding-right: 5px;
-  padding-left: 5px;
-  line-height: 17px;
-  font-size: 11px;
-  vertical-align: top;
-  background: #FFE0B2;
-}
-#violations .filter-label .fa {
-  cursor: pointer;
-  color: #F57C00;
-}
-#violations .filter-label .fa:hover {
-  color: #E65100;
 }
 #violations #filters {
   position: relative;
@@ -269,6 +228,30 @@
   display: inline;
   width: 15px;
   height: 15px;
+}
+.new-violation-mark {
+  display: inline-block;
+  height: 18px;
+  padding-right: 5px;
+  padding-left: 5px;
+  font-size: 11px;
+  line-height: 18px;
+  text-align: center;
+  background: #FF9800;
+  color: white;
+}
+.new-attachment-mark {
+  display: inline-block;
+  visibility: visible;
+  height: 18px;
+  padding-right: 5px;
+  padding-left: 5px;
+  box-sizing: border-box;
+  font-size: 11px;
+  line-height: 18px;
+  text-align: center;
+  background: #009688;
+  color: white;
 }
 /* Смартфоны */
 @media screen and (min-width: 320px) and (max-width: 800px) {

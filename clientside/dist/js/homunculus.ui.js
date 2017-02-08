@@ -356,7 +356,7 @@ angular
                     if (currentModal.onClose !== undefined)
                         currentModal.onClose();
                     var fog = document.getElementsByClassName("krypton-ui-fog");
-                    document.body.style.overflow = "hidden";
+                    document.body.style.overflow = "auto";
                     fog[0].classList.remove("visible");
                     angular.element(modal).css("display", "none");
                     currentModal = undefined;

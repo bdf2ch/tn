@@ -1,5 +1,5 @@
 angular
-    .module("application", ["ngRoute", "ngCookies", "ngAnimate", "violations", "homunculus", "homunculus.ui"])
+    .module("application", ["ngRoute", "ngCookies", "ngAnimate", "ngTouch", "violations", "homunculus", "homunculus.ui"])
     .config(["$routeProvider", "$locationProvider", "$httpProvider", function ($routeProvider, $locationProvider, $httpProvider) {
 
         $httpProvider.defaults.useXDomain = true;

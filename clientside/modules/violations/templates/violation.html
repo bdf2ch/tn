@@ -87,6 +87,18 @@
             </div>
 
             <div class="row padding-10">
+                <label class="width-100" for="current-violation-department">
+                    Филиал
+                </label>
+                <input class="width-100"
+                       type="text"
+                       name="department"
+                       id="current-violation-department"
+                       disabled
+                       ng-model="divisions.getDepartmentByDivisionId(violations.getCurrent().divisionId.value).shortTitle.value">
+            </div>
+
+            <div class="row padding-10">
                 <label class="width-100" for="current-violation-division">
                     Структурное подразделение
                     <span class="right form-error" ng-show="errors.divisionId !== undefined">{{ errors.divisionId }}</span>
@@ -103,7 +115,7 @@
 
             <div class="row padding-10">
                 <label class="width-100" for="current-violation-esk-group">
-                    Група ЭСК
+                    Группа ЭСК
                     <span class="right form-error" ng-show="errors.eskGroupId !== undefined">{{ errors.eskGroupId }}</span>
                 </label>
                 <select class="width-100"
@@ -115,6 +127,7 @@
                         ng-options="group.id.value as group.title.value for group in misc.eskGroups.getAll()">
                 </select>
             </div>
+
 
             <div class="row padding-10">
                 <label class="width-100" for="current-violation-esk-object">

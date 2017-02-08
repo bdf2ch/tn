@@ -10,7 +10,19 @@ angular
 
 
         $scope.openMobileMenu = function () {
-            $violations.mobileMenu(!$violations.mobileMenu());
+            $violations.mobileMenu(true);
+            $log.log("menu opened = ", $violations.mobileMenu());
+        };
+
+        $scope.closeMobileMenu = function () {
+            if ($violations.mobileMenu() === true)
+                $violations.mobileMenu(false);
+        };
+
+        $scope.swipeLeft = function () {
+            $log.log("swipe left");
+            $violations.mobileMenu(false);
+
         };
 
         $scope.openSettingsModal = function () {

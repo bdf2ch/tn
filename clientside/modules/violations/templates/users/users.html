@@ -1,6 +1,39 @@
+<div id="users-filter" class="block">
+    <div class="header">
+        Поиск и фильтр
+    </div>
+    <div class="content">
+        <div class="row padding-10">
+            <label for="users-filter-name">Поиск по имени</label>
+            <input type="text" name="users-filter-name" id="users-filter-name" class="width-100" ng-model="filters.name" placeholder="Введите имя">
+        </div>
+        <div class="row padding-10">
+            <label for="users-filter-division">По структурному подразделению</label>
+            <input type="text"
+                   name="users-filter-division"
+                   id="users-filter-division"
+                   class="width-85"
+                   disabled
+                   ng-model="divisions.getById(filters.divisionId).shortTitle.value">
+            <button class="blue width-15" ng-click="openFilterDivisionModal()">
+                <span class="fa fa-building"></span>
+            </button>
+        </div>
+    </div>
+</div>
+
 <div id="users" class="block">
     <div class="header">
-        Пользователи ({{ users.users.getAll().length }})
+        Пользователи ({{ filtered.length }})
+
+        <span class="filter-label" ng-show="filters.divisionId !== 0">
+            {{ divisions.getById(filters.divisionId).shortTitle.value }}
+            <span class="fa fa-times"
+                  title="Отменить фильтр"
+                  ng-click="cancelDivisionIdFilter()">
+            </span>
+        </span>
+
         <button class="blue right" ng-click="gotoNewUser()">
             <span class="fa fa-user-plus"></span> Добавить пользователя
         </button>
@@ -17,7 +50,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="user in users.users.getAll() | orderBy:'surname.value' track by $id(user)" ng-click="selectUser(user)">
+            <tr ng-repeat="user in filtered = (users.users.getAll() | byDivisionId:filters.divisionId | filter:{fio:filters.name} | orderBy:'surname.value') track by $id(user)" ng-click="selectUser(user)">
                 <td class="width-15 text-center">{{ user.surname.value }}</td>
                 <td class="width-15 text-center">{{ user.name.value }}</td>
                 <td class="width-15 text-center">{{ user.fname.value }}</td>
@@ -31,3 +64,12 @@
         </div>
     </div>
 </div>
+
+
+<div ui-modal modal-id="users-filter-division-modal" modal-caption="Выберите структурное подразделение" modal-width="450" modal-height="450">
+    <div class="row padding-10">
+        <ui-tree id="users-filter-tree" class="stacked" root-key="0" root-key-data-type="DATA_TYPE_INTEGER"></ui-tree>
+    </div>
+</div>
+
+
