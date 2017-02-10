@@ -97,6 +97,18 @@ body {
   padding-right: 10px;
   background: #006064;
 }
+#app-header .app-logo {
+  float: left;
+  overflow: hidden;
+  margin-left: 10px;
+  margin-right: 20px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  box-sizing: border-box;
+}
+#app-header .app-logo img {
+  height: 70px;
+}
 #app-header .menu-button {
   display: none;
   float: left;
@@ -387,13 +399,24 @@ body {
 #help {
   margin-right: 410px;
 }
+#help hr {
+  border-bottom: none;
+  border-top: 1px solid lightgrey;
+}
 #help-navigation {
+  position: fixed;
+  display: block;
+  top: 90px;
+  right: 10px;
   float: right;
   width: 400px;
 }
 #help-navigation ol li {
-  padding-bottom: 8px;
+  padding-bottom: 10px;
   line-height: 15px;
+}
+#help-navigation ol li a {
+  text-decoration: none;
 }
 /* Смартфоны */
 @media screen and (min-width: 320px) and (max-width: 800px) {
@@ -402,6 +425,9 @@ body {
   }
   #app-header .menu-button {
     display: block;
+  }
+  #app-header .app-logo {
+    display: none;
   }
   #app-header .caption {
     font-size: 18px;
@@ -424,6 +450,15 @@ body {
   #filters {
     display: none !important;
   }
+  #help {
+    margin-right: 0px;
+  }
+  #help img.scalable {
+    width: 100%;
+  }
+  #help-navigation {
+    display: none;
+  }
 }
 /* Планшеты */
 @media screen and (min-width: 800px) and (max-width: 1400px) {
@@ -432,6 +467,9 @@ body {
   }
   #app-header .menu-button {
     display: block;
+  }
+  #app-header .app-logo {
+    display: none;
   }
   #app-header .caption {
     font-size: 18px;
@@ -447,5 +485,11 @@ body {
   #app-content {
     margin-top: 50px;
     padding: 10px;
+  }
+  #help {
+    margin-right: 0px;
+  }
+  #help-navigation {
+    display: none;
   }
 }

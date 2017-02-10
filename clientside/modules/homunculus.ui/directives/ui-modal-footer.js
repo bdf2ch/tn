@@ -9,7 +9,7 @@ angular
                 if (attrs.height !== undefined && attrs.height !== "")
                     height = parseInt(attrs.height);
 
-                $log.log("ui modal footer");
+                //$log.log("ui modal footer");
                 ctrl.registerFooter($sce.trustAsHtml(element[0].innerHTML), height);
                 angular.element(element).remove();
             }

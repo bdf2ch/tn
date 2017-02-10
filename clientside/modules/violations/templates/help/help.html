@@ -5,25 +5,25 @@
     <div class="content padding-10">
         <ol>
             <li>
-                <a href="">Авторизация в приложении</a>
+                <a href ng-click="scroll('authorization-chapter')">Авторизация в приложении</a>
             </li>
             <li>
-                <a href="">Обзор технологических нарушений</a>
+                <a href ng-click="scroll('violations-browsing')">Обзор технологических нарушений</a>
             </li>
             <li>
-                <a href="">Просмотр технологических нарушений</a>
+                <a href ng-click="scroll('violation-viewing-chapter')">Просмотр технологических нарушений</a>
             </li>
             <li ng-show="session.getCurrentUser().allowEdit.value === true || session.getCurrentUser().isAdministrator.value === true">
-                <a href="" >Регистрация технологических нарушений</a>
+                <a href ng-click="scroll('violation-registering-chapter')" >Регистрация технологических нарушений</a>
             </li>
             <li ng-show="session.getCurrentUser().isAdministrator.value === true">
-                <a href="">Редактирование технологических нарушений</a>
+                <a href ng-click="scroll('violation-editing-chapter')">Редактирование технологических нарушений</a>
             </li>
             <li ng-show="session.getCurrentUser().isAdministrator.value === true">
-                <a href="">Добавление и редактирование структурных подразделений</a>
+                <a href ng-click="scroll('divisions-chapter')">Добавление и редактирование структурных подразделений</a>
             </li>
             <li ng-show="session.getCurrentUser().isAdministrator.value === true">
-                <a href="">Добавление и редактирование пользователей приложения</a>
+                <a href ng-click="scroll('users-chapter')">Добавление и редактирование пользователей приложения</a>
             </li>
         </ol>
     </div>
@@ -37,7 +37,8 @@
     </div>
     <div class="content">
 
-        <div class="row padding-20">
+        <div id="authorization-chapter" class="row padding-20">
+            <br><br><br>
             <h4>Авторизация в приложении</h4>
             <div class="width-100">
                 <p>
@@ -58,13 +59,15 @@
                 </p>
 
                 <p class="padding-20 text-center">
-                    <img src="/clientside/resources/images/help/auth.jpg" class="width-50 center">
+                    <img src="/clientside/resources/images/help/auth.jpg" class="width-50 center scalable">
                 </p>
             </div>
         </div>
 
 
-        <div class="row padding-20">
+        <div id="violations-browsing" class="row padding-20">
+            <hr>
+            <br><br><br>
             <h4>Обзор технологических нарушений</h4>
             <div class="width-100">
                 <p>
@@ -80,7 +83,7 @@
                     о количестве документов (n), добавленных в период отслеживания новых нарушений.
                 </p>
                 <p class="text-center padding-20">
-                    <img src="/clientside/resources/images/help/browse.png" alt="" class="width-50 center">
+                    <img src="/clientside/resources/images/help/browse.png" alt="" class="width-50 center scalable">
                 </p>
                 <p>
                     Технологические нарушения можно фильтровать по структурному подразделению, в котором оно произошло.
@@ -97,7 +100,7 @@
                     низлежащих структурных подразделений и свои собственные.
                 </p>
                 <p class="padding-20 text-center">
-                    <img src="/clientside/resources/images/help/divisions.png" alt="" class="width-40 center">
+                    <img src="/clientside/resources/images/help/divisions.png" alt="" class="width-40 center scalable">
                 </p>
                 <p>
                     В верхней части блока с технологическими нарушениями находится панель поиска и фильтрации технологических нарушений.
@@ -106,13 +109,15 @@
                     подтвержденности / неподтвержденности уполномоченным лицом и осуществлять поиск по номеру нарушения.
                 </p>
                 <p class="padding-20 text-center">
-                    <img src="/clientside/resources/images/help/filter.png" alt="" class="width-80 center">
+                    <img src="/clientside/resources/images/help/filter.png" alt="" class="width-80 center scalable">
                 </p>
             </div>
         </div>
 
 
-        <div class="row padding-20">
+        <div id="violation-viewing-chapter" class="row padding-20">
+            <hr>
+            <br><br><br>
             <h4>Просмотр технологических нарушений</h4>
             <div class="width-100">
                 <p>
@@ -120,13 +125,15 @@
                     интересующее нарушение, после чего загрузится страница с информацией о нарушении.
                 </p>
                 <p class="padding-20 text-center">
-                    <img src="/clientside/resources/images/help/violation.png" alt="" class="width-50 center">
+                    <img src="/clientside/resources/images/help/violation.png" alt="" class="width-50 center scalable">
                 </p>
             </div>
         </div>
 
 
-        <div class="row padding-20">
+        <div id="violation-registering-chapter" class="row padding-20">
+            <hr>
+            <br><br><br>
             <h4>Регистрация технологических нарушений</h4>
             <div class="width-100">
                 <p>
@@ -153,7 +160,7 @@
                     <img src="/clientside/resources/images/help/savi-violation-button.png" alt="" style="height: 30px">.
                 </p>
                 <p class="padding-20 text-center">
-                    <img src="/clientside/resources/images/help/new-violation.png" alt="" class="width-50 center">
+                    <img src="/clientside/resources/images/help/new-violation.png" alt="" class="width-50 center scalable">
                 </p>
                 <p>
                     К технологическому нарушению можно прикреплять документы. В правой части экрана расположен блок,
@@ -162,13 +169,15 @@
                     После завершения загрузки, информация о загруженном документе отобразится в блоке "Документы"
                 </p>
                 <p class="padding-10 text-center">
-                    <img src="/clientside/resources/images/help/new-violation-attachments.png" alt="" class="width-40 center">
+                    <img src="/clientside/resources/images/help/new-violation-attachments.png" alt="" class="width-40 center scalable">
                 </p>
             </div>
         </div>
 
 
-        <div class="row padding-20" ng-show="session.getCurrentUser().allowEdit.value === true || session.getCurrentUser().isAdministrator.value === true">
+        <div id="violation-editing-chapter" class="row padding-20" ng-show="session.getCurrentUser().allowEdit.value === true || session.getCurrentUser().isAdministrator.value === true">
+            <hr>
+            <br><br><br>
             <h4>Редактирование технологических нарушений</h4>
             <div class="width-100">
                 <p>
@@ -189,13 +198,15 @@
                     <img src="/clientside/resources/images/help/upload-file-button.png" alt="" style="height: 30px">.
                 </p>
                 <p class="padding-20 text-center">
-                    <img src="/clientside/resources/images/help/violation-attachments.png" alt="" class="width-40 center">
+                    <img src="/clientside/resources/images/help/violation-attachments.png" alt="" class="width-40 center scalable">
                 </p>
             </div>
         </div>
 
 
-        <div class="row padding-20" ng-show="session.getCurrentUser().isAdministrator.value === true">
+        <div id="divisions-chapter" class="row padding-20" ng-show="session.getCurrentUser().isAdministrator.value === true">
+            <hr>
+            <br><br><br>
             <h4>Добавление и редактирование структурных подразделений</h4>
             <div class="width-100">
                 <p>
@@ -206,7 +217,7 @@
                     иерархической модели.
                 </p>
                 <p class="padding-20 text-center">
-                    <img src="/clientside/resources/images/help/divisions-section.png" alt="" class="width-50 center">
+                    <img src="/clientside/resources/images/help/divisions-section.png" alt="" class="width-50 center scalable">
                 </p>
                 <p>
                     Для того, чтобы добавить структурное подразделение, следует нажать кнопку &nbsp;
@@ -228,7 +239,7 @@
                     новое структурное подразделение будет добавлено в корень иерархической модели.
                 </p>
                 <p class="padding-20 text-center">
-                    <img src="/clientside/resources/images/help/add-division-modal.png" alt="" class="width-40 center">
+                    <img src="/clientside/resources/images/help/add-division-modal.png" alt="" class="width-40 center scalable">
                 </p>
                 <p>
                     Для того, чтобы изменить структурное подразделение, следует выбрать структурное
@@ -241,13 +252,15 @@
                     <img src="/clientside/resources/images/help/save-division-button.png" alt="" style="height: 30px">,
                 </p>
                 <p class="padding-20 text-center">
-                    <img src="/clientside/resources/images/help/edit-division-modal.png" alt="" class="width-40 center">
+                    <img src="/clientside/resources/images/help/edit-division-modal.png" alt="" class="width-40 center scalable">
                 </p>
             </div>
         </div>
 
 
-        <div class="row padding-20" ng-show="session.getCurrentUser().isAdministrator.value === true">
+        <div id="users-chapter" class="row padding-20" ng-show="session.getCurrentUser().isAdministrator.value === true">
+            <hr>
+            <br><br><br>
             <h4>Добавление и редактирование пользователей приложения</h4>
             <div class="width-100">
                 <p>
@@ -256,14 +269,14 @@
                     пользователей приложения.
                 </p>
                 <p class="padding-20 text-center">
-                    <img src="/clientside/resources/images/help/users.png" alt="" class="width-50 center">
+                    <img src="/clientside/resources/images/help/users.png" alt="" class="width-50 center scalable">
                 </p>
                 <p>
                     В правой части страницы расположен блок "Поиск и фльтр". Пользователей можно отфильтровать по структурному подразделению,
                     либо воспользоваться поиском по имени.
                 </p>
                 <p class="padding-20 text-center">
-                    <img src="/clientside/resources/images/help/users-filter.png" alt="" class="width-30 center">
+                    <img src="/clientside/resources/images/help/users-filter.png" alt="" class="width-30 center scalable">
                 </p>
                 <p>
                     Для того, чтобы добавить пользователя, следует нажать кнопку &nbsp;
@@ -283,7 +296,7 @@
                     </ul>
                 </p>
                 <p class="padding-20 text-center">
-                    <img src="/clientside/resources/images/help/add-user-section.png" alt="" class="width-40 center">
+                    <img src="/clientside/resources/images/help/add-user-section.png" alt="" class="width-40 center scalable">
                 </p>
                 <p>
                     В правой части экрана расположен блок "Права пользователя", в котором отображены права доступа к
@@ -298,7 +311,7 @@
                     </ul>
                 </p>
                 <p class="padding-20 text-center">
-                    <img src="/clientside/resources/images/help/permissions.png" alt="" class="width-40 center">
+                    <img src="/clientside/resources/images/help/permissions.png" alt="" class="width-40 center scalable">
                 </p>
                 <p>
                     Для того, чтобы изменить данные пользователя, следует нажать на интерсующего пользователя, после чего
@@ -309,7 +322,7 @@
                     <img src="/clientside/resources/images/help/save-user-button.png" alt="" style="height: 30px">.
                 </p>
                 <p class="padding-20 text-center">
-                    <img src="/clientside/resources/images/help/edit-user-section.png" alt="" class="width-50 center">
+                    <img src="/clientside/resources/images/help/edit-user-section.png" alt="" class="width-50 center scalable">
                 </p>
             </div>
         </div>
@@ -317,7 +330,7 @@
 
 
 
-
+        <!--
         <div class="row padding-20">
             <h4>Авторизация в приложении</h4>
             <div class="width-60">
@@ -636,6 +649,7 @@
                 </div>
             </div>
         </div>
+        -->
 
     </div>
 </div>

@@ -135,6 +135,20 @@ html, body {
   padding-right: 10px;
   background: @app-header-background-color;
 
+  .app-logo {
+    float: left;
+    overflow: hidden;
+    margin-left: 10px;
+    margin-right: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    box-sizing: border-box;
+
+    img {
+      height: @app-header-height - 10;
+    }
+  }
+
   .menu-button {
     display: none;
     float: left;
@@ -524,16 +538,31 @@ html, body {
 
 #help {
   margin-right: 410px;
+
+  hr {
+    //border-width: 1px;
+    //border-color: lightgrey;
+    border-bottom: none;
+    border-top: 1px solid lightgrey;
+  }
 }
 
 #help-navigation {
+  position: fixed;
+  display: block;
+  top: @app-header-height + 10px;
+  right: 10px;
   float: right;
   width: 400px;
 
   ol {
     li {
-      padding-bottom: 8px;
+      padding-bottom: 10px;
       line-height: 15px;
+
+      a {
+        text-decoration: none;
+      }
     }
   }
 }
@@ -545,6 +574,10 @@ html, body {
 
     .menu-button {
       display: block;
+    }
+
+    .app-logo {
+      display: none;
     }
 
     .caption {
@@ -578,6 +611,18 @@ html, body {
   #filters {
     display: none !important;
   }
+
+  #help {
+    margin-right: 0px;
+
+    img.scalable {
+      width: 100%;
+    }
+  }
+
+  #help-navigation {
+    display: none;
+  }
 }
 
 
@@ -588,6 +633,10 @@ html, body {
 
     .menu-button {
       display: block;
+    }
+
+    .app-logo {
+      display: none;
     }
 
     .caption {
@@ -608,5 +657,13 @@ html, body {
   #app-content {
     margin-top: @app-header-mobile-height;
     padding: 10px;
+  }
+
+  #help {
+    margin-right: 0px;
+  }
+
+  #help-navigation {
+    display: none;
   }
 }

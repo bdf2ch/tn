@@ -85,5 +85,4 @@ angular
         moment.locale("ru");
         $violations.getNew().happened.value = new moment().hours(0).minutes(0).seconds(0).unix();
         $violations.getNew().ended.value = $violations.getNew().happened.value;
-        //$log.log(window.initialData);
     }]);

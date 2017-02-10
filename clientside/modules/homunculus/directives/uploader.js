@@ -20,7 +20,7 @@ angular
 
                 attrs.$observe("uploaderUrl", function (val) {
                     url = val;
-                    $log.log("interpolated url = ", url);
+                    //$log.log("interpolated url = ", url);
 
                 });
 
@@ -30,7 +30,7 @@ angular
                 element.bind("change", function () {
                     //var fd = new FormData();
                     angular.forEach(element[0].files, function (file) {
-                        $log.log(file);
+                        //$log.log(file);
                         fd.append("file", file);
                     });
 
@@ -42,7 +42,7 @@ angular
 
                     /* Если заданы данные для отправки на сервер - добавляем их в данные формы для отправки */
                     if (scope.uploaderData !== undefined) {
-                        $log.info(scope.uploaderData);
+                        //$log.info(scope.uploaderData);
                         for (var param in scope.uploaderData) {
                             fd.append(param, scope.uploaderData[param]);
                         }
@@ -67,7 +67,7 @@ angular
                                 }
                             }
                         ).success(function (data) {
-                            $log.log(data);
+                            //$log.log(data);
                             element.prop("disabled", "");
                             if (scope.uploaderOnCompleteUpload !== undefined && typeof scope.uploaderOnCompleteUpload === "function")
                                 scope.uploaderOnCompleteUpload(data);

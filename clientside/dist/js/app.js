@@ -277,11 +277,20 @@ angular
     }]);
 angular
     .module("violations")
-    .controller("HelpController", ["$scope", "$session", "$violations", function ($scope, $session, $violations) {
+    .controller("HelpController", ["$log", "$scope", "$session", "$violations", "$anchorScroll", "$location", function ($log, $scope, $session, $violations, $anchorScroll, $location) {
         $scope.session = $session;
+
 
         if ($violations.mobileMenu() === true)
             $violations.mobileMenu(false);
+
+
+        $scope.scroll = function (hash) {
+            if (hash !== undefined) {
+                $location.hash(hash);
+                $anchorScroll();
+            }
+        };
     }]);
 
 angular
@@ -1219,6 +1228,81 @@ angular
 
     }]);
 
+$classesInjector
+    .add("Attachment", {
+        _dependencies__: [],
+        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        violationId: new Field({ source: "VIOLATION_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        title: new Field({ source: "TITLE", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
+        type: new Field({ source: "MIME_TYPE", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
+        size: new Field({ source: "SIZE", type: DATA_TYPE_INTEGER, default_value: 0, value: 0, backupable: true, displayable: true }),
+        url: new Field({ source: "URL", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
+        added: new Field({ source: "DATE_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        isInAddMode: false
+    });
+
+$classesInjector
+    .add("Division", {
+        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        parentId: new Field({ source: "PARENT_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, bacupable: true }),
+        sortId: new Field({ source: "SORT_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        shortTitle: new Field({ source: "TITLE_SHORT", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
+        fullTitle: new Field({ source: "TITLE_FULL", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
+        violationsAdded: new Field({ source: "VIOLATIONS_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        attachmentsAdded: new Field({ source: "ATTACHMENTS_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        storage: new Field({ source: "FILE_STORAGE_HOST", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
+        isDepartment: new Field({ source: "IS_DEPARTMENT", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
+        path: new Field({ source: "PATH", type: DATA_TYPE_STRING, value: "", default_value: "" })
+    });
+
+$classesInjector
+    .add("ESKGroup", {
+        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        title: new Field({ source: "TITLE", type: DATA_TYPE_STRING, value: "", default_value: "" }),
+        description: new Field({ source: "DESCRIPTION", type: DATA_TYPE_STRING, value: "", default_value: "" })
+    });
+$classesInjector
+    .add("Violation", {
+        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        userId: new Field({ source: "USER_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        divisionId: new Field({ source: "DIVISION_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
+        eskGroupId: new Field({ source: "ESK_GROUP_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
+        eskObject: new Field({ source: "ESK_OBJECT", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
+        happened: new Field({ source: "DATE_HAPPENED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        ended: new Field({ source: "DATE_ENDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
+        added: new Field({ source: "DATE_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        description: new Field({ source: "DESCRIPTION", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
+        isConfirmed: new Field({ source: "IS_CONFIRMED", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
+        user: 0,
+        attachments: [],
+        isNew: false,
+        newAttachments: 0
+    });
+$classesInjector
+    .add("ViolationFilter", {
+        code: new Field({ source: "", type: DATA_TYPE_STRING, value: "", default_value: "" }),
+        title: new Field({ source: "", type: DATA_TYPE_STRING, value: "", default_value: "" }),
+        startValue: new Field({ source: "", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
+        endValue: new Field({ source: "", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
+        isEnabled: false,
+        isActive: false,
+
+        resetStartValue: function () {
+            this.startValue.value = this.startValue.default_value;
+        },
+
+        resetEndValue: function () {
+            this.endValue.value = this.endValue.default_value;
+        }
+    });
+
+$classesInjector
+    .add("Weekday", {
+        id: 0,
+        title: "",
+        code: ""
+    });
+
 angular
     .module("violations")
     .directive("structure", ["$log", "$templateCache", "$errors", "$structure", function ($log, $templateCache, $errors, $structure) {
@@ -2054,8 +2138,8 @@ angular.module("violations")
             var api = {
                 init: function () {
                     if (window.initialData !== undefined) {
-                        $log.log("startPeriod = ", moment.unix(window.initialData.startPeriod).format("DD.MM.YYYY HH:mm"), window.initialData.startPeriod);
-                        $log.log("endPeriod = ", moment.unix(window.initialData.endPeriod).format("DD.MM.YYYY HH:mm"), window.initialData.endPeriod);
+                        //$log.log("startPeriod = ", moment.unix(window.initialData.startPeriod).format("DD.MM.YYYY HH:mm"), window.initialData.startPeriod);
+                        //$log.log("endPeriod = ", moment.unix(window.initialData.endPeriod).format("DD.MM.YYYY HH:mm"), window.initialData.endPeriod);
                         //$log.log("testError = ", window.initialData.testError);
 
                         if (window.initialData.startPeriod !== undefined) {
@@ -2762,81 +2846,6 @@ angular.module("violations")
 
             return api;
         }]);
-$classesInjector
-    .add("Attachment", {
-        _dependencies__: [],
-        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        violationId: new Field({ source: "VIOLATION_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        title: new Field({ source: "TITLE", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
-        type: new Field({ source: "MIME_TYPE", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
-        size: new Field({ source: "SIZE", type: DATA_TYPE_INTEGER, default_value: 0, value: 0, backupable: true, displayable: true }),
-        url: new Field({ source: "URL", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
-        added: new Field({ source: "DATE_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        isInAddMode: false
-    });
-
-$classesInjector
-    .add("Division", {
-        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        parentId: new Field({ source: "PARENT_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, bacupable: true }),
-        sortId: new Field({ source: "SORT_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        shortTitle: new Field({ source: "TITLE_SHORT", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
-        fullTitle: new Field({ source: "TITLE_FULL", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
-        violationsAdded: new Field({ source: "VIOLATIONS_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        attachmentsAdded: new Field({ source: "ATTACHMENTS_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        storage: new Field({ source: "FILE_STORAGE_HOST", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
-        isDepartment: new Field({ source: "IS_DEPARTMENT", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
-        path: new Field({ source: "PATH", type: DATA_TYPE_STRING, value: "", default_value: "" })
-    });
-
-$classesInjector
-    .add("ESKGroup", {
-        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        title: new Field({ source: "TITLE", type: DATA_TYPE_STRING, value: "", default_value: "" }),
-        description: new Field({ source: "DESCRIPTION", type: DATA_TYPE_STRING, value: "", default_value: "" })
-    });
-$classesInjector
-    .add("Violation", {
-        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        userId: new Field({ source: "USER_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        divisionId: new Field({ source: "DIVISION_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
-        eskGroupId: new Field({ source: "ESK_GROUP_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
-        eskObject: new Field({ source: "ESK_OBJECT", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
-        happened: new Field({ source: "DATE_HAPPENED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        ended: new Field({ source: "DATE_ENDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
-        added: new Field({ source: "DATE_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        description: new Field({ source: "DESCRIPTION", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
-        isConfirmed: new Field({ source: "IS_CONFIRMED", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
-        user: 0,
-        attachments: [],
-        isNew: false,
-        newAttachments: 0
-    });
-$classesInjector
-    .add("ViolationFilter", {
-        code: new Field({ source: "", type: DATA_TYPE_STRING, value: "", default_value: "" }),
-        title: new Field({ source: "", type: DATA_TYPE_STRING, value: "", default_value: "" }),
-        startValue: new Field({ source: "", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
-        endValue: new Field({ source: "", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
-        isEnabled: false,
-        isActive: false,
-
-        resetStartValue: function () {
-            this.startValue.value = this.startValue.default_value;
-        },
-
-        resetEndValue: function () {
-            this.endValue.value = this.endValue.default_value;
-        }
-    });
-
-$classesInjector
-    .add("Weekday", {
-        id: 0,
-        title: "",
-        code: ""
-    });
-
 angular
     .module("application", ["ngRoute", "ngCookies", "ngAnimate", "ngTouch", "violations", "homunculus", "homunculus.ui"])
     .config(["$routeProvider", "$locationProvider", "$httpProvider", function ($routeProvider, $locationProvider, $httpProvider) {
@@ -2924,5 +2933,4 @@ angular
         moment.locale("ru");
         $violations.getNew().happened.value = new moment().hours(0).minutes(0).seconds(0).unix();
         $violations.getNew().ended.value = $violations.getNew().happened.value;
-        //$log.log(window.initialData);
     }]);
