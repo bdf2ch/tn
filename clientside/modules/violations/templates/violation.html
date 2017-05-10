@@ -9,7 +9,7 @@
             </button>
             <button id="save-violation-button" class="green right margin-right-10"
                     ng-click="save()"
-                    ng-show="session.getCurrentUser().isAdministrator.value === true"
+                    ng-show="session.getCurrentUser().isAdministrator.value === true && violations.getCurrent()._states_.changed() === true"
                     ng-disabled="violations.getCurrent()._states_.changed() === false || violations.getCurrent()._states_.loading() === true">
                 <span class="fa fa-plus"></span>&nbsp;
                 Сохранить

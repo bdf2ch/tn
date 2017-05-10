@@ -50,11 +50,11 @@ body {
   transition: left 0.2s linear;
 }
 #app-mobile-menu-container #app-mobile-menu .user {
-  height: 100px;
   margin-bottom: 30px;
+  padding-top: 10px;
   font-size: 20px;
   text-align: center;
-  line-height: 100px;
+  line-height: 40px;
   font-family: "PT Sans Bold";
   color: white;
   background: rgba(0, 0, 0, 0.2);

@@ -103,6 +103,7 @@
             <div class="row block-title">
                 Авторизация <hr>
             </div>
+            <!--
             <div class="row padding-10">
                 <div class="width-50">
                     <input type="radio" ng-model="users.users.getNew().isLDAPEnabled.value" ng-value="false"> Используя электронную почту
@@ -111,10 +112,11 @@
                     <input type="radio" ng-model="users.users.getNew().isLDAPEnabled.value" ng-value="true"> Используя учетную запись Active Directory
                 </div>
             </div>
+            -->
 
 
 
-            <div class="row padding-10" ng-show="users.users.getNew().isLDAPEnabled.value === true">
+            <div class="row padding-10">
                 <label class="width-100" for="new-user-login">
                     Учетная запись в Active Directory
                     <span class="right form-error" ng-show="errors.login !== undefined">{{ errors.login }}</span>
@@ -126,6 +128,7 @@
                        ng-model="users.users.getNew().login.value">
             </div>
 
+            <!--
             <div class="row padding-10" ng-show="users.users.getNew().isLDAPEnabled.value === false">
                 <label class="width-100" for="new-user-password">
                     Пароль
@@ -137,6 +140,7 @@
                        class="width-100"
                        ng-model="users.users.getNew().password.value">
             </div>
+            -->
 
 
         </div>

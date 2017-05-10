@@ -109,7 +109,17 @@
     <div id="app-mobile-menu-container" ng-controller="HeaderController" ng-class="{ 'opened': violations.mobileMenu() === true }" ng-swipe-left="closeMobileMenu()">
         <div id="app-mobile-menu">
             <div class="user">
-                {{ session.getCurrentUser().name.value + " " + session.getCurrentUser().surname.value }}
+                <div class="row margin-bottom-10">
+                    {{ session.getCurrentUser().name.value + " " + session.getCurrentUser().surname.value }}
+                </div>
+
+                <div class="row padding-10">
+                    <button class="blue width-100" ng-click="logout()">
+                        <i class="fa fa-sign-out"></i>
+                        Выйти
+                    </button>
+                </div>
+
             </div>
 
             <div class="menu-item" ng-class="{ active: navigation.getById('violations').isActive === true }">

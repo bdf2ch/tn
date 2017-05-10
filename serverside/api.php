@@ -721,7 +721,7 @@
         $fname = $data -> fname;
         $email = $data -> email;
         $login = $data -> login;
-        $password = $data -> password;
+        //$password = $data -> password;
         $password = $data -> password == "" ? $email : $data -> password;
         $isAdministrator = $data -> isAdministrator;
         $allowEdit = $data -> allowEdit;

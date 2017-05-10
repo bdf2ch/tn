@@ -348,7 +348,7 @@ angular
                         shortTitle: currentDivision.shortTitle.value,
                         fullTitle: currentDivision.fullTitle.value,
                         storage: currentDivision.storage.value,
-                        departmentId: this.getDepartmentByDivisionId(currentDivision.id.value).id.value,
+                        departmentId: currentDivision.parentId.value !== 0 ? this.getDepartmentByDivisionId(currentDivision.id.value).id.value : 0,
                         isDepartment: currentDivision.isDepartment.value === true ? 1 : 0
                     }
                 };

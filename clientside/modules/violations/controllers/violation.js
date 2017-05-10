@@ -111,6 +111,29 @@ angular
                             break;
                         }
                     }
+                    $violations.getCurrent().newAttachments--;
+
+
+                    var tree = $tree.getById("global-divisions-tree");
+                    if (tree) {
+                        var item = $tree.getItemByKey("global-divisions-tree", $violations.getCurrent().divisionId.value);
+                        item.data.attachmentsAdded--;
+                        item.data.attachmentsTotal--;
+                        item.notifications.getById("attachments").value -= 1;
+                        item.notifications.getById("attachments").isVisible = item.notifications.getById("attachments").value > 0 ? true : false;
+
+                        var prev = item;
+                        var parent = $tree.getItemByKey("global-divisions-tree", item.parentKey);
+                        while (parent) {
+                            parent.data.attachmentsTotal -= 1;
+                            parent.notifications.getById("attachments").value -= 1;
+                            parent.notifications.getById("attachments").isVisible = parent.notifications.getById("attachments").value > 0 ? true : false;
+                            prev = parent;
+                            parent = $tree.getItemByKey("global-divisions-tree", parent.parentKey);
+                        }
+
+                        tree.calcRoot();
+                    }
                 });
             }
         };

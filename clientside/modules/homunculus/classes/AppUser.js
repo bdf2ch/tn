@@ -11,5 +11,5 @@
         isAdministrator: new Field({ source: "IS_ADMINISTRATOR", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
         allowEdit: new Field({ source: "ALLOW_EDIT", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
         allowConfirm: new Field({ source: "ALLOW_CONFIRM", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
-        isLDAPEnabled: new Field({ source: "IS_LDAP_ENABLED", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true })
+        isLDAPEnabled: new Field({ source: "IS_LDAP_ENABLED", type: DATA_TYPE_BOOLEAN, value: true, default_value: true, backupable: true })
     });

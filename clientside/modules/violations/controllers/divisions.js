@@ -67,9 +67,14 @@ angular
 
 
         $scope.save = function () {
+            $log.log('start saving');
+
             for (var index in $scope.errors) {
+                $log.log('indec', index);
                 $scope.errors[index] = undefined;
             }
+
+            $log.log('current division', $divisions.getCurrent());
 
             if ($divisions.getCurrent().shortTitle.value === "")
                 $scope.errors.shortTitle = "Вы не указали краткое наименование";
@@ -79,6 +84,7 @@ angular
 
             if ($scope.errors.fullTitle == undefined && $scope.errors.shortTitle === undefined) {
                 $divisions.edit(function (division) {
+                    $log.log('edit division callback');
                     $modals.close();
                     $tree.getItemByKey("divisions-tree", division.id.value).display = division.shortTitle.value;
                 });
