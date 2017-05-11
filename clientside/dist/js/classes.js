@@ -930,6 +930,27 @@ $classesInjector
         description: new Field({ source: "DESCRIPTION", type: DATA_TYPE_STRING, value: "", default_value: "" })
     });
 $classesInjector
+    .add("FeedbackAttachment", {
+        _dependencies__: [],
+        id: new Field({ source: "id", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        messageId: new Field({ source: "message_id", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        title: new Field({ source: "title", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
+        type: new Field({ source: "mime_type", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
+        size: new Field({ source: "size", type: DATA_TYPE_INTEGER, default_value: 0, value: 0, backupable: true, displayable: true }),
+        url: new Field({ source: "url", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true })
+    });
+
+$classesInjector
+    .add("FeedbackMessage", {
+        _dependencies__: [],
+        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        userId: new Field({ source: "USER_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        message: new Field({ source: "MESSAGE", type: DATA_TYPE_STRING, default_value: "", value: "" }),
+        timestamp: new Field({ source: "TIMESTAMP", type: DATA_TYPE_INTEGER, default_value: 0, value: 0 }),
+        attachments: []
+    });
+
+$classesInjector
     .add("Violation", {
         id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
         userId: new Field({ source: "USER_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),

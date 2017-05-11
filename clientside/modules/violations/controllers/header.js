@@ -1,12 +1,23 @@
 angular
     .module("violations")
-    .controller("HeaderController", ["$log", "$scope", "$session", "$navigation", "$window", "$modals", "$misc", "$settings", "$violations", function ($log, $scope, $session, $navigation, $window, $modals, $misc, $settings, $violations) {
+    .controller("HeaderController", ["$log", "$scope", "$session", "$navigation", "$window", "$modals", "$misc", "$settings", "$violations", "$feedback", '$factory', function ($log, $scope, $session, $navigation, $window, $modals, $misc, $settings, $violations, $feedback, $factory) {
         $scope.misc = $misc;
         $scope.session = $session;
         $scope.settings = $settings;
         $scope.navigation = $navigation;
         $scope.violations = $violations;
         $scope.modals = $modals;
+        $scope.feedback = $feedback;
+        $scope.feedbackMessage = {
+            message: '',
+            attachments: []
+        };
+        $scope.newMessage = $factory({ classes: ['FeedbackMessage', 'Model'], base_class: 'FeedbackMessage' });
+        $scope.uploaderData = {
+            serviceId: 'violations',
+            userId: $session.getCurrentUser().id.value,
+            messageId: $scope.newMessage.id.value
+        };
 
 
         $scope.openMobileMenu = function () {
@@ -49,6 +60,38 @@ angular
             });
         };
 
+
+        $scope.openFeedbackModal = function () {
+            $modals.open('feedback-modal');
+        };
+
+
+        $scope.closeFeedbackModal = function () {
+            $scope.newMessage.message.value = '';
+        };
+
+
+        $scope.onBeforeUploadAttachment = function () {
+            $scope.uploaderData.messageId = $scope.newMessage.id.value;
+        };
+
+
+        $scope.onCompleteUploadAttachment = function (data) {
+            $log.log(data);
+            var attachment = $factory({ classes: ['FeedbackAttachment', 'Model'], base_class: 'FeedbackAttachment' });
+            attachment._model_.fromJSON(data);
+            $log.log(attachment);
+            $scope.newMessage.attachments.push(attachment);
+            $scope.newMessage.id.value = parseInt(data['message_id']);
+            $log.log($scope.newMessage);
+        };
+
+
+        $scope.sendMessage = function () {
+            $feedback.add($scope.newMessage, function () {
+                $modals.close();
+            });
+        };
 
         $scope.logout = function () {
             $session.logout(function () {

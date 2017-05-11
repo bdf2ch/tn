@@ -127,6 +127,27 @@ $classesInjector
         description: new Field({ source: "DESCRIPTION", type: DATA_TYPE_STRING, value: "", default_value: "" })
     });
 $classesInjector
+    .add("FeedbackAttachment", {
+        _dependencies__: [],
+        id: new Field({ source: "id", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        messageId: new Field({ source: "message_id", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        title: new Field({ source: "title", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
+        type: new Field({ source: "mime_type", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
+        size: new Field({ source: "size", type: DATA_TYPE_INTEGER, default_value: 0, value: 0, backupable: true, displayable: true }),
+        url: new Field({ source: "url", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true })
+    });
+
+$classesInjector
+    .add("FeedbackMessage", {
+        _dependencies__: [],
+        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        userId: new Field({ source: "USER_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        message: new Field({ source: "MESSAGE", type: DATA_TYPE_STRING, default_value: "", value: "" }),
+        timestamp: new Field({ source: "TIMESTAMP", type: DATA_TYPE_INTEGER, default_value: 0, value: 0 }),
+        attachments: []
+    });
+
+$classesInjector
     .add("Violation", {
         id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
         userId: new Field({ source: "USER_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
@@ -299,13 +320,24 @@ angular
 
 angular
     .module("violations")
-    .controller("HeaderController", ["$log", "$scope", "$session", "$navigation", "$window", "$modals", "$misc", "$settings", "$violations", function ($log, $scope, $session, $navigation, $window, $modals, $misc, $settings, $violations) {
+    .controller("HeaderController", ["$log", "$scope", "$session", "$navigation", "$window", "$modals", "$misc", "$settings", "$violations", "$feedback", '$factory', function ($log, $scope, $session, $navigation, $window, $modals, $misc, $settings, $violations, $feedback, $factory) {
         $scope.misc = $misc;
         $scope.session = $session;
         $scope.settings = $settings;
         $scope.navigation = $navigation;
         $scope.violations = $violations;
         $scope.modals = $modals;
+        $scope.feedback = $feedback;
+        $scope.feedbackMessage = {
+            message: '',
+            attachments: []
+        };
+        $scope.newMessage = $factory({ classes: ['FeedbackMessage', 'Model'], base_class: 'FeedbackMessage' });
+        $scope.uploaderData = {
+            serviceId: 'violations',
+            userId: $session.getCurrentUser().id.value,
+            messageId: $scope.newMessage.id.value
+        };
 
 
         $scope.openMobileMenu = function () {
@@ -348,6 +380,38 @@ angular
             });
         };
 
+
+        $scope.openFeedbackModal = function () {
+            $modals.open('feedback-modal');
+        };
+
+
+        $scope.closeFeedbackModal = function () {
+            $scope.newMessage.message.value = '';
+        };
+
+
+        $scope.onBeforeUploadAttachment = function () {
+            $scope.uploaderData.messageId = $scope.newMessage.id.value;
+        };
+
+
+        $scope.onCompleteUploadAttachment = function (data) {
+            $log.log(data);
+            var attachment = $factory({ classes: ['FeedbackAttachment', 'Model'], base_class: 'FeedbackAttachment' });
+            attachment._model_.fromJSON(data);
+            $log.log(attachment);
+            $scope.newMessage.attachments.push(attachment);
+            $scope.newMessage.id.value = parseInt(data['message_id']);
+            $log.log($scope.newMessage);
+        };
+
+
+        $scope.sendMessage = function () {
+            $feedback.add($scope.newMessage, function () {
+                $modals.close();
+            });
+        };
 
         $scope.logout = function () {
             $session.logout(function () {
@@ -2038,6 +2102,39 @@ angular
                 }
             }
         }
+
+        return api;
+    }]);
+angular
+    .module('violations')
+    .factory('$feedback', ['$log', '$http', '$factory', '$session', function ($log, $http, $factory, $session) {
+        var messages = [];
+
+        var api = {
+
+            add: function (message, success, error) {
+                var parameters = {
+                    action: 'addFeedbackMessage',
+                    data: {
+                        userId: $session.getCurrentUser().id.value,
+                        message: message.message.value
+                    }
+                };
+                $http.post('/serverside/api.php', parameters)
+                    .success(function (data) {
+                        var message = $factory({ classes: ["FeedbackMessage", "Model"], base_class: "FeedbackMessage" });
+                        message._model_.fromJSON(data);
+                        messages.push(message);
+                        $log.info(message);
+                        if (success !== undefined && typeof success === 'function')
+                            success(message);
+                    })
+                    .error(function () {
+                        if (error !== undefined && typeof error === 'function')
+                            error();
+                    });
+            }
+        };
 
         return api;
     }]);

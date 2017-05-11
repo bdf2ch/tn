@@ -57,6 +57,9 @@
         case "saveSettings":
             saveSettings($postdata -> data);
             break;
+        case "addFeedbackMessage":
+            addFeedbackMessage($postdata -> data);
+            break;
     }
 
 
@@ -933,5 +936,35 @@
     //    echo "Не удалось закрыть соединение с БД: (".$mysqli -> errno.") ".$mysqli -> error;
     //    return false;
     //}
+
+
+
+    function addFeedbackMessage ($data) {
+        global $db_host;
+        global $db_user;
+        global $db_password;
+        global $db_name;
+        global $mysqli;
+
+        $userId = $data -> userId;
+        $message = $data -> message;
+        $timestamp = time();
+
+        $message = mysqli_query($mysqli, "INSERT INTO feedback_messages (user_id, message, timestamp) VALUES ($userId, '$message', $timestamp)");
+        if (!$message) {
+            echo(json_encode(false));
+            return false;
+        }
+
+        $id = mysqli_insert_id($mysqli);
+        $result = mysqli_query($mysqli, "SELECT * FROM feedback_messages WHERE ID = $id");
+        if (!$result) {
+            echo(json_encode(false));
+            return false;
+        }
+
+        echo(json_encode(mysqli_fetch_assoc($result)));
+        return true;
+    }
 
 ?>
