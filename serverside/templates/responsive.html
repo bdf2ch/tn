@@ -4,6 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-control" content="public">
+    <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+    <META HTTP-EQUIV="EXPIRES" CONTENT="Mon, 22 Jul 2002 11:12:01 GMT">
     <title>Технологические нарушения</title>
     <link rel="stylesheet" href="/clientside/resources/styles/application-responsive.css">
     <link rel="stylesheet" href="/clientside/resources/styles/violations-responsive.css">
@@ -97,11 +100,13 @@
                 </a>
             </div>
             <div class="container">
+                <!--
                 <div class="menu-item">
                     <a href ng-click="openFeedbackModal()">
                         <span class="fa fa-exclamation-circle"></span>&nbsp;Сообщить об ошибке
                     </a>
                 </div>
+                -->
                 <div class="menu-item">
                     <a href ng-click="logout()">
                         <span class="fa fa-sign-out"></span>&nbsp;Выход
@@ -278,10 +283,10 @@
                        uploader-on-before-upload="onBeforeUploadAttachment"
                        uploader-on-complete-upload="onCompleteUploadAttachment">
             </label>
+            <h3 data-ng-repeat="file in files track by $id(file.id.value)">{{ file.title.value }}</h3>
             <div class="row margin-top-10">
-                files: {{ newMessage.attachments.length }}
-                <div class="row" ng-repeat="file in newMessage.attachments track by $index">
-                    {{ $index }}
+                files: {{ attachments.length }}
+                <div class="row" ng-repeat="file in attachments">
                     <div class="width-80"><a href="{{ file.url.value }}">{{ file.title.value }}</a></div>
                     <div class="width-20">{{ file.size.value }}</div>
                 </div>

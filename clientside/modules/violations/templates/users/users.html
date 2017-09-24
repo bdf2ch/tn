@@ -24,7 +24,7 @@
 
 <div id="users" class="block">
     <div class="header">
-        Пользователи ({{ filtered.length }})
+        Пользователи
 
         <span class="filter-label" ng-show="filters.divisionId !== 0">
             {{ divisions.getById(filters.divisionId).shortTitle.value }}
@@ -50,7 +50,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="user in filtered = (users.users.getAll() | byDivisionId:filters.divisionId | filter:{fio:filters.name} | orderBy:'surname.value') track by $id(user)" ng-click="selectUser(user)">
+            <tr ng-repeat="user in users.users.getAll() | byDivisionId:filters.divisionId | filter:{fio:filters.name} | orderBy:'surname.value' track by $id(user)" ng-click="selectUser(user)">
                 <td class="width-15 text-center">{{ user.surname.value }}</td>
                 <td class="width-15 text-center">{{ user.name.value }}</td>
                 <td class="width-15 text-center">{{ user.fname.value }}</td>

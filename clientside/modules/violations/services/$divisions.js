@@ -186,7 +186,8 @@ angular
                         //var division = this.getById(item.key);
                         //$log.log("div = ", division);
                         $violations.getNew().divisionId.value = item.key;
-                        //$log.log("div id = ", item.key);
+                        $log.log("div id = ", item.key);
+                        $log.log($violations.getNew());
                     }
 
                 });

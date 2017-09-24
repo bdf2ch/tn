@@ -172,6 +172,16 @@
                         </td>
                     </tr>
                     <tr>
+                        <td>Пользователь может удалять документы</td>
+                        <td>
+                            <input type="checkbox"
+                                   name="allow-delete-files"
+                                   id="new-user-allow-delete-files"
+                                   ng-change="users.users.getNew()._states_.changed(true)"
+                                   ng-model="users.users.getNew().allowDeleteFiles.value">
+                        </td>
+                    </tr>
+                    <tr>
                         <td>Пользователь является администратором</td>
                         <td>
                             <input type="checkbox"

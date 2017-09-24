@@ -118,22 +118,26 @@ angular
                             password: newUser.password.value,
                             isAdministrator: newUser.isAdministrator.value === true ? 1 : 0,
                             allowEdit: newUser.allowEdit.value === true ? 1 : 0,
-                            allowConfirm: newUser.allowConfirm.value === true ? 1 : 0
+                            allowConfirm: newUser.allowConfirm.value === true ? 1 : 0,
+                            allowAddFiles: newUser.allowAddFiles.value === true ? 1 : 0,
+                            allowDeleteFiles: newUser.allowDeleteFiles.value === true ? 1 : 0
                         }
                     };
                     $http.post("/serverside/api.php", params)
                         .success(function (data) {
-                            if (data !== undefined) {
+                            $log.log(data);
+                            //if (data !== undefined) {
                                 var user = $factory({ classes: ["AppUser", "Model", "Backup", "States"], base_class: "AppUser" });
                                 user._model_.fromJSON(data);
                                 user._backup_.setup();
+                                $log.log(user);
                                 users.push(user);
                                 newUser._backup_.restore();
                                 if (success !== undefined && typeof success === "function")
                                     success(user);
                                 return true;
-                            } else
-                                return false;
+                            //} else
+                                //return false;
                         })
                         .error(function (data) {
                             if (error !== undefined && typeof error === "function")
@@ -163,6 +167,7 @@ angular
                             isAdministrator: currentUser.isAdministrator.value === true ? 1 : 0,
                             allowEdit: currentUser.allowEdit.value === true ? 1: 0,
                             allowConfirm: currentUser.allowConfirm.value === true ? 1 : 0,
+                            allowDeleteFiles: currentUser.allowDeleteFiles.value === true ? 1 : 0,
                             isLDAPEnabled: currentUser.isLDAPEnabled.value === true ? 1 : 0
                         }
                     };

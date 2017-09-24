@@ -13,6 +13,7 @@ angular
             attachments: []
         };
         $scope.newMessage = $factory({ classes: ['FeedbackMessage', 'Model'], base_class: 'FeedbackMessage' });
+        $scope.files = [];
         $scope.uploaderData = {
             serviceId: 'violations',
             userId: $session.getCurrentUser().id.value,
@@ -77,13 +78,13 @@ angular
 
 
         $scope.onCompleteUploadAttachment = function (data) {
-            $log.log(data);
+            //$log.log(data);
             var attachment = $factory({ classes: ['FeedbackAttachment', 'Model'], base_class: 'FeedbackAttachment' });
             attachment._model_.fromJSON(data);
-            $log.log(attachment);
-            $scope.newMessage.attachments.push(attachment);
+            //$log.log(attachment);
+            $scope.files.push(attachment);
             $scope.newMessage.id.value = parseInt(data['message_id']);
-            $log.log($scope.newMessage);
+            $log.log($scope.files);
         };
 
 

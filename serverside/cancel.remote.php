@@ -32,6 +32,9 @@
         echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
     }
 
-    rmdir_recursive($_SERVER["DOCUMENT_ROOT"].$DS."uploads".$DS.$serviceId.$DS.$violationId);
+
+    if (file_exists($_SERVER["DOCUMENT_ROOT"].$DS."uploads".$DS.$serviceId.$DS.$violationId)) {
+        rmdir_recursive($_SERVER["DOCUMENT_ROOT"].$DS."uploads".$DS.$serviceId.$DS.$violationId);
+    }
     echo json_encode(true);
 ?>

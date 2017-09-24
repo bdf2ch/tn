@@ -1,0 +1,65 @@
+@hours-width: 55px;
+@hours-input-width: 35px;
+@separator-width: 10px;
+@minutes-width: 55px;
+@minutes-input-width: 35px;
+@controls-width: 20px;
+
+
+.time-input {
+  float: right;
+  line-height: 35px;
+  box-sizing: border-box;
+
+  .hours {
+    float: left;
+    width: @hours-width;
+    text-align: center;
+  }
+
+  .separator {
+    float: left;
+    width: @separator-width;
+    text-align: center;
+  }
+
+  .minutes {
+    float: left;
+    width: @minutes-width;
+    text-align: center;
+  }
+
+  .controls {
+    float: left;
+    width: @controls-width;
+    box-sizing: border-box;
+    background: transparent;
+    border-top: 1px solid lightgrey;
+    border-right: 1px solid lightgrey;
+    border-bottom: 1px solid lightgrey;
+    .control {
+      height: 13.5px;
+      margin: 2px;
+      line-height: 13.5px;
+      box-sizing: border-box;
+      font-size: 9px;
+      background: lightgrey;
+      cursor: pointer;
+      &:hover {
+        color: white;
+        background: gray;
+      }
+    }
+  }
+
+  input {
+    float: left;
+    width: @minutes-input-width;
+    text-align: center;
+    border-right: none;
+    &.disabled {
+      width: 100%;
+      border-right: 1px solid lightgrey;
+    }
+  }
+}

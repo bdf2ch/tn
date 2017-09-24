@@ -4,7 +4,7 @@
 (function () {
     angular
         .module("violations")
-        .controller("NewViolationController", ["$log", "$scope", "$violations", "$divisions", "$misc", "$factory", "$tree", "$location", "$modals", "$session", "$dateTimePicker", function ($log, $scope, $violations, $divisions, $misc, $factory, $tree, $location, $modals, $session, $dateTimePicker) {
+        .controller("NewViolationController", ["$log", "$scope", "$violations", "$divisions", "$misc", "$factory", "$tree", "$location", "$modals", "$session", "$dateTimePicker", "$interval", "nowFilterFilter", function ($log, $scope, $violations, $divisions, $misc, $factory, $tree, $location, $modals, $session, $dateTimePicker, $interval, nowFilter) {
             $scope.violations = $violations;
             $scope.divisions = $divisions;
             $scope.misc = $misc;
@@ -30,6 +30,12 @@
             $scope.endHours = 0;
             $scope.endMinutes = 0;
             $scope.uploaderLink = "test";
+            $scope.now = new Date();
+
+
+            $interval(function () {
+                $scope.now = nowFilter(new Date());
+            } , 1000);
 
 
 
@@ -126,7 +132,7 @@
                     $scope.errors[error] = undefined;
                 }
 
-                if ($violations.getNew().ended.value < $violations.getNew().happened.value)
+                if ($violations.getNew().ended.value < $violations.getNew().happened.value && $violations.getNew().isNotFixed.value === false)
                     $scope.errors.ended = "Дата устренения не может быть раньше времени ТН";
                 if ($violations.getNew().divisionId.value === 0)
                     $scope.errors.divisionId = "Вы не выбрали структурное подразделение";
@@ -197,6 +203,7 @@
 
                 $scope.isUploadInProgress = true;
                 $scope.uploaderData.violationId = $violations.getNew().id.value;
+                $scope.uploaderData.divisionId = $violations.getNew().divisionId.value;
 
                 //var division = $divisions.getById($session.getCurrentUser().divisionId.value);
                 var division = $divisions.getById($violations.getNew().divisionId.value);
@@ -215,14 +222,25 @@
 
 
             $scope.onCompleteUploadAttachment = function (data) {
-                //$log.log("upload complete", data);
-                var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
-                attachment._model_.fromJSON(data);
-                attachment.isInAddMode = true;
-                $violations.addAttachmentToNew(attachment);
-                $violations.attachments.add(attachment);
-                $scope.isUploadInProgress = false;
-                delete $scope.uploaderData.storage;
+                $log.log("upload complete", data);
+                var length = data.length;
+                for (var i = 0; i < length; i++) {
+                    var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
+                    attachment._model_.fromJSON(data[i]);
+                    attachment.isInAddMode = true;
+                    $violations.addAttachmentToNew(attachment);
+                    $violations.attachments.add(attachment);
+                    $scope.isUploadInProgress = false;
+                    delete $scope.uploaderData.storage;
+                }
+
+                //var attachment = $factory({ classes: ["Attachment", "Model", "Backup", "States"], base_class: "Attachment" });
+                //attachment._model_.fromJSON(data);
+                //attachment.isInAddMode = true;
+                //$violations.addAttachmentToNew(attachment);
+                //$violations.attachments.add(attachment);
+                //$scope.isUploadInProgress = false;
+                //delete $scope.uploaderData.storage;
 
                 //$log.log("attachment = ", attachment);
 
@@ -251,6 +269,15 @@
             };
 
 
+
+
+            $scope.setViolationFixed = function () {
+                if ($scope.violations.getNew().isNotFixed.value === true) {
+                    $scope.violations.getNew().ended.value = 0;
+                } else {
+                    $scope.violations.getNew().ended.value = $scope.violations.getNew().happened.value;
+                }
+            };
 
 
         }]);

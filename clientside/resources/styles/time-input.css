@@ -1,0 +1,52 @@
+.time-input {
+  float: right;
+  line-height: 35px;
+  box-sizing: border-box;
+}
+.time-input .hours {
+  float: left;
+  width: 55px;
+  text-align: center;
+}
+.time-input .separator {
+  float: left;
+  width: 10px;
+  text-align: center;
+}
+.time-input .minutes {
+  float: left;
+  width: 55px;
+  text-align: center;
+}
+.time-input .controls {
+  float: left;
+  width: 20px;
+  box-sizing: border-box;
+  background: transparent;
+  border-top: 1px solid lightgrey;
+  border-right: 1px solid lightgrey;
+  border-bottom: 1px solid lightgrey;
+}
+.time-input .controls .control {
+  height: 13.5px;
+  margin: 2px;
+  line-height: 13.5px;
+  box-sizing: border-box;
+  font-size: 9px;
+  background: lightgrey;
+  cursor: pointer;
+}
+.time-input .controls .control:hover {
+  color: white;
+  background: gray;
+}
+.time-input input {
+  float: left;
+  width: 35px;
+  text-align: center;
+  border-right: none;
+}
+.time-input input.disabled {
+  width: 100%;
+  border-right: 1px solid lightgrey;
+}

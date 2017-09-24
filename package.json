@@ -13,6 +13,7 @@
     "gulp-util": "^3.0.7"
   },
   "devDependencies": {
+    "async": "^2.4.1",
     "graceful-fs": "^1.2.3",
     "gtd": "0.0.1",
     "gulp": "^3.9.1",
@@ -21,8 +22,10 @@
     "gulp-livereload": "^3.8.1",
     "gulp-plumber": "^1.1.0",
     "gulp-util": "^3.0.7",
-    "less": "^2.7.1",
-    "tsd": "^0.6.5"
+    "less": "^2.7.2",
+    "mysql": "^2.13.0",
+    "tsd": "^0.6.5",
+    "url-exists": "^1.0.3"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

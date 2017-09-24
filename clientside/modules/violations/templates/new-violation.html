@@ -12,6 +12,22 @@
             </button>
         </div>
         <div class="content">
+
+            <div class="row padding-10">
+                <label class="width-100" for="add-time">
+                    Дата и время добавления ТН
+                </label>
+                <div class="width-100">
+                    <input type="text"
+                           name="add_time"
+                           id="add-time"
+                           class="width-100"
+                           ng-model="now"
+                           disabled
+                    style="text-align: center;">
+                </div>
+            </div>
+
             <div class="row width-100 padding-10">
                 <div class="width-80">
                     <label class="width-100" for="new-violation-date">
@@ -30,7 +46,7 @@
                            ng-model="violations.getNew().happened.value">
                 </div>
                 <div class="width-20">
-                    <label for="new-violation-time" class="width-90 right">&nbsp;</label>
+                    <!--<label for="new-violation-time" class="width-90 right">&nbsp;</label>-->
                     <!--
                     <input type="text"
                            name="time"
@@ -40,18 +56,25 @@
                            ui-time-input>
                     -->
                     <!--<ui-time-picker class="width-80 right" ng-model="violations.getNew().happened.value"></ui-time-picker>-->
+                    <!--
                     <div class="width-90 right" id="new-violation-time">
                         <input type="number" name="time_hours" id="new-violation-hours" min="0" max="23" class="width-45 text-center" ng-model="hours" ng-change="onHoursChange()">
                         <span class="width-10 text-center time-separator">:</span>
                         <input type="number" name="time_minutes" id="new-violation-minutes" min="0" max="59" class=" width-45 text-center" ng-model="minutes" ng-change="onMinutesChange()">
                     </div>
+                    -->
+
+                    <label for="new-violation-time" class="width-90 right">&nbsp;</label>
+                    <time-input id="new-violation-time"
+                                ng-model="violations.getNew().happened.value">
+                    </time-input>
                 </div>
 
             </div>
 
             <!--<div class="width-10 text-center mdash">&mdash;</div>-->
 
-            <div class="row width-100 padding-10">
+            <div class="row width-100 padding-10" ng-show="violations.getNew().isNotFixed.value === false">
                 <div class="width-80">
                     <label class="width-100" for="new-violation-end-date">
                         Дата и время устранения
@@ -70,14 +93,33 @@
                            ng-model="violations.getNew().ended.value">
                 </div>
                 <div class="width-20">
+                    <!--
                     <label for="new-violation-end-time" class="width-90 right">&nbsp;</label>
                     <div class="width-90 right" id="new-violation-end-time">
                         <input type="number" name="time_hours" id="new-violation-end-hours" min="0" max="23" class="width-45 text-center" ng-model="endHours" ng-change="onEndHoursChange()">
                         <span class="width-10 text-center time-separator">:</span>
                         <input type="number" name="time_minutes" id="new-violation-end-minutes" min="0" max="59" class=" width-45 text-center" ng-model="endMinutes" ng-change="onEndMinutesChange()">
                     </div>
-                </div>
+                    -->
 
+                    <label for="new-violation-end-time" class="width-90 right">&nbsp;</label>
+                    <time-input id="new-violation-end-time"
+                                ng-model="violations.getNew().ended.value">
+                    </time-input>
+                </div>
+            </div>
+
+
+            <div class="row padding-10">
+                <div class="width-100">
+                    <span class="left">Технологическое нарушение еще не устранено</span>
+                    <input type="checkbox"
+                           name="not_fixed"
+                           id="current-violation-is-not-fixed"
+                           class="right"
+                           ng-change="violations.getNew()._states_.changed(true); setViolationFixed()"
+                           ng-model="violations.getNew().isNotFixed.value">
+                </div>
             </div>
 
 
@@ -155,8 +197,11 @@
                 <span class="fa fa-upload"></span>&nbsp; Загрузить файл
                 <input
                         type="file"
-                        name="userfile"
+                        name="userfile[]"
+                        enctype="multipart/form-data"
+                        multiple
                         id="userfile"
+                        accept="image/*,video/*,application/pdf,application/msword,application/msword,application/excel,application/vnd.ms-excel,application/x-excel,application/x-msexcel,application/excel,application/x-excel,application/excel,application/x-excel,application/x-compressed,application/x-zip-compressed,application/zip,multipart/x-zip,application/rtf,application/x-rtf,text/richtext,text/plain,application/plain,multipart/x-gzip,application/x-gzip"
                         ng-disabled="isUploadComplete === false"
                         uploader
                         uploader-url="{{ uploaderLink }}"

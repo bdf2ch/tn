@@ -2,14 +2,21 @@
 
     <div id="violation-info" class="block" ng-init="user = session.getCurrentUser()">
         <div class="header">
-            Нарушение №{{ violations.getCurrent().id.value }} от {{ violations.getCurrent().happened.value | dateFilter }}
+            Нарушение №{{ violations.getCurrent().id.value }} <!--от {{ violations.getCurrent().happened.value | dateFilter }}-->
             <button id="back-to-violations-button" class="blue right" ng-click="gotoMain()">
                 <span class="fa fa-arrow-left"></span>&nbsp;
                 Вернуться
             </button>
+            <button id="delete-violation-button" class="red right margin-right-10"
+                    ng-click="openDeleteModal()"
+                    ng-show="session.getCurrentUser().isAdministrator.value === true && violations.getCurrent().isMarkedForDelete.value === true"
+                    ng-disabled="violations.getCurrent()._states_.loading() === true">
+                <span class="fa fa-times"></span>&nbsp;
+                Удалить
+            </button>
             <button id="save-violation-button" class="green right margin-right-10"
                     ng-click="save()"
-                    ng-show="session.getCurrentUser().isAdministrator.value === true && violations.getCurrent()._states_.changed() === true"
+                    ng-show="(session.getCurrentUser().isAdministrator.value === true || session.getCurrentUser().allowEdit.value === true) && violations.getCurrent()._states_.changed() === true"
                     ng-disabled="violations.getCurrent()._states_.changed() === false || violations.getCurrent()._states_.loading() === true">
                 <span class="fa fa-plus"></span>&nbsp;
                 Сохранить
@@ -33,6 +40,20 @@
 
 
             <div class="row padding-10">
+                <div class="width-100  is-violation-confirmed" ng-class="{ 'yes': violations.getCurrent().isMarkedForDelete.value === true }">
+                    <span class="left">Технологическое нарушение помечено на удаление</span>
+                    <input type="checkbox"
+                           name="confirmed"
+                           id="current-violation-is-marked-for-delete"
+                           class="right"
+                           ng-change="violations.getCurrent()._states_.changed(true)"
+                           ng-model="violations.getCurrent().isMarkedForDelete.value"
+                           ng-disabled="session.getCurrentUser().isAdministrator.value === false && violations.getCurrent().isMarkedForDelete.value === true">
+                </div>
+            </div>
+
+
+            <div class="row padding-10">
                 <label class="width-100" for="current-violation-date">
                     Дата и время нарушения
                 </label>
@@ -44,7 +65,7 @@
                        disabled>
             </div>
 
-            <div class="row width-100 padding-10">
+            <div class="row width-100 padding-10" ng-show="violations.getCurrent().isNotFixed.value === false">
                 <div class="width-80">
                     <label class="width-100" for="new-violation-end-date">
                         Дата и время устранения
@@ -60,18 +81,39 @@
                            date-time-picker-modal="1"
                            date-time-picker-format="DD MMMM YYYY"
                            date-time-picker-on-select="selectEndDate"
-                           ng-disabled="violations.getCurrent().isConfirmed.value === true || user.allowEdit.value === false"
+                           ng-disabled="violations.getCurrent().isConfirmed.value === true || user.allowEdit.value === false || violations.getCurrent().isNotFixed.value === true"
                            ng-model="violations.getCurrent().ended.value">
                 </div>
                 <div class="width-20">
+                    <!--
                     <label for="new-violation-end-time" class="width-90 right">&nbsp;</label>
                     <div class="width-90 right" id="new-violation-end-time">
-                        <input type="number" name="time_hours" id="new-violation-end-hours" min="0" max="23" class="width-45 text-center" ng-model="endHours" ng-change="onEndHoursChange()" ng-disabled="violations.getCurrent().isConfirmed.value === true || user.allowEdit.value === false">
+                        <input type="number" name="time_hours" id="new-violation-end-hours" min="0" max="23" class="width-45 text-center" ng-model="endHours" ng-change="onEndHoursChange()" ng-disabled="violations.getCurrent().isConfirmed.value === true || user.allowEdit.value === false || violations.getCurrent().isNotFixed.value === true">
                         <span class="width-10 text-center time-separator">:</span>
-                        <input type="number" name="time_minutes" id="new-violation-end-minutes" min="0" max="59" class=" width-45 text-center" ng-model="endMinutes" ng-change="onEndMinutesChange()" ng-disabled="violations.getCurrent().isConfirmed.value === true || user.allowEdit.value === false">
+                        <input type="number" name="time_minutes" id="new-violation-end-minutes" min="0" max="59" class=" width-45 text-center" ng-model="endMinutes" ng-change="onEndMinutesChange()" ng-disabled="violations.getCurrent().isConfirmed.value === true || user.allowEdit.value === false || violations.getCurrent().isNotFixed.value === true">
                     </div>
+                    -->
+                    <label for="new-violation-end-time" class="width-90 right">&nbsp;</label>
+                    <time-input id="new-violation-end-time"
+                                ng-model="violations.getCurrent().ended.value"
+                                disabled="violations.getCurrent().isConfirmed.value === true || user.allowEdit.value === false || violations.getCurrent().isNotFixed.value === true"
+                                on-change="onTimeChange()">
+                    </time-input>
                 </div>
 
+            </div>
+
+
+            <div class="row padding-10">
+                <div class="width-100">
+                    <span class="left">Технологическое нарушение еще не устранено</span>
+                    <input type="checkbox"
+                           name="not_fixed"
+                           id="current-violation-is-not-fixed"
+                           class="right"
+                           ng-change="violations.getCurrent()._states_.changed(true); setViolationFixed()"
+                           ng-model="violations.getCurrent().isNotFixed.value">
+                </div>
             </div>
 
             <div class="row padding-10">
@@ -170,8 +212,11 @@
                 <span>&nbsp; Загрузить файл</span>
                 <input
                         type="file"
-                        name="userfile"
+                        name="userfile[]"
+                        enctype="multipart/form-data"
+                        multiple
                         id="userfile"
+                        accept="image/*,video/*,application/pdf,application/msword,application/msword,application/excel,application/vnd.ms-excel,application/x-excel,application/x-msexcel,application/excel,application/x-excel,application/excel,application/x-excel,application/x-compressed,application/x-zip-compressed,application/zip,multipart/x-zip,application/rtf,application/x-rtf,text/richtext,text/plain,application/plain,multipart/x-gzip,application/x-gzip"
                         ng-disabled="isUploadComplete === false"
                         uploader
                         uploader-url="{{ uploaderLink }}"
@@ -200,10 +245,18 @@
                 <tbody>
                 <tr class="attachment" ng-repeat="attachment in violations.getCurrent().attachments track by $index">
                     <td class="width-60 attachment-loaded">
-                        <button class="red small" title="Удалить файл" ng-show="attachment.isInAddMode === true" ng-click="deleteAttachment(attachment.id.value)">
-                            <span class="fa fa-times"></span>
-                        </button>&nbsp;
-                        <a ng-href="{{ attachment.url.value }}" target="_blank">{{ attachment.title.value }}</a>
+
+
+                        <div class="row" ng-init="at = attachment.title.value.split('.')">
+                            <img src="{{ attachment.url.value }}" ng-if="at[at.length - 1].toLowerCase() === 'jpg' || at[at.length - 1].toLowerCase() === 'jpeg' || at[at.length - 1].toLowerCase() === 'png' || at[at.length - 1].toLowerCase() === 'bmp'" ng-click="openCarousel(attachment.id.value)" alt="" style="display:block; width: 270px; margin-bottom: 5px; cursor: pointer;">
+                        </div>
+                        <div class="row">
+                            <button class="red small" title="Удалить файл" ng-show="attachment.isInAddMode === true || session.getCurrentUser().allowDeleteFiles.value === true" ng-click="openDeleteAttachmentModal(attachment.id.value)">
+                                <span class="fa fa-times"></span>
+                            </button>&nbsp;
+                            <a ng-href="{{ attachment.url.value }}" target="_blank">{{ attachment.title.value }}</a>
+                        </div>
+
                     </td>
                     <td class="width-25 attachment-loaded text-center">
                         {{ attachment.added.value | dateShort }}
@@ -219,4 +272,75 @@
             </table>
         </div>
     </div>
+</div>
+
+
+<div ui-modal modal-id="delete-attachment-modal" modal-caption="Подтвердите удаление документа" modal-width="400" modal-height="160">
+    <div class="row padding-20 text-center">Удалить документ?</div>
+    <ui-modal-footer height="45">
+        <div class="row padding-5">
+            <div class="width-50">
+                <button class="width-100 green right" ng-click="approveDeleteAttachment()">
+                    Удалить
+                </button>
+            </div>
+            <div class="width-50">
+                <button class="width-100 red right" ng-click="modals.close()">
+                    Отмена
+                </button>
+            </div>
+        </div>
+    </ui-modal-footer>
+</div>
+
+
+
+<div id="carousel" ng-show="inCarouselMode === true">
+    <!--
+    <div class="row" style="height: 80px;">
+        <div class="width-90">&nbsp;</div>
+        <div class="width-10" style="font-size: 24px; line-height: 80px; color: white; text-align: right; padding-right: 20px; padding-left: 20px; -webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;"><i class="fa fa-times" ng-click="closeCarousel()" style="cursor: pointer" title="Закрыть"></i></div>
+    </div>
+    <div class="row" ng-init="images = violations.getCurrent().attachments | onlyImages" style="position: absolute; top: 80px; left: 0px; right: 0px; bottom: 0px;">
+        <img src="{{ images[currentImageIndex].url.value  }}" alt="{{ images[currentImageIndex].title.value }}" style="padding:  20px; box-sizing: border-box;display:block; height: 100%; margin-left: auto; margin-right: auto;">
+    </div>
+    -->
+
+
+    <div class="row">
+        <div style="position: absolute; left: 0px; top: 0px; bottom: 0px; width: 50px;  font-size: 30px; color: white; text-align: center; line-height: calc(100% - 50px); cursor: pointer;">
+            <i class="fa fa-chevron-left" ng-click="prevImage()" style="position: relative; top: 50%;"></i>
+        </div>
+        <div ng-init="images = (violations.getCurrent().attachments | onlyImages)" style="position: absolute; left: 50px; right: 50px; top: 0px; bottom: 0px;">
+            <img src="{{ images[currentImageIndex].url.value  }}" alt="{{ images[currentImageIndex].title.value }}" style="padding:  20px; box-sizing: border-box;display:block; height: 100%; margin-left: auto; margin-right: auto;">
+        </div>
+        <div style="position: absolute; top: 0px; right: 0px; bottom: 0px; width: 50px;">
+            <div style="position: absolute; top: 0px; right: 0px; left: 0px; height: 50px; font-size: 30px; color: white; line-height: 50px; text-align: center; cursor: pointer">
+                <i class="fa fa-times" ng-click="closeCarousel()"></i>
+            </div>
+            <div style="position: absolute; top: 50px; bottom: 0px; right: 0px; left: 0px; font-size: 30px; color: white; text-align: center; line-height: calc(100% - 50px); cursor: pointer">
+                <i class="fa fa-chevron-right" ng-click="nextImage()" style="position: relative; top: 50%;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div ui-modal modal-id="delete-violation-modal" modal-caption="Подтвердите удаление" modal-width="400" modal-height="160">
+    <div class="row padding-20 text-center">Удалить технологическое нарушение № {{ violations.getCurrent().id.value }}?</div>
+    <ui-modal-footer height="45">
+        <div class="row padding-5">
+            <div class="width-50">
+                <button class="width-100 green right" ng-click="delete()">
+                    Удалить
+                </button>
+            </div>
+            <div class="width-50">
+                <button class="width-100 red right" ng-click="modals.close()">
+                    Отмена
+                </button>
+            </div>
+        </div>
+    </ui-modal-footer>
 </div>

@@ -362,7 +362,8 @@ angular.module("violations")
                             eskObject: newViolation.eskObject.value,
                             happened: newViolation.happened.value,
                             ended: newViolation.ended.value,
-                            description: newViolation.description.value
+                            description: newViolation.description.value,
+                            isNotFixed: newViolation.isNotFixed.value === true ? 1: 0
                         }
                     };
 
@@ -421,7 +422,9 @@ angular.module("violations")
                             description: currentViolation.description.value,
                             happened: currentViolation.happened.value,
                             ended: currentViolation.ended.value,
-                            isConfirmed: currentViolation.isConfirmed.value === true ? 1 : 0
+                            isConfirmed: currentViolation.isConfirmed.value === true ? 1 : 0,
+                            isMarkedForDelete: currentViolation.isMarkedForDelete.value === true ? 1 : 0,
+                            isNotFixed: currentViolation.isNotFixed.value === true ? 1 : 0
                         }
                     };
                     $http.post("/serverside/api.php", params)
@@ -434,6 +437,11 @@ angular.module("violations")
                             }
                             return false;
                         });
+                },
+
+
+                delete: function (violationId, url, departmentId) {
+
                 },
 
 
@@ -457,7 +465,7 @@ angular.module("violations")
                         action: "cancelViolation",
                         data: {
                             serviceId: "violations",
-                            violationId: newViolation.id.value,
+                            violationId: violationId !== undefined && violationId !== 0 ? violationId : newViolation.id.value,
                             departmentId: departmentId
                         }
                     };

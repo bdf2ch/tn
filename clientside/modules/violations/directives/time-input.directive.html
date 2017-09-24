@@ -1,0 +1,35 @@
+<div class="time-input">
+
+    <!-- Часы -->
+    <div class="hours">
+        <input type="text"
+               maxlength="2"
+               ng-model="hours"
+               ng-class="{'disabled': isDisabled === true}"
+               ng-change="change()"
+               ng-disabled="isDisabled"
+               readonly>
+        <div class="controls" ng-show="isDisabled === false">
+            <div class=" control" ng-click="hoursUp()"><i class="fa fa-chevron-up"></i></div>
+            <div class="control" ng-click="hoursDown()"><i class="fa fa-chevron-down"></i></div>
+        </div>
+    </div>
+
+    <!-- Раздклитель -->
+    <div class="separator">:</div>
+
+    <!-- Минуты -->
+    <div class="minutes">
+        <input type="text"
+               maxlength="2"
+               ng-model="minutes"
+               ng-class="{'disabled': isDisabled === true}"
+               ng-change="change()"
+               ng-disabled="isDisabled"
+               readonly>
+        <div class="controls" ng-show="isDisabled === false">
+            <div class="control" ng-click="minutesUp()"><i class="fa fa-chevron-up"></i></div>
+            <div class="control" ng-click="minutesDown()"><i class="fa fa-chevron-down"></i></div>
+        </div>
+    </div>
+</div>

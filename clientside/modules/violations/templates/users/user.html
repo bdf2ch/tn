@@ -179,9 +179,19 @@
                         <td>
                             <input type="checkbox"
                                    name="allow-confirm"
-                                   id="new-user-allow-confirm"
+                                   id="current-user-allow-confirm"
                                    ng-change="users.users.getCurrent()._states_.changed(true)"
                                    ng-model="users.users.getCurrent().allowConfirm.value">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Пользователь может удалять документы</td>
+                        <td>
+                            <input type="checkbox"
+                                   name="allow-delete-files"
+                                   id="current-user-allow-delete-files"
+                                   ng-change="users.users.getCurrent()._states_.changed(true)"
+                                   ng-model="users.users.getCurrent().allowDeleteFiles.value">
                         </td>
                     </tr>
                     <tr>
@@ -189,7 +199,7 @@
                         <td>
                             <input type="checkbox"
                                    name="is-administrator"
-                                   id="new-user-is-administrator"
+                                   id="current-user-is-administrator"
                                    ng-change="users.users.getCurrent()._states_.changed(true)"
                                    ng-model="users.users.getCurrent().isAdministrator.value">
                         </td>

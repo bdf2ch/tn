@@ -3,6 +3,7 @@ angular
     .controller("ViolationsController", ["$log", "$scope", "$violations", "$divisions", "$misc", "$location", "$tree", "$session", "$dateTimePicker", function ($log, $scope, $violations, $divisions, $misc, $location, $tree, $session, $dateTimePicker) {
         $scope.violations = $violations;
         $scope.divisions = $divisions;
+        $scope.session = $session;
         $scope.misc = $misc;
         $scope.today = new moment().hours(23).minutes(59).seconds(59).unix();
 

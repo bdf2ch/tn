@@ -115,6 +115,12 @@
       //border: 1px solid black;
     }
 
+    .violation-is-marked-for-delete {
+      width: 5%;
+      text-align: center;
+      //border: 1px solid black;
+    }
+
     .violation-date {
       width: 15%;
       //border: 1px solid black;
@@ -199,6 +205,18 @@
     line-height: 18px;
     text-align: center;
     color: forestgreen;
+    background: transparent;
+  }
+
+
+  .violation-delete-mark {
+    height: 18px;
+    padding-right: 5px;
+    padding-left: 5px;
+    font-size: 11px;
+    line-height: 18px;
+    text-align: center;
+    color: red;
     background: transparent;
   }
 
@@ -451,7 +469,7 @@
     margin-left: 0px;
 
     #add-violation-button {
-      display: none;
+      display: block;
     }
 
     #current-division-title {

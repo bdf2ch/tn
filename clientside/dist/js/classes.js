@@ -11,6 +11,8 @@
         isAdministrator: new Field({ source: "IS_ADMINISTRATOR", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
         allowEdit: new Field({ source: "ALLOW_EDIT", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
         allowConfirm: new Field({ source: "ALLOW_CONFIRM", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
+        allowAddFiles: new Field({ source: "ALLOW_ADD_FILES", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
+        allowDeleteFiles: new Field({ source: "ALLOW_DELETE_FILES", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
         isLDAPEnabled: new Field({ source: "IS_LDAP_ENABLED", type: DATA_TYPE_BOOLEAN, value: true, default_value: true, backupable: true })
     });
 /******************************
@@ -814,6 +816,104 @@ $classesInjector.add("States", {
         }
     }
 });
+$classesInjector
+    .add("Attachment", {
+        _dependencies__: [],
+        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        violationId: new Field({ source: "VIOLATION_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        title: new Field({ source: "TITLE", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
+        type: new Field({ source: "MIME_TYPE", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
+        size: new Field({ source: "SIZE", type: DATA_TYPE_INTEGER, default_value: 0, value: 0, backupable: true, displayable: true }),
+        url: new Field({ source: "URL", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
+        added: new Field({ source: "DATE_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        isInAddMode: false
+    });
+
+$classesInjector
+    .add("Division", {
+        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        parentId: new Field({ source: "PARENT_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, bacupable: true }),
+        sortId: new Field({ source: "SORT_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        shortTitle: new Field({ source: "TITLE_SHORT", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
+        fullTitle: new Field({ source: "TITLE_FULL", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
+        violationsAdded: new Field({ source: "VIOLATIONS_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        attachmentsAdded: new Field({ source: "ATTACHMENTS_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        storage: new Field({ source: "FILE_STORAGE_HOST", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
+        isDepartment: new Field({ source: "IS_DEPARTMENT", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
+        path: new Field({ source: "PATH", type: DATA_TYPE_STRING, value: "", default_value: "" })
+    });
+
+$classesInjector
+    .add("ESKGroup", {
+        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        title: new Field({ source: "TITLE", type: DATA_TYPE_STRING, value: "", default_value: "" }),
+        description: new Field({ source: "DESCRIPTION", type: DATA_TYPE_STRING, value: "", default_value: "" })
+    });
+$classesInjector
+    .add("FeedbackAttachment", {
+        _dependencies__: [],
+        id: new Field({ source: "id", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        messageId: new Field({ source: "message_id", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        title: new Field({ source: "title", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
+        type: new Field({ source: "mime_type", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
+        size: new Field({ source: "size", type: DATA_TYPE_INTEGER, default_value: 0, value: 0, backupable: true, displayable: true }),
+        url: new Field({ source: "url", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true })
+    });
+
+$classesInjector
+    .add("FeedbackMessage", {
+        _dependencies__: [],
+        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        userId: new Field({ source: "USER_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        message: new Field({ source: "MESSAGE", type: DATA_TYPE_STRING, default_value: "", value: "" }),
+        timestamp: new Field({ source: "TIMESTAMP", type: DATA_TYPE_INTEGER, default_value: 0, value: 0 }),
+        attachments: []
+    });
+
+$classesInjector
+    .add("Violation", {
+        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        userId: new Field({ source: "USER_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        divisionId: new Field({ source: "DIVISION_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
+        eskGroupId: new Field({ source: "ESK_GROUP_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
+        eskObject: new Field({ source: "ESK_OBJECT", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
+        happened: new Field({ source: "DATE_HAPPENED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        ended: new Field({ source: "DATE_ENDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
+        added: new Field({ source: "DATE_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
+        description: new Field({ source: "DESCRIPTION", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
+        isConfirmed: new Field({ source: "IS_CONFIRMED", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
+        isMarkedForDelete: new Field({ source: "IS_MARKED_FOR_DELETE", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
+        isNotFixed: new Field({ source: "IS_NOT_FIXED", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
+        user: 0,
+        attachments: [],
+        isNew: false,
+        newAttachments: 0
+    });
+$classesInjector
+    .add("ViolationFilter", {
+        code: new Field({ source: "", type: DATA_TYPE_STRING, value: "", default_value: "" }),
+        title: new Field({ source: "", type: DATA_TYPE_STRING, value: "", default_value: "" }),
+        startValue: new Field({ source: "", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
+        endValue: new Field({ source: "", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
+        isEnabled: false,
+        isActive: false,
+
+        resetStartValue: function () {
+            this.startValue.value = this.startValue.default_value;
+        },
+
+        resetEndValue: function () {
+            this.endValue.value = this.endValue.default_value;
+        }
+    });
+
+$classesInjector
+    .add("Weekday", {
+        id: 0,
+        title: "",
+        code: ""
+    });
+
 $classesInjector.add("TreeItem", {
         key: 0,
         parentKey: 0,
@@ -894,100 +994,4 @@ $classesInjector
         initial: {},
         selectedItem: false,
         onAddItem: function (item) {}
-    });
-
-$classesInjector
-    .add("Attachment", {
-        _dependencies__: [],
-        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        violationId: new Field({ source: "VIOLATION_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        title: new Field({ source: "TITLE", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
-        type: new Field({ source: "MIME_TYPE", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
-        size: new Field({ source: "SIZE", type: DATA_TYPE_INTEGER, default_value: 0, value: 0, backupable: true, displayable: true }),
-        url: new Field({ source: "URL", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
-        added: new Field({ source: "DATE_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        isInAddMode: false
-    });
-
-$classesInjector
-    .add("Division", {
-        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        parentId: new Field({ source: "PARENT_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, bacupable: true }),
-        sortId: new Field({ source: "SORT_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        shortTitle: new Field({ source: "TITLE_SHORT", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
-        fullTitle: new Field({ source: "TITLE_FULL", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
-        violationsAdded: new Field({ source: "VIOLATIONS_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        attachmentsAdded: new Field({ source: "ATTACHMENTS_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        storage: new Field({ source: "FILE_STORAGE_HOST", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
-        isDepartment: new Field({ source: "IS_DEPARTMENT", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
-        path: new Field({ source: "PATH", type: DATA_TYPE_STRING, value: "", default_value: "" })
-    });
-
-$classesInjector
-    .add("ESKGroup", {
-        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        title: new Field({ source: "TITLE", type: DATA_TYPE_STRING, value: "", default_value: "" }),
-        description: new Field({ source: "DESCRIPTION", type: DATA_TYPE_STRING, value: "", default_value: "" })
-    });
-$classesInjector
-    .add("FeedbackAttachment", {
-        _dependencies__: [],
-        id: new Field({ source: "id", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        messageId: new Field({ source: "message_id", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        title: new Field({ source: "title", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
-        type: new Field({ source: "mime_type", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true }),
-        size: new Field({ source: "size", type: DATA_TYPE_INTEGER, default_value: 0, value: 0, backupable: true, displayable: true }),
-        url: new Field({ source: "url", type: DATA_TYPE_STRING, default_value: "", value: "", backupable: true, displayable: true })
-    });
-
-$classesInjector
-    .add("FeedbackMessage", {
-        _dependencies__: [],
-        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        userId: new Field({ source: "USER_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        message: new Field({ source: "MESSAGE", type: DATA_TYPE_STRING, default_value: "", value: "" }),
-        timestamp: new Field({ source: "TIMESTAMP", type: DATA_TYPE_INTEGER, default_value: 0, value: 0 }),
-        attachments: []
-    });
-
-$classesInjector
-    .add("Violation", {
-        id: new Field({ source: "ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        userId: new Field({ source: "USER_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        divisionId: new Field({ source: "DIVISION_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
-        eskGroupId: new Field({ source: "ESK_GROUP_ID", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
-        eskObject: new Field({ source: "ESK_OBJECT", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
-        happened: new Field({ source: "DATE_HAPPENED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        ended: new Field({ source: "DATE_ENDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
-        added: new Field({ source: "DATE_ADDED", type: DATA_TYPE_INTEGER, value: 0, default_value: 0 }),
-        description: new Field({ source: "DESCRIPTION", type: DATA_TYPE_STRING, value: "", default_value: "", backupable: true }),
-        isConfirmed: new Field({ source: "IS_CONFIRMED", type: DATA_TYPE_BOOLEAN, value: false, default_value: false, backupable: true }),
-        user: 0,
-        attachments: [],
-        isNew: false,
-        newAttachments: 0
-    });
-$classesInjector
-    .add("ViolationFilter", {
-        code: new Field({ source: "", type: DATA_TYPE_STRING, value: "", default_value: "" }),
-        title: new Field({ source: "", type: DATA_TYPE_STRING, value: "", default_value: "" }),
-        startValue: new Field({ source: "", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
-        endValue: new Field({ source: "", type: DATA_TYPE_INTEGER, value: 0, default_value: 0, backupable: true }),
-        isEnabled: false,
-        isActive: false,
-
-        resetStartValue: function () {
-            this.startValue.value = this.startValue.default_value;
-        },
-
-        resetEndValue: function () {
-            this.endValue.value = this.endValue.default_value;
-        }
-    });
-
-$classesInjector
-    .add("Weekday", {
-        id: 0,
-        title: "",
-        code: ""
     });

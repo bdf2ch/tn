@@ -49,6 +49,9 @@
     }
     */
 
-    rmdir_recursive($_SERVER["DOCUMENT_ROOT"].$DS."uploads".$DS.$serviceId.$DS.$departmentId.$DS.$violationId);
+    if (file_exists($_SERVER["DOCUMENT_ROOT"].$DS."uploads".$DS.$serviceId.$DS.$departmentId.$DS.$violationId)) {
+        rmdir_recursive($_SERVER["DOCUMENT_ROOT"].$DS."uploads".$DS.$serviceId.$DS.$departmentId.$DS.$violationId);
+    }
+
     echo json_encode(true);
 ?>

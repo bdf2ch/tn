@@ -20,8 +20,8 @@
         return false;
     }
 
-    $violationsFile = PHPExcel_IOFactory::load($_SERVER["DOCUMENT_ROOT"].$DS."import.xls");
-    $attachmentsFile = PHPExcel_IOFactory::load($_SERVER["DOCUMENT_ROOT"].$DS."attachments.xls");
+    $violationsFile = PHPExcel_IOFactory::load($_SERVER["DOCUMENT_ROOT"].$DS."violations.xls");
+    $attachmentsFile = PHPExcel_IOFactory::load($_SERVER["DOCUMENT_ROOT"].$DS."attachments2.xls");
     $attachmentsWriter = new PHPExcel_Writer_Excel5($attachmentsFile);
 
     $violationsFileRows = $violationsFile -> getActiveSheet() -> getHighestRow();
@@ -54,13 +54,14 @@
 
         $violation = mysqli_query($mysqli, "INSERT INTO violations (DIVISION_ID, USER_ID, ESK_GROUP_ID, DATE_HAPPENED, DATE_ENDED, DURATION, DESCRIPTION, ESK_OBJECT, DATE_ADDED, IS_CONFIRMED) VALUES ($divisionId, $userId, $eskGroupId, $dateHappenedUnix, $dateHappenedUnix, $duration, '$description', '$eskObject', $dateAdded, $isConfirmed)");
         if (!$violation) {
-            echo "Не удалось выполнить запрос1: (" . $mysqli -> errno . ") " . $mysqli -> error;
+            echo "ERROR! Не удалось выполнить запрос1: (" . $mysqli -> errno . ") " . $mysqli -> error;
             return false;
         }
         $id = mysqli_insert_id($mysqli);
 
         for ($x = 2; $x <= $attachmentsFileRows; $x++) {
             $attachmentsId = intval($attachmentsFile -> getActiveSheet() -> getCell("A".$x) -> getValue());
+
             if ($attachmentsId == $oldId) {
                 $attachmentAdded = DateTime::createFromFormat('d.m.Y H:i:s', $attachmentsFile -> getActiveSheet() -> getCell("L".$x) -> getValue());
                 $attachmentAddedUnix = $attachmentAdded -> getTimestamp();
@@ -69,9 +70,15 @@
                 $attachmentTitleArray = explode("\\", $attachmentUrl);
                 $attachmentTitle = end($attachmentTitleArray);
 
+                echo("attachmentId = ".$attachmentsId);
+                echo("attachmentAdded = ".$attachmentAddedUnix."<br>");
+                echo("attachmentUserId = ".$attachmentUserId."<br>");
+                echo("attachmentTitle = ".$attachmentTitle."<br>");
+
+
                 $attachment = mysqli_query($mysqli, "INSERT INTO attachments (VIOLATION_ID, DIVISION_ID, TITLE, SIZE, MIME_TYPE, URL, USER_ID, DATE_ADDED) VALUES ($id, $divisionId, '$attachmentTitle', 10, 'NONE', '$attachmentUrl', $userId, $attachmentAddedUnix)");
                 if (!$attachment) {
-                    echo "Не удалось выполнить запрос2: (" . $mysqli -> errno . ") " . $mysqli -> error;
+                    echo "ERROR! Не удалось выполнить запрос2: (" . $mysqli -> errno . ") " . $mysqli -> error;
                     return false;
                 }
 

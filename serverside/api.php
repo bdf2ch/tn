@@ -400,12 +400,13 @@
         $ended = $data -> ended;
         $duration = $ended - $happened;
         $description = $data -> description;
+        $isNotFixed = $data -> isNotFixed;
         $added = time();
         $result = new stdClass();
         $result -> attachments = array();
 
         if ($id != 0) {
-            $query = mysqli_query($mysqli, "UPDATE violations SET USER_ID = $userId, DIVISION_ID = $divisionId, ESK_GROUP_ID = $eskGroupId, ESK_OBJECT = '$eskObject', DESCRIPTION = '$description', DATE_HAPPENED = $happened, DATE_ENDED = $ended, DURATION = $duration, DATE_ADDED = $added WHERE ID = $id");
+            $query = mysqli_query($mysqli, "UPDATE violations SET USER_ID = $userId, DIVISION_ID = $divisionId, ESK_GROUP_ID = $eskGroupId, ESK_OBJECT = '$eskObject', DESCRIPTION = '$description', DATE_HAPPENED = $happened, DATE_ENDED = $ended, DURATION = $duration, DATE_ADDED = $added, IS_NOT_FIXED = $isNotFixed WHERE ID = $id");
             if (!$query) {
                 echo "Не удалось выполнить запрос: (" . $mysqli -> errno . ") " . $mysqli -> error;
                 return false;
@@ -442,7 +443,7 @@
 
             echo(json_encode($result));
         } else {
-            $query = mysqli_query($mysqli, "INSERT INTO violations (USER_ID, DIVISION_ID, ESK_GROUP_ID, ESK_OBJECT, DESCRIPTION, DATE_HAPPENED, DATE_ENDED, DURATION, DATE_ADDED) VALUES ($userId, $divisionId, $eskGroupId, '$eskObject', '$description', $happened, $ended, $duration, $added)");
+            $query = mysqli_query($mysqli, "INSERT INTO violations (USER_ID, DIVISION_ID, ESK_GROUP_ID, ESK_OBJECT, DESCRIPTION, DATE_HAPPENED, DATE_ENDED, DURATION, DATE_ADDED, IS_NOT_FIXED) VALUES ($userId, $divisionId, $eskGroupId, '$eskObject', '$description', $happened, $ended, $duration, $added, $isNotFixed)");
             if (!$query) {
                 echo(json_encode(false));
                 return false;
@@ -487,9 +488,11 @@
         $ended = $data -> ended;
         $description = $data -> description;
         $isConfirmed = $data -> isConfirmed;
+        $isMarkedForDelete = $data -> isMarkedForDelete;
+        $isNotFixed = $data -> isNotFixed;
         $duration = $ended - $happened;
 
-        $query = mysqli_query($mysqli, "UPDATE violations SET USER_ID = $userId, DIVISION_ID = $divisionId, ESK_GROUP_ID = $eskGroupId, ESK_OBJECT = '$eskObject', DESCRIPTION = '$description', DATE_ENDED = $ended, DURATION = $duration, IS_CONFIRMED = $isConfirmed WHERE ID = $id");
+        $query = mysqli_query($mysqli, "UPDATE violations SET USER_ID = $userId, DIVISION_ID = $divisionId, ESK_GROUP_ID = $eskGroupId, ESK_OBJECT = '$eskObject', DESCRIPTION = '$description', DATE_ENDED = $ended, DURATION = $duration, IS_CONFIRMED = $isConfirmed, IS_MARKED_FOR_DELETE = $isMarkedForDelete, IS_NOT_FIXED = $isNotFixed WHERE ID = $id");
         if (!$query) {
             echo(json_encode(false));
             return false;
@@ -728,10 +731,11 @@
         $password = $data -> password == "" ? $email : $data -> password;
         $isAdministrator = $data -> isAdministrator;
         $allowEdit = $data -> allowEdit;
+        $allowDeleteFiles = $data -> allowDeleteFiles;
         $allowConfirm = $data -> allowConfirm;
 
 
-        $user = mysqli_query($mysqli, "INSERT INTO users (DIVISION_ID, SURNAME, NAME, FNAME, EMAIL, LOGIN, PASSWORD, IS_ADMINISTRATOR, ALLOW_EDIT, ALLOW_CONFIRM) VALUES ($divisionId, '$surname', '$name', '$fname', '$email', '$login', '$password', $isAdministrator, $allowEdit, $allowConfirm)");
+        $user = mysqli_query($mysqli, "INSERT INTO users (DIVISION_ID, SURNAME, NAME, FNAME, EMAIL, LOGIN, PASSWORD, IS_ADMINISTRATOR, ALLOW_EDIT, ALLOW_CONFIRM, ALLOW_DELETE_FILES) VALUES ($divisionId, '$surname', '$name', '$fname', '$email', '$login', '$password', $isAdministrator, $allowEdit, $allowConfirm, $allowDeleteFiles)");
         if (!$user) {
             echo(json_encode(false));
             return false;
@@ -739,7 +743,7 @@
 
 
         $id = mysqli_insert_id($mysqli);
-        $user = mysqli_query($mysqli, "SELECT ID, DIVISION_ID, SURNAME, NAME, FNAME, EMAIL, LOGIN, PASSWORD, IS_ADMINISTRATOR, ALLOW_EDIT, ALLOW_CONFIRM FROM users WHERE ID = $id");
+        $user = mysqli_query($mysqli, "SELECT ID, DIVISION_ID, SURNAME, NAME, FNAME, EMAIL, LOGIN, PASSWORD, IS_ADMINISTRATOR, ALLOW_EDIT, ALLOW_CONFIRM, ALLOW_ADD_FILES, ALLOW_DELETE_FILES FROM users WHERE ID = $id");
         if (!$user) {
             echo(json_encode(false));
             return false;
@@ -771,15 +775,16 @@
         $isAdministrator = $data -> isAdministrator;
         $allowEdit = $data -> allowEdit;
         $allowConfirm = $data -> allowConfirm;
+        $allowDeleteFiles = $data -> allowDeleteFiles;
         $isLDAPEnabled = $data -> isLDAPEnabled;
 
-        $user = mysqli_query($mysqli, "UPDATE users SET DIVISION_ID = $divisionId, SURNAME = '$surname', NAME = '$name', FNAME = '$fname', EMAIL = '$email', LOGIN = '$login', PASSWORD = '$password', IS_ADMINISTRATOR = $isAdministrator, ALLOW_EDIT = $allowEdit, ALLOW_CONFIRM = $allowConfirm, IS_LDAP_ENABLED = $isLDAPEnabled WHERE ID = $id");
+        $user = mysqli_query($mysqli, "UPDATE users SET DIVISION_ID = $divisionId, SURNAME = '$surname', NAME = '$name', FNAME = '$fname', EMAIL = '$email', LOGIN = '$login', PASSWORD = '$password', IS_ADMINISTRATOR = $isAdministrator, ALLOW_EDIT = $allowEdit, ALLOW_CONFIRM = $allowConfirm, ALLOW_DELETE_FILES = $allowDeleteFiles, IS_LDAP_ENABLED = $isLDAPEnabled WHERE ID = $id");
         if (!$user) {
             echo(json_encode(false));
             return false;
         }
 
-        $user = mysqli_query($mysqli, "SELECT ID, DIVISION_ID, SURNAME, NAME, FNAME, EMAIL, LOGIN, PASSWORD, IS_ADMINISTRATOR, ALLOW_EDIT, ALLOW_CONFIRM, IS_LDAP_ENABLED FROM users WHERE ID = $id");
+        $user = mysqli_query($mysqli, "SELECT ID, DIVISION_ID, SURNAME, NAME, FNAME, EMAIL, LOGIN, PASSWORD, IS_ADMINISTRATOR, ALLOW_EDIT, ALLOW_CONFIRM, ALLOW_DELETE_FILES, IS_LDAP_ENABLED FROM users WHERE ID = $id");
         if (!$user) {
             echo(json_encode(false));
             return false;

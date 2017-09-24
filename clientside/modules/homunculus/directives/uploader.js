@@ -31,7 +31,7 @@ angular
                     //var fd = new FormData();
                     angular.forEach(element[0].files, function (file) {
                         //$log.log(file);
-                        fd.append("file", file);
+                        fd.append("file[]", file);
                     });
 
                     /* Если задан коллбэк onBeforeUpload - выполняем его */

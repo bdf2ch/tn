@@ -19,12 +19,13 @@
         return false;
     }
 
-    $attachmentsFile = PHPExcel_IOFactory::load($_SERVER["DOCUMENT_ROOT"].$DS."attachments.xls");
+    $attachmentsFile = PHPExcel_IOFactory::load($_SERVER["DOCUMENT_ROOT"].$DS."attachments2.xls");
     $attachmentsFileRows = $attachmentsFile -> getActiveSheet() -> getHighestRow();
     $notFound = 0;
     echo("attachments file rows = ". $attachmentsFileRows."<br><br>");
 
-    for ($i = 2; $i < $attachmentsFileRows; $i++) {
+    //for ($i = 2; $i < $attachmentsFileRows; $i++) {
+    for ($i = 300; $i < $attachmentsFileRows; $i++) {
         $attachmentUrl = $attachmentsFile -> getActiveSheet() -> getCell("K".$i) -> getValue();
         $attachmentTitleArray = explode("\\", $attachmentUrl);
         $attachmentTitle = end($attachmentTitleArray);
@@ -32,6 +33,7 @@
 
         echo("title = ".$attachmentTitle."<br>");
         echo("onDisk = ".$onDisk."<br>");
+
 
         $attachment = mysqli_query($mysqli, "SELECT * FROM attachments WHERE TITLE = '$attachmentTitle'");
         if (!$attachment) {
@@ -71,6 +73,7 @@
         $url = $storage == "" ? "uploads".$DS."violations".$DS.$parent["ID"].$DS.$violationId.$DS.$attachmentTitle : $storage.$DS."uploads".$DS."violations".$DS.$violationId.$DS.$attachmentTitle;
         echo("url = ".$url."<br>");
 
+
         if (!file_exists($_SERVER["DOCUMENT_ROOT"].$DS."serverside".$DS."attachments".$DS.$parent["ID"])) {
             mkdir($_SERVER["DOCUMENT_ROOT"].$DS."serverside".$DS."attachments".$DS.$parent["ID"], 0777);
         }
@@ -81,8 +84,12 @@
 
         $encoding = mb_detect_encoding($attachmentTitle);
         $title1251 = mb_convert_encoding($attachmentTitle, "WINDOWS-1251", $encoding);
-        if (!file_exists($_SERVER["DOCUMENT_ROOT"].$DS."serverside".$DS."files".$DS.$onDisk.$DS.$title1251)) {
-            echo("Файл "."serverside".$DS."files".$DS.$onDisk.$title1251." не найден<br>");
+        //if (!file_exists($_SERVER["DOCUMENT_ROOT"].$DS."serverside".$DS."files".$DS.$onDisk.$DS.$title1251)) {
+
+        $url1251 = mb_convert_encoding($attachmentUrl, "WINDOWS-1251", $encoding);
+        if (!file_exists($url1251)) {
+            //echo("Файл "."serverside".$DS."files".$DS.$onDisk.$title1251." не найден<br>");
+            echo("FILE ".$attachmentUrl." NOT FOUND<br>");
             $notFound++;
             $file = mysqli_query($mysqli, "DELETE FROM attachments WHERE ID = $attachmentId");
             if (!$file) {
@@ -90,12 +97,14 @@
                 return false;
             }
         } else {
-            copy($_SERVER["DOCUMENT_ROOT"].$DS."serverside".$DS."files".$DS.$onDisk.$DS.$title1251, $_SERVER["DOCUMENT_ROOT"].$DS."serverside".$DS."attachments".$DS.$parent["ID"].$DS.$violationId.$DS.$title1251);
+           //copy($_SERVER["DOCUMENT_ROOT"].$DS."serverside".$DS."files".$DS.$onDisk.$DS.$title1251, $_SERVER["DOCUMENT_ROOT"].$DS."serverside".$DS."attachments".$DS.$parent["ID"].$DS.$violationId.$DS.$title1251);
+            copy($url1251, $_SERVER["DOCUMENT_ROOT"].$DS."serverside".$DS."attachments".$DS.$parent["ID"].$DS.$violationId.$DS.$title1251);
+
             $urlEncoded = mysqli_real_escape_string($mysqli, $url);
             $size = filesize($_SERVER["DOCUMENT_ROOT"].$DS."serverside".$DS."attachments".$DS.$parent["ID"].$DS.$violationId.$DS.$title1251);
-            //$data = file_get_contents($_SERVER["DOCUMENT_ROOT"].$DS."serverside".$DS."files".$DS.$onDisk.$DS.$title1251);
-            //$size = strlen($data);
-            //echo("size = ".$size."<br>");
+            $data = file_get_contents($_SERVER["DOCUMENT_ROOT"].$DS."serverside".$DS."files".$DS.$onDisk.$DS.$title1251);
+            $size = strlen($data);
+            echo("size = ".$size."<br>");
             $file = mysqli_query($mysqli, "UPDATE attachments SET URL = '$urlEncoded', SIZE = $size WHERE ID = $attachmentId");
             if (!$file) {
                 echo "Не удалось выполнить запрос: (".$mysqli -> errno.") ".$mysqli -> error;
@@ -109,6 +118,8 @@
 
 
         echo("<br><br>");
+
+
     }
 
 

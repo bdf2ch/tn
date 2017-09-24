@@ -1,6 +1,17 @@
 @info-width: 700px;
 @documents-width: 490px;
 
+
+#carousel {
+  position: fixed;
+  top: 80px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 10;
+}
+
 #current-violation_ {
   width: 1200px;
   height: 400px;
@@ -114,6 +125,7 @@
 
   #save-violation-button {
     display: none !important;
+    //display: block;
   }
 
   #violation-upload-button {
@@ -147,10 +159,12 @@
   }
 
   #save-violation-button {
-    display: none !important;
+    //display: none !important;
+    display: block;
   }
 
   #violation-upload-button {
-    display: none !important;
+    //display: none !important;
+    display: block;
   }
 }

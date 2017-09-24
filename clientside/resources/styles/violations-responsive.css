@@ -81,6 +81,10 @@
   width: 5%;
   text-align: center;
 }
+#violations table .violation-is-marked-for-delete {
+  width: 5%;
+  text-align: center;
+}
 #violations table .violation-date {
   width: 15%;
 }
@@ -140,6 +144,16 @@
   line-height: 18px;
   text-align: center;
   color: forestgreen;
+  background: transparent;
+}
+#violations .violation-delete-mark {
+  height: 18px;
+  padding-right: 5px;
+  padding-left: 5px;
+  font-size: 11px;
+  line-height: 18px;
+  text-align: center;
+  color: red;
   background: transparent;
 }
 #violations .mdash {
@@ -338,7 +352,7 @@
     margin-left: 0px;
   }
   #violations #add-violation-button {
-    display: none;
+    display: block;
   }
   #violations #current-division-title {
     display: inline-block;

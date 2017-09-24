@@ -1,3 +1,7 @@
+<div class="margin-bottom-10 text-right">
+    <small> Замечания по работе приложения, а так же Ваши предложения отправляйте по <a href="mailto:shershilov@mrsksevzap.ru;alena@novgor.elektra.ru;oleg@novgor.elektra.ru?subject=ТН%20ЭСК%20Web&body=Добрый%20день!">ссылке</a>.</small>
+</div>
+
 <div id="divisions" class="block" ng-class="{ opened: violations.showDivisions() === true }">
     <div class="header">
         Структурные подразделения
@@ -17,19 +21,30 @@
                  root-key-data-type="DATA_TYPE_INTEGER"
                  expand-on-select="1">
         </ui-tree>
+
+
     </div>
 </div>
+
+
+
+
+
 </div>
 
 <div id="violations" class="block">
     <div class="row mobile-violations-header">
-        <div class="width-90 division-title">
-            {{ divisions.getCurrent().shortTitle.value }}
-        </div>
-        <div class="width-10">
-            <button id="select-division-button" class="blue right" ng-click="showDivisions(true)">
+        <div class="width-60 division-title">
+            <button id="select-division-button" class="blue left margin-right-10" ng-click="showDivisions(true)">
                 <span class="fa fa-building"></span>
             </button>
+            {{ divisions.getCurrent().shortTitle.value }}
+        </div>
+        <div class="width-40">
+            <button id="add-violation-button" class="blue right" ng-click="gotoNewViolation()">
+                <span class="fa fa-plus"></span> Добавить нарушение
+            </button>
+
         </div>
     </div>
 
@@ -224,6 +239,9 @@
                 <th class="violation-is-confirmed text-center">
                     <span class="fa fa-check"></span>
                 </th>
+                <th class="violation-is-marked-for-delete text-center" ng-show="session.getCurrentUser().isAdministrator.value === true">
+                    <span class="fa fa-times"></span>
+                </th>
                 <th class="violation-date text-left">
                     <span class="fa fa-clock-o"></span>&nbsp;
                     Дата
@@ -254,6 +272,9 @@
                 <td class="violation-is-confirmed text-center">
                     <span class="fa fa-check violation-confirmed-mark" ng-show="violation.isConfirmed.value === true"></span>
                 </td>
+                <td class="violation-is-marked-for-delete text-center" ng-show="session.getCurrentUser().isAdministrator.value === true">
+                    <span class="fa fa-times violation-delete-mark" ng-show="violation.isMarkedForDelete.value === true"></span>
+                </td>
                 <td class="violation-date text-left">
                     <span class="violation-full-date">{{ violation.happened.value | day }}, {{ violation.happened.value | time }}</span>
                     <span class="violation-short-date">{{ violation.happened.value | shortDay }}, {{ violation.happened.value | time }}</span>
@@ -281,7 +302,7 @@
             </tbody>
             <tfoot ng-show="violations.getAll().length !== 0" >
             <tr>
-                <td colspan="6">
+                <td colspan="7">
                     <span class="width-50 left text-center">
                         <span class="fa fa-bolt"></span>&nbsp; Нарушений: {{ violations.getLoaded() }}
                     </span>
@@ -292,7 +313,7 @@
             </tr>
             <tr>
                 <td class="buttoned text-center"
-                    colspan="6"
+                    colspan="7"
                     ng-show="violations.getAll().length < violations.getTotal() && violations.loading() === false"
                     ng-click="violations.getByDivisionId(divisions.getCurrent().id.value)">
                     Загрузить еще
